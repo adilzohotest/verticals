@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every Conversation Matters</title>
+
+<!--
+  ═══════════════════════════════════════════════════════════
+  PRESENTING
+  ═══════════════════════════════════════════════════════════
+  Arrows / Space / click = next    F = fullscreen
+  O = slide overview                R = replay slide animation
+
+  ═══════════════════════════════════════════════════════════
+  SWAPPING IN A REAL SCREEN RECORDING
+  ═══════════════════════════════════════════════════════════
+  Every app screen is a <div class="art"> containing a mocked
+  Zoho window. To use a real capture instead, replace the
+  contents of that .art with:
+
+     <video src="crm-timeline.mp4" autoplay muted loop playsinline></video>
+     <img src="salesiq.gif" alt="SalesIQ visitor board">
+
+  .art already handles sizing, rounding and cropping.
+  ═══════════════════════════════════════════════════════════
+-->
+
+
+<style>
+
+/* ════════ JetBrains Mono (local, self-hosted) ════════ */
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Regular.woff") format("woff");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
+
+/* ════════ Zoho Puvi (local, self-hosted) ════════ */
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Medium.woff") format("woff");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-SemiBold.woff") format("woff");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
+/* ════════ deck tokens (dark room canvas) ════════ */
+:root{
+  --ink:#15121C; --ink2:#1C1726; --line:#382E49;
+  --text:#F3EFF8; --muted:#9A91AC;
+
+  /* Zoho four-colour signature */
+  --z-red:#E42527; --z-green:#33A852; --z-blue:#1A73E8; --z-yellow:#F5B01A;
+
+  /* per-app accents */
+  --crm:#E14A3B; --siq:#4E7BF0; --desk:#E0483D; --camp:#F0A21B;
+  --ma:#E8752B; --social:#E5487B; --book:#0EA5A5; --books:#2D9CDB;
+  --sign:#5B6BF0; --survey:#F2B21B; --anal:#7B61FF; --cliq:#33A852;
+  --wa:#25D366;
+
+  /* light product-UI tokens */
+  --w-bg:#FFFFFF; --w-canvas:#F4F6F9; --w-bd:#E2E7EE;
+  --w-tx:#22272F; --w-mu:#7A8494; --w-soft:#EDF1F6;
+
+  --arabic:"Geeza Pro","Segoe UI",Tahoma,Arial,sans-serif;
+  --display:"Zoho Puvi","Trebuchet MS",system-ui,sans-serif;
+  --body:"Zoho Puvi",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--body);overflow:hidden}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(58vw 58vw at 8% 4%, rgba(26,115,232,.14), transparent 62%),
+    radial-gradient(52vw 52vw at 95% 94%, rgba(228,37,39,.13), transparent 64%);
+}
+
+/* ════════ stage ════════ */
+#stage{width:1280px;height:720px;position:fixed;top:50%;left:50%;z-index:1;transform-origin:center}
+.slide{position:absolute;inset:0;display:none;padding:38px 54px 0;grid-template-rows:auto 1fr auto;gap:20px}
+.slide.is-on{display:grid}
+.slide.hero{grid-template-rows:1fr auto;place-items:center}
+
+/* ════════ deck type ════════ */
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+.eyebrow b{color:var(--text);font-weight:500}
+h1{font-family:var(--display);font-weight:700;letter-spacing:-.03em;font-size:82px;line-height:.95}
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.025em;font-size:38px;line-height:1.05;margin-top:6px}
+.sub{font-size:17px;line-height:1.4;color:var(--muted)}
+
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:30px}
+.shead .sub{max-width:34ch;font-size:14.5px;padding-bottom:3px}
+
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:5px 10px;border-radius:6px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.chip i{width:7px;height:7px;border-radius:2px;background:var(--c,#fff);display:block;flex:none}
+.chip img{width:13px;height:13px;object-fit:contain;display:block;flex:none}
+
+/* ════════ art frame (swap point) ════════ */
+.art{position:relative;width:100%;height:100%;border-radius:13px;overflow:hidden;
+  box-shadow:0 34px 70px -18px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.07)}
+.art > video,.art > img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ════════ ZOHO APP WINDOW ════════ */
+.win{width:100%;height:100%;background:var(--w-canvas);color:var(--w-tx);display:flex;flex-direction:column;
+  font-size:12px;--acc:var(--crm)}
+.win-top{height:36px;flex:none;background:var(--w-bg);border-bottom:1px solid var(--w-bd);
+  display:flex;align-items:center;gap:10px;padding:0 12px}
+.zlogo{display:flex;gap:2.5px;flex:none}
+.zlogo i{width:4px;height:13px;border-radius:1px;display:block}
+.zlogo i:nth-child(1){background:var(--z-red)}
+.zlogo i:nth-child(2){background:var(--z-green)}
+.zlogo i:nth-child(3){background:var(--z-blue)}
+.zlogo i:nth-child(4){background:var(--z-yellow)}
+.appname{font-weight:600;font-size:13px;letter-spacing:-.01em}
+.appname span{color:var(--w-mu);font-weight:400}
+.spacer{flex:1}
+.searchpill{width:150px;height:21px;border-radius:5px;background:var(--w-soft);display:flex;align-items:center;
+  padding:0 8px;font-size:9.5px;color:var(--w-mu);gap:5px;white-space:nowrap;overflow:hidden;flex:none}
+.tbtn{width:21px;height:21px;border-radius:5px;background:var(--w-soft);display:grid;place-items:center;
+  font-size:10px;color:var(--w-mu);flex:none}
+.uav{width:22px;height:22px;border-radius:99px;background:linear-gradient(140deg,#F5B01A,#E42527);flex:none;
+  display:grid;place-items:center;color:#fff;font-weight:700;font-size:10px}
+
+.win-tabs{height:32px;flex:none;background:var(--w-bg);border-bottom:1px solid var(--w-bd);
+  display:flex;align-items:stretch;padding:0 12px;gap:2px}
+.tab{display:flex;align-items:center;padding:0 11px;font-size:11.5px;color:var(--w-mu);border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc);font-weight:600}
+
+.win-mid{flex:1;display:flex;min-height:0}
+.rail{width:46px;flex:none;background:#242833;display:flex;flex-direction:column;align-items:center;gap:7px;padding:9px 0}
+.rail .amk{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;
+  font-weight:700;font-size:11px;font-family:var(--display);opacity:.42}
+.rail .amk.on{opacity:1;box-shadow:0 0 0 2px rgba(255,255,255,.28)}
+.win-body{flex:1;padding:13px 15px;min-height:0;overflow:hidden}
+
+/* light-UI atoms */
+.wc{background:var(--w-bg);border:1px solid var(--w-bd);border-radius:8px}
+.wsk{height:7px;border-radius:99px;background:#E7ECF3;display:block}
+.wmu{color:var(--w-mu)}
+.wlbl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--w-mu)}
+.wbtn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;background:var(--acc);
+  color:#fff;font-size:10.5px;font-weight:600}
+.wbtn.ghost{background:var(--w-bg);color:var(--w-mu);border:1px solid var(--w-bd)}
+.wav{width:28px;height:28px;border-radius:99px;flex:none;display:grid;place-items:center;color:#fff;
+  font-family:var(--display);font-weight:700;font-size:12px;background:linear-gradient(140deg,#F5B01A,#E14A3B)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:600;padding:3px 8px;border-radius:99px}
+.pill.g{background:#E6F6EC;color:#1E7C3A}.pill.r{background:#FDEBEA;color:#C0281F}
+.pill.b{background:#E8F1FE;color:#1257A8}.pill.y{background:#FEF4E1;color:#96650A}
+.pill.p{background:#EFEBFE;color:#5B3FD6}
+.dotlive{width:7px;height:7px;border-radius:99px;background:var(--z-green);display:block}
+.wrow{display:flex;align-items:center;gap:9px;padding:8px 10px;border-bottom:1px solid var(--w-bd)}
+.wrow:last-child{border-bottom:0}
+.wgrid{display:grid;gap:9px}
+.chan{width:19px;height:19px;border-radius:5px;display:grid;place-items:center;font-size:9.5px;color:#fff;flex:none}
+
+/* chat bubbles inside product UI */
+.cb{max-width:76%;padding:8px 11px;border-radius:10px;font-size:11.5px;line-height:1.38;
+  background:var(--w-soft);color:var(--w-tx)}
+.cb.me{margin-inline-start:auto;background:#E8F1FE;color:#123B77}
+.cb.wa{background:#fff;border:1px solid var(--w-bd)}
+.cb.wame{margin-inline-start:auto;background:#DCF8C6;color:#123B22}
+.tping{display:inline-flex;gap:4px;padding:10px 12px;border-radius:10px;background:var(--w-soft)}
+.tping i{width:5px;height:5px;border-radius:99px;background:var(--w-mu);display:block}
+
+/* ════════ Zoho Desk specifics ════════ */
+.deptsel{font-size:10.5px;color:var(--w-mu);padding:3px 8px;border-radius:5px;background:var(--w-soft);
+  white-space:nowrap;flex:none}
+.tkrow{display:flex;gap:8px;padding:8px 10px;border-bottom:1px solid var(--w-bd);align-items:flex-start}
+.tktabs{flex:none;height:28px;background:var(--w-bg);border-bottom:1px solid var(--w-bd);
+  display:flex;align-items:stretch;padding:0 14px;gap:14px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.09em;color:var(--w-mu)}
+.tktabs span{display:flex;align-items:center;gap:4px;border-bottom:2px solid transparent}
+.tktabs span b{background:var(--w-soft);border-radius:3px;padding:0 4px;font-size:8.5px}
+.tktabs span.on{color:var(--desk);border-bottom-color:var(--desk);font-weight:500}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hr{font-size:9.5px;font-weight:600;padding:4px 8px;border-radius:5px;flex:1;text-align:center}
+.rail .amk[title]{position:relative}
+
+/* ════════ Arabic / RTL ════════ */
+.ar{font-family:var(--arabic)}
+.ar .wlbl,.ar .eyebrow{letter-spacing:0}
+.ar .appname,.ar .wbtn,.ar .pill,.ar b{font-family:var(--arabic)}
+[dir="rtl"] .tping{margin-inline-start:auto}
+[dir="rtl"] .rail{border-left:1px solid var(--w-bd)}
+.tsend{text-align:end;font-size:8.5px;margin-top:3px}
+.arnum{font-family:var(--arabic);font-feature-settings:"lnum" 0}
+h1 .arh{display:block;font-family:var(--arabic);font-weight:600;font-size:.62em;letter-spacing:0;
+  line-height:1.35;margin-top:14px;color:#CDBFE6}
+
+/* ════════ thread (signature) ════════ */
+.thread{padding:16px 0 24px;display:flex;align-items:center}
+.tnode{position:relative;flex:none;width:10px;height:10px;border-radius:99px;background:#2B2338;border:1px solid var(--line)}
+.tseg{flex:1;height:2px;background:#241E30}
+.tseg.done{background:linear-gradient(90deg,var(--z-blue),var(--z-red))}
+.tnode.done{background:var(--z-red);border-color:var(--z-red)}
+.tnode.now{width:14px;height:14px;background:#fff;border-color:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.13)}
+.tnode.now::after{content:attr(data-l);position:absolute;top:-24px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#fff;white-space:nowrap}
+
+/* ════════ animations ════════ */
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{opacity:0;transform:scale(.9)}60%{transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+@keyframes inR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@keyframes winIn{from{opacity:0;transform:translateY(26px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes feed{0%,12%{transform:translateY(0)}100%{transform:translateY(-104px)}}
+@keyframes ripple{0%{transform:scale(.2);opacity:.8}100%{transform:scale(3.6);opacity:0}}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+@keyframes jitter{0%{transform:translate(0,0) rotate(var(--r,0deg))}25%{transform:translate(3px,-4px) rotate(calc(var(--r,0deg) + 1.4deg))}
+  50%{transform:translate(-3px,3px) rotate(var(--r,0deg))}75%{transform:translate(4px,2px) rotate(calc(var(--r,0deg) - 1.4deg))}
+  100%{transform:translate(0,0) rotate(var(--r,0deg))}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(51,168,82,.5)}100%{box-shadow:0 0 0 14px rgba(51,168,82,0)}}
+@keyframes glow{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes draw{from{stroke-dashoffset:var(--len,600)}to{stroke-dashoffset:0}}
+@keyframes drawto{from{stroke-dashoffset:var(--from,300)}to{stroke-dashoffset:var(--to,0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fall{0%{opacity:0;transform:translate(0,-10px) rotate(0)}12%{opacity:1}
+  100%{opacity:0;transform:translate(var(--dx,0),190px) rotate(540deg)}}
+@keyframes bargrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes barw{from{width:0}to{width:var(--w,100%)}}
+@keyframes rowin{from{opacity:0;transform:translateY(-10px);background:#FFF8E1}
+  60%{background:#FFF8E1}to{opacity:1;transform:none;background:transparent}}
+@keyframes kdrag{0%{transform:translate(0,0);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+  18%{transform:translate(6px,-9px) rotate(-2deg);box-shadow:0 14px 26px rgba(0,0,0,.22)}
+  82%{transform:translate(430px,-9px) rotate(-2deg);box-shadow:0 14px 26px rgba(0,0,0,.22)}
+  100%{transform:translate(436px,0);box-shadow:0 2px 6px rgba(0,0,0,.08)}}
+@keyframes cursorpath{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes dimout{to{opacity:.2;filter:grayscale(1)}}
+@keyframes sweep{from{transform:translateX(-100%)}to{transform:translateX(220%)}}
+
+.is-on [data-a]{opacity:0}
+.is-on [data-a="up"]{animation:up .6s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="fade"]{animation:fade .65s ease both}
+.is-on [data-a="pop"]{animation:pop .5s cubic-bezier(.2,.9,.3,1.15) both}
+.is-on [data-a="inR"]{animation:inR .52s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="inL"]{animation:inL .52s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="win"]{animation:winIn .7s cubic-bezier(.2,.85,.25,1) both}
+.is-on [data-a="row"]{animation:rowin .9s ease both}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001s !important;animation-iteration-count:1 !important}}
+
+/* ════════ chrome ════════ */
+#brand{position:fixed;top:16px;right:20px;z-index:20;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.2em;text-transform:uppercase;color:#5D5470;display:flex;align-items:center;gap:8px}
+#brand .zlogo i{height:10px}
+#hud{position:fixed;bottom:14px;right:18px;z-index:20;display:flex;gap:12px;align-items:center;
+  font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em}
+#hud button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:7px;font:inherit;padding:4px 8px;cursor:pointer}
+#hud button:hover,#hud button:focus-visible{color:#fff;border-color:#fff;outline:none}
+#count b{color:#fff}
+#grid{position:fixed;inset:0;z-index:30;background:rgba(11,9,15,.97);display:none;
+  grid-template-columns:repeat(4,1fr);gap:12px;padding:32px;align-content:start;overflow:auto}
+#grid.on{display:grid}
+#grid button{aspect-ratio:16/9;border:1px solid var(--line);background:var(--ink2);color:var(--text);border-radius:9px;
+  font-family:var(--display);font-size:14px;font-weight:600;text-align:left;padding:11px;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:space-between;line-height:1.2}
+#grid button:hover,#grid button:focus-visible{border-color:var(--z-red);outline:none}
+#grid button span{font-family:var(--mono);font-size:8.5px;color:var(--muted);letter-spacing:.1em}
+
+/* ════════ responsive: fixed chrome + overview grid ════════ */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{overflow-x:hidden;max-width:100%}
+@media (max-width:820px){
+  #brand{font-size:8.5px;top:10px;right:10px;gap:6px}
+  #brand .zlogo i{height:8px}
+  #hud{font-size:9px;bottom:10px;right:10px;gap:7px}
+  #hud button{padding:3px 7px}
+  #grid{padding:16px;gap:8px;grid-template-columns:repeat(3,1fr)}
+  #grid button{padding:9px;font-size:12px}
+}
+@media (max-width:560px){
+  #brand{top:8px;right:8px;font-size:7.5px;gap:5px}
+  #hud{bottom:8px;right:8px;font-size:8px;gap:5px}
+  #grid{padding:10px;gap:6px;grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:380px){
+  #grid{grid-template-columns:1fr}
+}
+@media (max-height:420px) and (orientation:landscape){
+  #brand{top:4px;right:6px}
+  #hud{bottom:4px;right:6px}
+}
+
+/* ════════ product logos ════════ */
+.applogo{height:16px;width:auto;max-width:70px;object-fit:contain;flex:none;display:block}
+#brand .applogo{height:13px}
+.amk-logo{background:#fff !important;padding:6px}
+.amk-logo::after{display:none !important}
+.amk-logo img{width:100%;height:100%;object-fit:contain}
+.amk.on.amk-logo{box-shadow:0 0 0 2px var(--c,#888) inset,0 8px 20px -6px rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+
+<div id="brand"><img class="applogo" src="logos/zoho.png" alt="Zoho"> Every Conversation Matters</div>
+
+<div id="stage">
+
+<!-- ══════════ 01 COVER ══════════ -->
+<section class="slide hero" data-node="0" data-title="Every conversation matters">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px">
+    <p class="eyebrow" data-a="fade" data-d=".1">Zoho CRM Plus · Saudi Arabia</p>
+    <h1 data-a="up" data-d=".2">Every conversation<br>matters<span class="arh">كل محادثة مهمة</span></h1>
+    <!-- Zoho One app constellation -->
+    <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:9px;margin-top:4px">
+      <div class="amk amk-logo" style="--c:var(--social)" data-a="pop" data-d=".5"><img src="logos/social.png" alt="social"></div>
+      <div class="amk amk-logo" style="--c:var(--camp)" data-a="pop" data-d=".56"><img src="logos/campaigns.png" alt="campaigns"></div>
+      <div class="amk amk-logo" style="--c:var(--siq)" data-a="pop" data-d=".62"><img src="logos/salesiq.png" alt="salesiq"></div>
+      <div class="amk amk-logo" style="--c:var(--ma)" data-a="pop" data-d=".68"><img src="logos/marketingautomation.png" alt="marketingautomation"></div>
+      <div class="amk amk-logo" style="--c:var(--crm)" data-a="pop" data-d=".74"><img src="logos/crm.png" alt="crm"></div>
+      <div class="amk amk-logo" style="--c:var(--book)" data-a="pop" data-d=".8"><img src="logos/bookings.png" alt="bookings"></div>
+      <div class="amk amk-logo" style="--c:var(--desk)" data-a="pop" data-d=".86"><img src="logos/desk.png" alt="desk"></div>
+      <div class="amk amk-logo" style="--c:var(--anal)" data-a="pop" data-d=".92"><img src="logos/analytics.png" alt="analytics"></div>
+    </div>
+    <p class="sub" style="max-width:46ch;font-size:16px" data-a="fade" data-d="1.1">
+      One customer in Riyadh. Nine touchpoints, two languages, one record.
+    </p>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 02 THE ASK ══════════ -->
+<section class="slide" data-node="0" data-title="How many systems?">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Start here</p><h2 data-a="up" data-d=".06">How many systems do you use to talk to customers?</h2>
+      <p class="ar" dir="rtl" data-a="up" data-d=".1" style="font-size:19px;color:#CDBFE6;margin-top:8px">كم نظاماً تستخدمون للتواصل مع عملائكم؟</p></div>
+    <p class="sub" data-a="up" data-d=".14">Count them. Then count how many share one customer record.</p>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--crm)">
+      <div class="win-top">
+        <img class="applogo" src="logos/crm.png" alt="Zoho CRM"><span class="appname">Zoho <span>CRM</span></span>
+        <div class="spacer"></div><div class="searchpill">⌕ Search Sara Al-Otaibi</div><div class="tbtn">◔</div><div class="uav">M</div>
+      </div>
+      <div class="win-mid">
+        <div style="flex:1;display:grid;grid-template-columns:1fr 44px 1fr;align-items:center;padding:16px 22px;background:var(--w-canvas)">
+          <!-- disconnected stack -->
+          <div style="position:relative;height:100%">
+            <span class="wlbl" style="position:absolute;top:0;left:2px">TODAY · 9 DISCONNECTED TOOLS</span>
+            <svg viewBox="0 0 300 300" style="position:absolute;inset:26px 0 0;width:100%;opacity:.35">
+              <g stroke="#B9C3D1" stroke-width="1" fill="none" stroke-dasharray="700" style="--len:700;animation:draw 1.6s .3s ease both">
+                <path d="M40 40 L235 160 M235 45 L55 230 M150 25 L45 265 M60 130 L250 250 M250 105 L110 285"/>
+              </g>
+            </svg>
+            <div style="position:absolute;inset:26px 0 0;font-family:var(--mono);font-size:9.5px">
+              <span class="wc" style="position:absolute;left:4%;top:2%;padding:5px 9px;--r:-6deg;animation:jitter 5s infinite">Shared inbox</span>
+              <span class="wc" style="position:absolute;left:52%;top:0;padding:5px 9px;--r:5deg;animation:jitter 6s .4s infinite">Snapchat DMs</span>
+              <span class="wc" style="position:absolute;left:0;top:24%;padding:5px 9px;--r:3deg;animation:jitter 5.5s .8s infinite">WhatsApp Web</span>
+              <span class="wc" style="position:absolute;left:56%;top:23%;padding:5px 9px;--r:-4deg;animation:jitter 6.5s .2s infinite">Ticket tool</span>
+              <span class="wc" style="position:absolute;left:12%;top:45%;padding:5px 9px;--r:-2deg;animation:jitter 5.2s 1s infinite">Email blaster</span>
+              <span class="wc" style="position:absolute;left:58%;top:46%;padding:5px 9px;--r:6deg;animation:jitter 6.2s .6s infinite">Chat widget</span>
+              <span class="wc" style="position:absolute;left:2%;top:66%;padding:5px 9px;--r:4deg;animation:jitter 5.8s .3s infinite">Spreadsheet</span>
+              <span class="wc" style="position:absolute;left:46%;top:68%;padding:5px 9px;--r:-5deg;animation:jitter 6.8s .9s infinite">Calendly link</span>
+              <span class="wc" style="position:absolute;left:20%;top:87%;padding:5px 9px;--r:2deg;animation:jitter 5.4s 1.3s infinite">Call log · Excel</span>
+            </div>
+          </div>
+          <div style="display:grid;place-items:center" data-a="fade" data-d="1.5">
+            <svg width="30" height="14" viewBox="0 0 30 14"><path d="M0 7h24M19 2l5 5-5 5" stroke="#8894A6" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <!-- the CRM record -->
+          <div style="display:grid;place-items:center">
+            <div class="wc" style="width:250px;padding:14px;position:relative" data-a="pop" data-d="1.6">
+              <span class="wlbl" style="position:absolute;top:-20px;left:2px">ZOHO CRM · ONE RECORD</span>
+              <div style="display:flex;gap:10px;align-items:center;margin-bottom:11px">
+                <div class="wav" style="width:36px;height:36px;font-size:15px">S</div>
+                <div><div style="font-weight:700;font-size:14px">Sara Al-Otaibi</div>
+                  <div class="ar" style="font-size:11px;color:var(--w-mu);direction:rtl">سارة العتيبي · الرياض</div></div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px">
+                <span class="chan" style="background:var(--social)">◎</span>
+                <span class="chan" style="background:var(--siq)">◔</span>
+                <span class="chan" style="background:var(--camp)">✉</span>
+                <span class="chan" style="background:var(--wa)">◍</span>
+                <span class="chan" style="background:var(--book)">▤</span>
+                <span class="chan" style="background:var(--crm)">◆</span>
+                <span class="chan" style="background:var(--desk)">☏</span>
+                <span class="chan" style="background:var(--survey)">★</span>
+                <span class="chan" style="background:var(--anal)">▦</span>
+              </div>
+              <div style="margin-top:11px;display:flex;justify-content:space-between;align-items:center">
+                <span class="wlbl">9 CHANNELS · 1 TIMELINE</span>
+                <span class="pill g"><i class="dotlive" style="animation:ping 2s infinite"></i>LIVE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 03 MEET SARA — CRM record ══════════ -->
+<section class="slide" data-node="0" data-title="Sara — the CRM record">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The customer</p><h2 data-a="up" data-d=".06">Sara doesn't think in channels.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Ops lead at Mazaya Retail, Riyadh. She expects you to remember her.</p>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--crm)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crm.png" alt="Zoho CRM"><span class="appname">Zoho <span>CRM</span></span>
+        <div class="spacer"></div><div class="searchpill">⌕ Search</div><div class="tbtn">🔔</div><div class="uav">M</div>
+      </div>
+      <div class="win-tabs">
+        <div class="tab">Home</div><div class="tab">Leads</div><div class="tab on">Contacts</div>
+        <div class="tab">Accounts</div><div class="tab">Deals</div><div class="tab">Activities</div>
+        <div class="tab">Analytics</div><div class="spacer"></div><div class="tab" style="color:var(--anal)">Zia ✦</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail">
+          <div class="amk on amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div>
+          <div class="amk amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div>
+          <div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div>
+          <div class="amk amk-logo" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns"></div>
+          <div class="amk amk-logo" style="--c:var(--books)"><img src="logos/books.png" alt="books"></div>
+        </div>
+        <div class="win-body" style="display:grid;grid-template-columns:255px 1fr 210px;gap:12px">
+          <!-- record summary -->
+          <div class="wc" style="padding:13px" data-a="inL" data-d=".2">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:7px;padding-bottom:11px;border-bottom:1px solid var(--w-bd)">
+              <div class="wav" style="width:54px;height:54px;font-size:21px">S</div>
+              <div style="font-weight:700;font-size:15px">Sara Al-Otaibi</div>
+              <div class="ar" style="font-size:12px;color:var(--w-mu);direction:rtl">سارة العتيبي</div>
+              <div class="wlbl">OPS LEAD · MAZAYA RETAIL · RIYADH</div>
+              <span class="pill b">Customer · 40 users</span>
+            </div>
+            <div style="padding-top:10px;display:flex;flex-direction:column;gap:8px;font-size:11px">
+              <div style="display:flex;justify-content:space-between"><span class="wmu">Email</span><span>sarah@meridian.co</span></div>
+              <div style="display:flex;justify-content:space-between"><span class="wmu">Mobile</span><span>+966 5• ••• 4127</span></div>
+              <div style="display:flex;justify-content:space-between"><span class="wmu">Owner</span><span>Faisal Al-Harbi</span></div>
+              <div style="display:flex;justify-content:space-between"><span class="wmu">Source</span><span style="color:var(--social)">Paid social</span></div>
+            </div>
+          </div>
+          <!-- preferred channels -->
+          <div class="wc" style="padding:13px" data-a="up" data-d=".34">
+            <div class="wlbl" style="margin-bottom:11px">HOW SHE ACTUALLY BEHAVES · RIYADH</div>
+            <div class="wgrid" style="gap:10px">
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span>Replies on WhatsApp <span class="ar wmu">واتساب</span></span><span class="wmu">94%</span></div>
+                <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:94%;display:block;height:100%;background:var(--wa);animation:barw 1s .6s ease both"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span>Browses on mobile</span><span class="wmu">96%</span></div>
+                <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:96%;display:block;height:100%;background:var(--social);animation:barw 1s .72s ease both"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span>Writes in Arabic first</span><span class="wmu">81%</span></div>
+                <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:81%;display:block;height:100%;background:var(--anal);animation:barw 1s .84s ease both"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span>Opens marketing email</span><span class="wmu">19%</span></div>
+                <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:19%;display:block;height:100%;background:var(--camp);animation:barw 1s .96s ease both"></i></div></div>
+            </div>
+          </div>
+          <!-- Zia panel -->
+          <div class="wc" style="padding:12px;border-color:#D8CEFB;background:#FAF8FF" data-a="inR" data-d=".5">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+              <span style="width:18px;height:18px;border-radius:5px;background:var(--anal);color:#fff;display:grid;place-items:center;font-size:9px">✦</span>
+              <span style="font-weight:700;font-size:11.5px;color:#4B2FBE">Zia</span>
+            </div>
+            <div style="font-size:11px;line-height:1.45;color:#3C3560">Reach Sara <b>Sun–Thu, 10:00–11:30 AST</b>. She replies <b>6× faster</b> on WhatsApp than email — and in Arabic.</div>
+            <div style="margin-top:11px;display:flex;flex-direction:column;gap:6px">
+              <div class="pill p" data-a="up" data-d="1">Next best action</div>
+              <div style="font-size:10.5px;color:#3C3560">WhatsApp · Arabic template · not Friday</div>
+              <div class="ar" style="font-size:10.5px;color:#5B3FD6;direction:rtl;margin-top:3px">القناة المفضلة: واتساب — بالعربية</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 04 ZOHO SOCIAL — the ad ══════════ -->
+<section class="slide" data-node="1" data-title="Sara taps the ad — Zoho Social">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 1 · <b>09:12</b></p><h2 data-a="up" data-d=".06">Sara taps a Snapchat ad.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--social)"><img src="logos/social.png" alt="social">Zoho Social</span><span class="chip" style="--c:var(--ma)"><img src="logos/marketingautomation.png" alt="marketingautomation">Marketing Automation</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--social)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/social.png" alt="Zoho Social"><span class="appname">Zoho <span>Social</span></span>
+        <div class="spacer"></div><div class="searchpill">⌕ Campaigns</div><div class="tbtn">◔</div><div class="uav">M</div>
+      </div>
+      <div class="win-tabs">
+        <div class="tab">Dashboard</div><div class="tab">Publish</div><div class="tab on">Ads</div>
+        <div class="tab">Monitor</div><div class="tab">Reports</div><div class="tab">Inbox</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk on amk-logo" style="--c:var(--social)"><img src="logos/social.png" alt="social"></div>
+          <div class="amk amk-logo" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns"></div><div class="amk amk-logo" style="--c:var(--ma)"><img src="logos/marketingautomation.png" alt="marketingautomation"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 232px;gap:13px">
+          <div style="display:flex;flex-direction:column;gap:11px;min-height:0">
+            <!-- KPI strip -->
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px">
+              <div class="wc" style="padding:10px 12px" data-a="up" data-d=".2"><div class="wlbl">IMPRESSIONS</div><div style="font-family:var(--display);font-weight:700;font-size:21px" data-count="41200" data-fmt="k">0</div></div>
+              <div class="wc" style="padding:10px 12px" data-a="up" data-d=".28"><div class="wlbl">CLICKS</div><div style="font-family:var(--display);font-weight:700;font-size:21px" data-count="1864">0</div></div>
+              <div class="wc" style="padding:10px 12px;border-color:#F7C6D8;background:#FFF6F9" data-a="up" data-d=".36"><div class="wlbl">CTR</div><div style="font-family:var(--display);font-weight:700;font-size:21px;color:var(--social)">4.5<span style="font-size:12px">%</span></div></div>
+              <div class="wc" style="padding:10px 12px" data-a="up" data-d=".44"><div class="wlbl">LEADS → CRM</div><div style="font-family:var(--display);font-weight:700;font-size:21px;color:var(--crm)" data-count="212">0</div></div>
+            </div>
+            <!-- chart -->
+            <div class="wc" style="padding:12px;flex:1;display:flex;flex-direction:column" data-a="up" data-d=".5">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+                <span class="wlbl">CLICKS BY PLACEMENT · KSA · LAST 7 DAYS</span><span class="pill g">▲ 18%</span>
+              </div>
+              <div style="flex:1;display:flex;align-items:flex-end;gap:8px;padding-top:6px">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+                  <div style="width:100%;height:52%;border-radius:4px 4px 0 0;background:var(--social);transform-origin:bottom;animation:bargrow .8s .7s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">SNAP</span></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+                  <div style="width:100%;height:88%;border-radius:4px 4px 0 0;background:var(--social);transform-origin:bottom;animation:bargrow .8s .8s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">TIKTOK</span></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+                  <div style="width:100%;height:40%;border-radius:4px 4px 0 0;background:#F5B6CD;transform-origin:bottom;animation:bargrow .8s .9s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">X</span></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+                  <div style="width:100%;height:64%;border-radius:4px 4px 0 0;background:#F5B6CD;transform-origin:bottom;animation:bargrow .8s 1s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">SEARCH</span></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+                  <div style="width:100%;height:30%;border-radius:4px 4px 0 0;background:#F5B6CD;transform-origin:bottom;animation:bargrow .8s 1.1s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">INSTA</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- live preview -->
+          <div class="wc" style="padding:10px;display:flex;flex-direction:column" data-a="inR" data-d=".6">
+            <div class="wlbl" style="margin-bottom:8px">LIVE PREVIEW · AR CREATIVE</div>
+            <div style="flex:1;background:#0F1116;border-radius:9px;padding:8px;overflow:hidden;position:relative">
+              <div style="animation:feed 4.6s .9s cubic-bezier(.6,0,.4,1) both">
+                <div style="height:44px;border-radius:6px;background:#22252D;margin-bottom:7px"></div>
+                <div style="height:52px;border-radius:6px;background:#22252D;margin-bottom:7px"></div>
+                <div style="border-radius:7px;background:linear-gradient(150deg,#3A1E2C,#1B1D25);border:1px solid var(--social);padding:9px;margin-bottom:7px;position:relative">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+                    <span class="zlogo" style="gap:2px"><i style="height:9px"></i><i style="height:9px"></i><i style="height:9px"></i><i style="height:9px"></i></span>
+                    <span class="ar" style="font-size:8.5px;color:#F5B6CD">مُموَّل</span>
+                  </div>
+                  <div class="ar" dir="rtl" style="font-weight:700;font-size:12.5px;color:#fff;line-height:1.4;margin-bottom:7px">أدر أعمالك بالكامل من منصة واحدة</div>
+                  <div class="ar" dir="rtl" style="display:inline-block;font-size:8.5px;padding:4px 9px;border-radius:99px;background:var(--social);color:#fff">اعرف المزيد ←</div>
+                  <div style="position:absolute;right:26px;bottom:11px;width:11px;height:11px;border-radius:99px;background:rgba(229,72,123,.85);animation:ripple 1.5s 4.5s ease-out 2"></div>
+                </div>
+                <div style="height:52px;border-radius:6px;background:#22252D"></div>
+              </div>
+            </div>
+            <div style="margin-top:9px;padding-top:9px;border-top:1px solid var(--w-bd);display:flex;justify-content:space-between;align-items:center">
+              <span class="wlbl">UTM → CRM</span><span class="pill g" data-a="pop" data-d="5.2">Captured ✓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 05 SALESIQ — visitor board ══════════ -->
+<section class="slide" data-node="2" data-title="Sara arrives — SalesIQ">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 1 · <b>09:13</b></p><h2 data-a="up" data-d=".06">Sara lands on the Arabic pricing page.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq">Zoho SalesIQ</span><span class="chip" style="--c:var(--anal)"><img src="logos/pagesense.png" alt="pagesense">PageSense</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--siq)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/salesiq.png" alt="Zoho SalesIQ"><span class="appname">Zoho <span>SalesIQ</span></span>
+        <div class="spacer"></div><span class="pill g" style="margin-right:8px"><i class="dotlive" style="animation:ping 2s infinite"></i>14 ONLINE · 11 AR</span><div class="uav">M</div>
+      </div>
+      <div class="win-tabs">
+        <div class="tab on">Visitors Online</div><div class="tab">Chats</div><div class="tab">Zobot</div>
+        <div class="tab">Tracking</div><div class="tab">Reports</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk on amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div>
+          <div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div><div class="amk amk-logo" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 268px;gap:13px">
+          <!-- radar + list -->
+          <div style="display:flex;flex-direction:column;gap:11px;min-height:0">
+            <div class="wc" style="flex:1;position:relative;overflow:hidden;display:grid;place-items:center" data-a="up" data-d=".2">
+              <span class="wlbl" style="position:absolute;top:11px;left:13px">VISITOR RADAR · REAL TIME</span>
+              <div style="position:relative;width:224px;height:224px;display:grid;place-items:center">
+                <div style="position:absolute;width:100%;height:100%;border-radius:99px;border:1px solid #DCE4EE"></div>
+                <div style="position:absolute;width:66%;height:66%;border-radius:99px;border:1px solid #E6ECF4"></div>
+                <div style="position:absolute;width:34%;height:34%;border-radius:99px;border:1px solid #E6ECF4"></div>
+                <div style="position:absolute;width:100%;height:100%;border-radius:99px;background:conic-gradient(from 0deg,rgba(78,123,240,.18),transparent 28%);animation:spin 4s linear infinite"></div>
+                <!-- visitors -->
+                <span style="position:absolute;left:16%;top:26%;width:9px;height:9px;border-radius:99px;background:#B9C7E8" data-a="pop" data-d=".5"></span>
+                <span style="position:absolute;left:74%;top:20%;width:9px;height:9px;border-radius:99px;background:#B9C7E8" data-a="pop" data-d=".6"></span>
+                <span style="position:absolute;left:82%;top:66%;width:9px;height:9px;border-radius:99px;background:#B9C7E8" data-a="pop" data-d=".7"></span>
+                <span style="position:absolute;left:24%;top:74%;width:9px;height:9px;border-radius:99px;background:#B9C7E8" data-a="pop" data-d=".8"></span>
+                <span style="position:absolute;left:58%;top:82%;width:9px;height:9px;border-radius:99px;background:#B9C7E8" data-a="pop" data-d=".9"></span>
+                <!-- Sara -->
+                <div style="position:absolute;left:44%;top:34%;display:flex;align-items:center;gap:7px" data-a="pop" data-d="1.2">
+                  <span style="width:13px;height:13px;border-radius:99px;background:var(--siq);display:block;animation:ping 1.9s infinite"></span>
+                  <span class="wc" style="padding:4px 8px;font-family:var(--mono);font-size:9px;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.1)">HOT · 78</span>
+                </div>
+                <div class="wav" style="width:40px;height:40px;font-size:15px;background:linear-gradient(140deg,#7BA0F5,#1A4FD0)">◎</div>
+              </div>
+            </div>
+            <div class="wc" style="flex:none" data-a="up" data-d=".7">
+              <div class="wrow" style="background:#F7F9FC"><span class="wlbl" style="flex:1">VISITOR</span><span class="wlbl" style="width:96px">PAGES</span><span class="wlbl" style="width:70px">TIME</span><span class="wlbl" style="width:56px">SCORE</span></div>
+              <div class="wrow" style="background:#FFFBEE" data-a="row" data-d="1.3">
+                <span class="dotlive" style="animation:ping 2s infinite"></span>
+                <span style="flex:1;font-weight:600">Unknown · Riyadh <span class="wmu" style="font-weight:400">· AR · returning</span></span>
+                <span style="width:96px" class="wmu">/ar/pricing +2</span><span style="width:70px" class="wmu">02:41</span>
+                <span style="width:56px"><span class="pill r">78</span></span>
+              </div>
+              <div class="wrow"><span style="width:7px"></span><span style="flex:1" class="wmu">Unknown · Jeddah</span><span style="width:96px" class="wmu">/blog</span><span style="width:70px" class="wmu">00:22</span><span style="width:56px"><span class="pill b">12</span></span></div>
+              <div class="wrow"><span style="width:7px"></span><span style="flex:1" class="wmu">Rawaf Group · Dammam</span><span style="width:96px" class="wmu">/features</span><span style="width:70px" class="wmu">01:04</span><span style="width:56px"><span class="pill y">44</span></span></div>
+            </div>
+          </div>
+          <!-- visitor detail -->
+          <div class="wc" style="padding:13px;display:flex;flex-direction:column;gap:11px" data-a="inR" data-d=".4">
+            <div class="wlbl">VISITOR INFO</div>
+            <div style="display:flex;gap:9px;align-items:center">
+              <div class="wav" style="background:#DCE4EE;color:var(--w-mu)">?</div>
+              <div><div style="font-weight:700;font-size:12.5px">Unknown visitor</div><div class="wlbl">RIYADH · AR-SA · IOS · MOBILE</div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span>Intent score</span><span style="font-weight:700;color:var(--siq)">78 / 100</span></div>
+              <div style="height:7px;border-radius:99px;background:var(--w-soft);overflow:hidden">
+                <i style="--w:78%;display:block;height:100%;background:linear-gradient(90deg,var(--siq),var(--crm));animation:barw 1.2s 1s ease both"></i>
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--w-bd);padding-top:10px">
+              <div class="wlbl" style="margin-bottom:8px">PAGE PATH</div>
+              <div style="display:flex;flex-direction:column;gap:7px;font-size:10.5px">
+                <div style="display:flex;gap:7px" data-a="up" data-d="1.2"><span class="wmu" style="font-family:var(--mono);width:34px">09:13</span><span>/ar from Snapchat ad</span></div>
+                <div style="display:flex;gap:7px" data-a="up" data-d="1.35"><span class="wmu" style="font-family:var(--mono);width:34px">09:14</span><span>/ar/features</span></div>
+                <div style="display:flex;gap:7px" data-a="up" data-d="1.5"><span class="wmu" style="font-family:var(--mono);width:34px">09:15</span><span style="font-weight:600;color:var(--siq)">/ar/pricing · 01:52 dwell</span></div>
+              </div>
+            </div>
+            <div style="margin-top:auto;display:flex;gap:7px" data-a="up" data-d="1.8">
+              <span class="wbtn" style="flex:1;justify-content:center">Start chat</span>
+              <span class="wbtn ghost">Push to CRM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 06 SALESIQ — Arabic RTL chat console ══════════ -->
+<section class="slide" data-node="3" data-title="Sara asks in Arabic — SalesIQ">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 1 · <b>09:16</b> · العربية</p><h2 data-a="up" data-d=".06">Sara asks a question in Arabic.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq">SalesIQ · Zobot</span><span class="chip" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics">Arabic RTL interface</span></div>
+  </header>
+  <div class="art">
+    <div class="win ar" dir="rtl" style="--acc:var(--siq)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/salesiq.png" alt="Zoho SalesIQ"><span class="appname">Zoho <span>SalesIQ</span></span>
+        <div class="spacer"></div><span class="pill b" style="margin-left:8px">المشرف · فيصل</span><div class="uav">ف</div>
+      </div>
+      <div class="win-tabs">
+        <div class="tab on">الزوار الآن</div><div class="tab">المحادثات</div><div class="tab">الروبوت</div>
+        <div class="tab">التتبع</div><div class="tab">التقارير</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk on amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div><div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div></div>
+        <!-- قائمة المحادثات -->
+        <div style="width:190px;flex:none;border-inline-start:1px solid var(--w-bd);background:var(--w-bg)">
+          <div style="padding:9px 11px;border-bottom:1px solid var(--w-bd)" class="wlbl">المحادثات النشطة · ٣</div>
+          <div style="padding:10px 11px;border-bottom:1px solid var(--w-bd);border-inline-start:3px solid var(--siq);background:#F5F8FF">
+            <div style="display:flex;gap:7px;align-items:center;margin-bottom:4px">
+              <span class="dotlive" style="animation:ping 2s infinite"></span><span style="font-weight:700;font-size:11.5px">زائر غير معروف · الرياض</span>
+            </div>
+            <div class="wmu" style="font-size:10.5px">هل تدعمون واتساب؟</div>
+            <div style="margin-top:6px"><span class="pill r">درجة النية ٧٨</span></div>
+          </div>
+          <div style="padding:10px 11px;border-bottom:1px solid var(--w-bd);opacity:.6">
+            <div style="font-weight:600;font-size:11.5px">مجموعة رواف · جدة</div><div class="wmu" style="font-size:10.5px">شكراً، هذا مناسب</div></div>
+          <div style="padding:10px 11px;opacity:.6">
+            <div style="font-weight:600;font-size:11.5px">زائر · الدمام</div><div class="wmu" style="font-size:10.5px">أتصفح فقط</div></div>
+        </div>
+        <!-- المحادثة -->
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:var(--w-canvas)">
+          <div style="padding:9px 14px;background:var(--w-bg);border-bottom:1px solid var(--w-bd);display:flex;align-items:center;gap:9px">
+            <span style="width:22px;height:22px;border-radius:6px;background:var(--anal);color:#fff;display:grid;place-items:center;font-size:10px">✦</span>
+            <div><div style="font-weight:700;font-size:12px">زيا · الروبوت</div><div class="wlbl">رد تلقائي بالعربية</div></div>
+            <div class="spacer"></div><span class="pill y">المهلة ٠٠:٠٨</span>
+          </div>
+          <div style="flex:1;padding:14px;display:flex;flex-direction:column;gap:9px;overflow:hidden">
+            <div class="cb" data-a="inL" data-d=".4">مرحباً 👋 كم عدد المستخدمين لديكم؟</div>
+            <div class="cb me" data-a="inR" data-d="1.1">حوالي ٤٠ مستخدماً. هل تدعمون واتساب؟</div>
+            <div class="tping" style="width:52px" data-a="fade" data-d="1.7">
+              <i style="animation:blink 1.2s infinite"></i><i style="animation:blink 1.2s .18s infinite"></i><i style="animation:blink 1.2s .36s infinite"></i></div>
+            <div class="cb" data-a="inL" data-d="2.4">نعم — بشكل مدمج وفي الاتجاهين. أحوّلك لأحد مستشاري المبيعات؟</div>
+            <div class="cb me" data-a="inR" data-d="3">نعم، من فضلك</div>
+            <div class="wc" style="padding:8px 11px;display:flex;align-items:center;gap:8px;border-color:#BFE3CB;background:#F2FBF5;font-size:10.5px" data-a="pop" data-d="3.5">
+              <span style="width:16px;height:16px;border-radius:99px;background:var(--z-green);color:#fff;display:grid;place-items:center;font-size:9px">✓</span>
+              <b>تم التحويل إلى فيصل الحربي</b> — مع كامل المحادثة وسجل الصفحات
+            </div>
+          </div>
+          <div style="padding:9px 14px;background:var(--w-bg);border-top:1px solid var(--w-bd);display:flex;gap:8px;align-items:center">
+            <div style="flex:1;height:26px;border-radius:6px;background:var(--w-soft);display:flex;align-items:center;padding:0 9px;font-size:10.5px" class="wmu">اكتب رداً…</div>
+            <span class="wbtn">إرسال</span>
+          </div>
+        </div>
+        <!-- بيانات CRM -->
+        <div style="width:200px;flex:none;border-inline-end:1px solid var(--w-bd);background:var(--w-bg);padding:12px" data-a="inR" data-d="1.4">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+            <span style="width:16px;height:16px;border-radius:4px;background:var(--crm);color:#fff;display:grid;place-items:center;font-size:8px">C</span>
+            <span class="wlbl">بيانات CRM</span>
+          </div>
+          <div style="font-size:11px;display:flex;flex-direction:column;gap:9px">
+            <div><div class="wlbl">السجل المطابق</div><div style="font-weight:700;margin-top:2px">عميل محتمل جديد</div></div>
+            <div><div class="wlbl">المصدر</div><div style="margin-top:2px;color:var(--social)">إعلان سناب شات</div></div>
+            <div><div class="wlbl">المؤشرات</div>
+              <div style="display:flex;flex-direction:column;gap:5px;margin-top:5px;align-items:flex-start">
+                <span class="pill y" data-a="up" data-d="2">٤٠ مستخدماً</span>
+                <span class="pill p" data-a="up" data-d="2.15">سألت عن واتساب</span>
+                <span class="pill b" data-a="up" data-d="2.3">زارت صفحة الأسعار مرتين</span>
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--w-bd);padding-top:9px">
+              <div class="wlbl">لغة المحادثة</div><div style="font-weight:700;margin-top:2px">العربية — تم الحفظ في السجل</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 07 CRM — lead auto-created ══════════ -->
+<section class="slide" data-node="4" data-title="Sara leaves — CRM lead created">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 1 · <b>09:21</b></p><h2 data-a="up" data-d=".06">Sara leaves without filling a form.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">Zoho CRM</span><span class="chip" style="--c:var(--ma)"><img src="logos/marketingautomation.png" alt="marketingautomation">Marketing Automation</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--crm)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crm.png" alt="Zoho CRM"><span class="appname">Zoho <span>CRM</span></span>
+        <div class="spacer"></div>
+        <span class="pill r" style="margin-right:8px" data-a="pop" data-d="1.4">🔔 SalesSignals · 1 new</span><div class="uav">M</div>
+      </div>
+      <div class="win-tabs">
+        <div class="tab">Home</div><div class="tab on">Leads</div><div class="tab">Contacts</div>
+        <div class="tab">Deals</div><div class="tab">Activities</div><div class="spacer"></div>
+        <div class="tab">Filters ⌄</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div>
+          <div class="amk amk-logo" style="--c:var(--ma)"><img src="logos/marketingautomation.png" alt="marketingautomation"></div><div class="amk amk-logo" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 250px;gap:13px">
+          <div class="wc" style="overflow:hidden;display:flex;flex-direction:column" data-a="up" data-d=".2">
+            <div class="wrow" style="background:#F7F9FC"><span class="wlbl" style="flex:1">LEAD NAME</span><span class="wlbl" style="width:112px">SOURCE</span><span class="wlbl" style="width:92px">CHANNEL</span><span class="wlbl" style="width:70px">SCORE</span><span class="wlbl" style="width:78px">OWNER</span></div>
+            <!-- the new row -->
+            <div class="wrow" style="border-left:3px solid var(--crm)" data-a="row" data-d="1.5">
+              <span style="flex:1;display:flex;align-items:center;gap:8px"><span class="wav" style="width:22px;height:22px;font-size:10px">S</span><b>Sara Al-Otaibi</b><span class="pill r">NEW</span><span class="pill p ar">عربي</span></span>
+              <span style="width:112px" class="wmu">Paid social</span>
+              <span style="width:92px;display:flex;gap:3px"><span class="chan" style="background:var(--social)">◎</span><span class="chan" style="background:var(--siq)">◔</span></span>
+              <span style="width:70px"><span class="pill r">78</span></span>
+              <span style="width:78px" class="wmu">Faisal</span>
+            </div>
+            <div class="wrow"><span style="flex:1;display:flex;align-items:center;gap:8px" class="wmu"><span class="wav" style="width:22px;height:22px;font-size:10px;background:#C9D3E0">D</span>Dhari Al-Qahtani</span>
+              <span style="width:112px" class="wmu">Webinar</span><span style="width:92px"><span class="chan" style="background:var(--camp)">✉</span></span><span style="width:70px"><span class="pill y">51</span></span><span style="width:78px" class="wmu">Nouf</span></div>
+            <div class="wrow"><span style="flex:1;display:flex;align-items:center;gap:8px" class="wmu"><span class="wav" style="width:22px;height:22px;font-size:10px;background:#C9D3E0">K</span>Khalid Al-Amri</span>
+              <span style="width:112px" class="wmu">Referral</span><span style="width:92px"><span class="chan" style="background:var(--wa)">◍</span></span><span style="width:70px"><span class="pill b">33</span></span><span style="width:78px" class="wmu">Faisal</span></div>
+            <div class="wrow" style="opacity:.45"><span style="flex:1;display:flex;align-items:center;gap:8px"><span class="wav" style="width:22px;height:22px;font-size:10px;background:#C9D3E0">A</span>Amal Al-Zahrani</span>
+              <span style="width:112px">Organic</span><span style="width:92px"><span class="chan" style="background:var(--siq)">◔</span></span><span style="width:70px"><span class="pill b">21</span></span><span style="width:78px">Nouf</span></div>
+            <div style="margin-top:auto;padding:9px 11px;border-top:1px solid var(--w-bd);display:flex;align-items:center;gap:8px">
+              <span class="wlbl">CREATED BY SALESIQ FROM AN ARABIC CHAT — NO FORM FILLED</span>
+            </div>
+          </div>
+          <!-- automation panel -->
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div class="wc" style="padding:12px;border-color:#F6C9C4;background:#FFF7F6" data-a="inR" data-d="1.7">
+              <div class="wlbl" style="margin-bottom:8px">WORKFLOW FIRED</div>
+              <div style="display:flex;flex-direction:column;gap:7px;font-size:10.5px">
+                <div style="display:flex;gap:7px;align-items:center"><span style="width:14px;height:14px;border-radius:99px;background:var(--z-green);color:#fff;display:grid;place-items:center;font-size:8px">✓</span>Owner assigned · Faisal</div>
+                <div style="display:flex;gap:7px;align-items:center"><span style="width:14px;height:14px;border-radius:99px;background:var(--z-green);color:#fff;display:grid;place-items:center;font-size:8px">✓</span>Transcript attached</div>
+                <div style="display:flex;gap:7px;align-items:center"><span style="width:14px;height:14px;border-radius:99px;background:var(--z-green);color:#fff;display:grid;place-items:center;font-size:8px">✓</span>Language set · Arabic</div>
+                <div style="display:flex;gap:7px;align-items:center"><span style="width:14px;height:14px;border-radius:99px;background:var(--ma);color:#fff;display:grid;place-items:center;font-size:8px">→</span>Enrolled in nurture journey</div>
+              </div>
+            </div>
+            <div class="wc" style="padding:12px;flex:1" data-a="inR" data-d="1.9">
+              <div class="wlbl" style="margin-bottom:9px">LEADS CAPTURED WITHOUT A FORM</div>
+              <div style="font-family:var(--display);font-weight:700;font-size:34px;color:var(--crm)"><span data-count="64">0</span><span style="font-size:16px">%</span></div>
+              <div class="wmu" style="font-size:10.5px;margin-top:3px">of KSA pipeline started as an anonymous Arabic chat, not a form</div>
+              <div style="margin-top:11px;height:7px;border-radius:99px;background:var(--w-soft);overflow:hidden">
+                <i style="--w:64%;display:block;height:100%;background:var(--crm);animation:barw 1.1s 2.1s ease both"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 08 MARKETING AUTOMATION — journey canvas ══════════ -->
+<section class="slide" data-node="5" data-title="Sara is nurtured — Marketing Automation">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 3 · <b>08:00</b></p><h2 data-a="up" data-d=".06">Sara gets an email about her question.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--ma)"><img src="logos/marketingautomation.png" alt="marketingautomation">Marketing Automation</span><span class="chip" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns">Zoho Campaigns</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--ma)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/marketingautomation.png" alt="Zoho Marketing Automation"><span class="appname">Zoho <span>Marketing Automation</span></span>
+        <div class="spacer"></div><span class="pill g" style="margin-right:8px">JOURNEY LIVE</span><div class="uav">M</div>
+      </div>
+      <div class="win-tabs"><div class="tab on">Journeys</div><div class="tab">Campaigns</div><div class="tab">Lead Nurturing</div><div class="tab">Analytics</div></div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk on amk-logo" style="--c:var(--ma)"><img src="logos/marketingautomation.png" alt="marketingautomation"></div>
+          <div class="amk amk-logo" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns"></div><div class="amk amk-logo" style="--c:var(--social)"><img src="logos/social.png" alt="social"></div></div>
+        <!-- canvas: fixed coordinate space so connectors and nodes align exactly -->
+        <div style="flex:1;position:relative;min-width:0;background:var(--w-canvas);overflow:hidden">
+          <div style="position:absolute;inset:0;background-image:radial-gradient(circle,#D5DDE8 1px,transparent 1px);background-size:17px 17px"></div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:1000px;height:360px">
+            <svg width="1000" height="360" viewBox="0 0 1000 360" style="position:absolute;left:0;top:0">
+              <g stroke="#A9B6C8" stroke-width="1.6" fill="none" stroke-dasharray="1400" style="--len:1400;animation:draw 1.8s .5s ease both">
+                <path d="M110 66 L110 118"/>
+                <path d="M110 166 L110 218"/>
+                <path d="M110 284 C 110 322 330 322 330 266"/>
+                <path d="M330 218 L330 166"/>
+                <path d="M410 142 L470 142"/>
+                <path d="M550 166 L550 238"/>
+                <path d="M630 262 L690 262"/>
+              </g>
+            </svg>
+            <div class="wc" style="position:absolute;left:30px;top:18px;width:160px;height:48px;padding:8px 11px;border-left:3px solid var(--siq)" data-a="pop" data-d=".5">
+              <div class="wlbl">TRIGGER</div><div style="font-size:11px;font-weight:600">Chat ended · no reply</div></div>
+            <div class="wc" style="position:absolute;left:30px;top:118px;width:160px;height:48px;padding:8px 11px;border-left:3px solid #9AA7B8" data-a="pop" data-d=".8">
+              <div class="wlbl">WAIT</div><div style="font-size:11px;font-weight:600">2 days · Sun–Thu</div></div>
+            <div class="wc" style="position:absolute;left:30px;top:218px;width:160px;height:66px;padding:8px 11px;border-left:3px solid var(--camp);box-shadow:0 0 0 3px rgba(240,162,27,.18)" data-a="pop" data-d="1.1">
+              <div class="wlbl">SEND EMAIL</div><div style="font-size:11px;font-weight:600">Bilingual follow-up</div>
+              <div style="display:flex;gap:5px;margin-top:5px"><span class="pill g">Opened</span><span class="pill b">Clicked</span></div></div>
+            <div class="wc" style="position:absolute;left:250px;top:218px;width:160px;height:48px;padding:8px 11px;border-left:3px solid var(--anal)" data-a="pop" data-d="1.4">
+              <div class="wlbl">DECISION · ZIA</div><div style="font-size:11px;font-weight:600">Arabic or English?</div></div>
+            <div class="wc" style="position:absolute;left:250px;top:118px;width:160px;height:48px;padding:8px 11px;border-left:3px solid var(--wa)" data-a="pop" data-d="1.7">
+              <div class="wlbl">SEND WHATSAPP</div><div style="font-size:11px;font-weight:600">Arabic template · same thread</div></div>
+            <div class="wc" style="position:absolute;left:470px;top:118px;width:160px;height:48px;padding:8px 11px;border-left:3px solid var(--book)" data-a="pop" data-d="2">
+              <div class="wlbl">OFFER</div><div style="font-size:11px;font-weight:600">Bookings link</div></div>
+            <div class="wc" style="position:absolute;left:470px;top:238px;width:160px;height:48px;padding:8px 11px;border-left:3px solid var(--crm)" data-a="pop" data-d="2.3">
+              <div class="wlbl">CRM ACTION</div><div style="font-size:11px;font-weight:600">Stage → Engaged</div></div>
+            <div class="wc" style="position:absolute;left:690px;top:238px;width:160px;height:48px;padding:8px 11px;border-left:3px solid var(--z-green);background:#F3FBF6" data-a="pop" data-d="2.6">
+              <div class="wlbl">EXIT</div><div style="font-size:11px;font-weight:600">Meeting booked ✓</div></div>
+            <!-- Sara travelling the journey -->
+            <div style="position:absolute;left:0;top:0;offset-path:path('M 110 66 L 110 118 L 110 166 L 110 218 L 110 284 C 110 322 330 322 330 266 L 330 218 L 330 166 L 410 142 L 470 142 L 550 166 L 550 238 L 630 262 L 690 262');offset-rotate:0deg;animation:cursorpath 4.2s 2.9s ease-in-out both">
+              <div class="wav" style="width:24px;height:24px;font-size:10px;box-shadow:0 4px 14px rgba(0,0,0,.3)">S</div>
+            </div>
+          </div>
+          <!-- live stats -->
+          <div style="position:absolute;right:14px;top:14px;display:flex;gap:8px" data-a="inR" data-d="2.9">
+            <div class="wc" style="padding:8px 11px"><div class="wlbl">IN JOURNEY</div><div style="font-weight:700;font-size:16px" data-count="1284">0</div></div>
+            <div class="wc" style="padding:8px 11px"><div class="wlbl">OPEN RATE</div><div style="font-weight:700;font-size:16px;color:var(--camp)">62%</div></div>
+            <div class="wc" style="padding:8px 11px"><div class="wlbl">BOOKED</div><div style="font-weight:700;font-size:16px;color:var(--z-green)">18%</div></div>
+            <div class="wc" style="padding:8px 11px;border-color:#DED5FB;background:#FAF8FF"><div class="wlbl">RAMADAN SEND WINDOW</div><div style="font-weight:700;font-size:16px;color:var(--anal)">22:00–01:00</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 09 CRM — WhatsApp inside the record ══════════ -->
+<section class="slide" data-node="6" data-title="Sara replies — WhatsApp in CRM">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 3 · <b>08:04</b></p><h2 data-a="up" data-d=".06">Sara replies on WhatsApp, in Arabic.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--wa)"><img src="logos/whatsapp.png" alt="whatsapp">WhatsApp for CRM</span><span class="chip" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq">SalesIQ</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--crm)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crm.png" alt="Zoho CRM"><span class="appname">Zoho <span>CRM</span> › Sara Al-Otaibi</span>
+        <div class="spacer"></div><div class="searchpill">⌕ Search</div><div class="uav">M</div>
+      </div>
+      <div class="win-tabs">
+        <div class="tab">Overview</div><div class="tab">Timeline</div><div class="tab on" style="--acc:var(--wa);color:var(--wa);border-bottom-color:var(--wa)">WhatsApp</div>
+        <div class="tab">Emails</div><div class="tab">Chats</div><div class="tab">Calls</div><div class="tab">Notes</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div>
+          <div class="amk amk-logo" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns"></div><div class="amk amk-logo" style="--c:var(--book)"><img src="logos/bookings.png" alt="bookings"></div></div>
+        <!-- left: record -->
+        <div style="width:212px;flex:none;border-right:1px solid var(--w-bd);background:var(--w-bg);padding:13px" data-a="inL" data-d=".2">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:7px;padding-bottom:11px;border-bottom:1px solid var(--w-bd)">
+            <div class="wav" style="width:46px;height:46px;font-size:18px">S</div>
+            <div style="font-weight:700;font-size:13px">Sara Al-Otaibi</div><span class="pill y">Lead · Engaged</span>
+          </div>
+          <div style="padding-top:11px;display:flex;flex-direction:column;gap:9px;font-size:10.5px">
+            <div><div class="wlbl">SCORE</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><b style="font-size:13px;color:var(--crm)">86</b><span class="pill g">▲ 8</span></div></div>
+            <div><div class="wlbl">PREFERRED CHANNEL</div><div style="margin-top:3px;display:flex;align-items:center;gap:5px"><span class="chan" style="background:var(--wa)">◍</span><b>WhatsApp</b></div></div>
+            <div><div class="wlbl">LAST TOUCH</div><div class="wmu" style="margin-top:3px">Email opened · 10:04 AST</div></div>
+          </div>
+        </div>
+        <!-- WhatsApp thread -->
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:#EFE7DE">
+          <div style="padding:8px 14px;background:#F5F0EA;border-bottom:1px solid #E0D6CA;display:flex;align-items:center;gap:9px">
+            <span style="width:22px;height:22px;border-radius:99px;background:var(--wa);color:#fff;display:grid;place-items:center;font-size:11px">◍</span>
+            <div><div style="font-weight:700;font-size:11.5px">+966 5• ••• 4127</div><div class="wlbl">WHATSAPP BUSINESS · VERIFIED · AR</div></div>
+            <div class="spacer"></div><span class="pill g">Synced to CRM</span>
+          </div>
+          <div style="flex:1;padding:13px;display:flex;flex-direction:column;gap:8px;overflow:hidden">
+            <div style="text-align:center"><span class="wlbl ar" style="background:#E4DACF;padding:3px 9px;border-radius:5px">اليوم</span></div>
+            <div class="cb wame ar" dir="rtl" data-a="inR" data-d=".5">مرحباً سارة، متابعةً لسؤالك عن ربط واتساب 🙂
+              <div class="tsend" style="color:#4B7C5A">١٠:٠٠ ✓✓</div></div>
+            <div class="cb wa ar" dir="rtl" data-a="inL" data-d="1.2">هذا بالضبط ما نحتاجه. نقدر نتكلم اليوم؟
+              <div style="font-size:8.5px;color:var(--w-mu);margin-top:3px">١٠:٠٤</div></div>
+            <div class="tping" style="width:50px;background:#DCF8C6;margin-left:auto" data-a="fade" data-d="1.9">
+              <i style="animation:blink 1.2s infinite;background:#5D8F6C"></i><i style="animation:blink 1.2s .18s infinite;background:#5D8F6C"></i><i style="animation:blink 1.2s .36s infinite;background:#5D8F6C"></i></div>
+            <div class="cb wame ar" dir="rtl" data-a="inR" data-d="2.5">بكل تأكيد — اختاري الوقت المناسب لك 👇
+              <div class="tsend" style="color:#4B7C5A">١٠:٠٥ ✓✓</div></div>
+            <div class="cb wame" style="padding:0;overflow:hidden;max-width:60%" data-a="pop" data-d="3">
+              <div style="background:#fff;padding:9px 11px;border-bottom:1px solid #E0E6EC">
+                <div style="display:flex;align-items:center;gap:6px"><span class="chan" style="background:var(--book)">▤</span><b style="font-size:10.5px">Zoho Bookings</b></div>
+                <div class="ar wmu" dir="rtl" style="font-size:9.5px;margin-top:3px">فيصل الحربي · مكالمة تعريفية ١٥ دقيقة</div>
+              </div>
+              <div class="ar" dir="rtl" style="padding:7px 11px;font-size:9.5px;color:#1A6B3C;font-weight:600">اضغطي لاختيار الوقت ←</div>
+            </div>
+          </div>
+          <div style="padding:8px 13px;background:#F5F0EA;border-top:1px solid #E0D6CA;display:flex;gap:8px;align-items:center">
+            <div class="ar wmu" dir="rtl" style="flex:1;height:26px;border-radius:99px;background:#fff;display:flex;align-items:center;padding:0 11px;font-size:10.5px">رسالة · قوالب عربية معتمدة</div>
+            <span class="wbtn" style="background:var(--wa);border-radius:99px">Send</span>
+          </div>
+        </div>
+        <!-- right: unified channels -->
+        <div style="width:176px;flex:none;border-left:1px solid var(--w-bd);background:var(--w-bg);padding:12px" data-a="inR" data-d="1.5">
+          <div class="wlbl" style="margin-bottom:10px">ALL CHANNELS · ONE THREAD</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:10.5px">
+            <div style="display:flex;gap:7px;align-items:center" data-a="up" data-d="1.7"><span class="chan" style="background:var(--social)">◎</span><div><div>Snapchat ad</div><div class="wlbl">D1 09:12</div></div></div>
+            <div style="display:flex;gap:7px;align-items:center" data-a="up" data-d="1.8"><span class="chan" style="background:var(--siq)">◔</span><div><div>Website + chat</div><div class="wlbl">D1 09:13</div></div></div>
+            <div style="display:flex;gap:7px;align-items:center" data-a="up" data-d="1.9"><span class="chan" style="background:var(--camp)">✉</span><div><div>Email opened</div><div class="wlbl">D3 10:00</div></div></div>
+            <div style="display:flex;gap:7px;align-items:center;padding:6px;border-radius:6px;background:#F2FBF5" data-a="up" data-d="2"><span class="chan" style="background:var(--wa)">◍</span><div><div><b>WhatsApp · AR</b></div><div class="wlbl">D3 10:04 · NOW</div></div></div>
+          </div>
+          <div class="wc" style="margin-top:12px;padding:9px;background:#FAF8FF;border-color:#DED5FB">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px"><span style="width:14px;height:14px;border-radius:4px;background:var(--anal);color:#fff;display:grid;place-items:center;font-size:8px">✦</span><b style="font-size:10px;color:#4B2FBE">Zia</b></div>
+            <div style="font-size:9.5px;line-height:1.4;color:#3C3560">Reply in Arabic within 5 min. Response rate drops 40% after that, and 60% after Thursday.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 10 BOOKINGS ══════════ -->
+<section class="slide" data-node="7" data-title="Sara books — Zoho Bookings">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 3 · <b>08:09</b></p><h2 data-a="up" data-d=".06">Sara books a meeting in two taps.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--book)"><img src="logos/bookings.png" alt="bookings">Zoho Bookings</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM · Meetings</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--book)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/bookings.png" alt="Zoho Bookings"><span class="appname">Zoho <span>Bookings</span></span>
+        <div class="spacer"></div><span class="pill b" style="margin-right:8px">FAISAL AL-HARBI · AST</span><div class="uav">M</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk on amk-logo" style="--c:var(--book)"><img src="logos/bookings.png" alt="bookings"></div><div class="amk amk-logo" style="--c:var(--cliq)"><img src="logos/cliq.png" alt="cliq"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 1fr 254px;gap:13px">
+          <!-- calendar -->
+          <div class="wc" style="padding:13px" data-a="up" data-d=".2">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px">
+              <b style="font-size:12px">October 2026</b>
+              <span class="pill p ar">هجري ⇄ ميلادي</span></div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center" class="wlbl">
+              <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span>
+              <span style="color:#C0281F">FRI</span><span style="color:#C0281F">SAT</span></div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:7px;text-align:center;font-size:10.5px">
+              <span class="wmu">4</span><span class="wmu">5</span><span class="wmu">6</span><span class="wmu">7</span><span class="wmu">8</span>
+              <span style="opacity:.32;color:#C0281F">9</span><span style="opacity:.32;color:#C0281F">10</span>
+              <span>11</span><span>12</span><span style="background:var(--book);color:#fff;border-radius:5px;padding:2px 0;animation:glow 2s 1s infinite">13</span><span>14</span><span>15</span>
+              <span style="opacity:.32;color:#C0281F">16</span><span style="opacity:.32;color:#C0281F">17</span>
+              <span>18</span><span>19</span><span>20</span><span>21</span><span>22</span>
+              <span style="opacity:.32;color:#C0281F">23</span><span style="opacity:.32;color:#C0281F">24</span>
+            </div>
+            <div class="wlbl" style="margin-top:9px;text-align:center">WORK WEEK SUN–THU · FRI &amp; SAT CLOSED</div>
+            <div style="margin-top:12px;padding-top:11px;border-top:1px solid var(--w-bd)">
+              <div class="wlbl" style="margin-bottom:8px">SERVICE</div>
+              <div style="display:flex;gap:7px;align-items:center;font-size:11px"><span class="chan" style="background:var(--book)">▤</span><b>Discovery call · 15 min</b><span class="ar wmu" style="margin-inline-start:6px">/ عربي</span></div>
+            </div>
+          </div>
+          <!-- slots -->
+          <div class="wc" style="padding:13px;display:flex;flex-direction:column" data-a="up" data-d=".32">
+            <div class="wlbl" style="margin-bottom:10px">AVAILABLE · TUE 13 OCT · AST</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div class="wc" style="padding:8px 11px;font-size:11px;text-align:center" data-a="up" data-d=".7">10:30</div>
+              <div class="wc" style="padding:7px 11px;font-size:10px;text-align:center;opacity:.5;background:var(--w-soft)" data-a="up" data-d=".78">12:00 · blocked</div>
+              <div class="wc" style="padding:8px 11px;font-size:11px;text-align:center;border-color:var(--book);background:#EAFAFA;color:#0A6E6E;font-weight:700;box-shadow:0 0 0 3px rgba(14,165,165,.16)" data-a="up" data-d=".9">14:00 · selected</div>
+              <div class="wc" style="padding:8px 11px;font-size:11px;text-align:center;opacity:.45" data-a="up" data-d="1">16:15 · booked</div>
+              <div class="wc" style="padding:8px 11px;font-size:11px;text-align:center" data-a="up" data-d="1.15">17:30</div>
+            </div>
+            <div style="margin-top:auto;padding-top:11px">
+              <div class="wbtn" style="width:100%;justify-content:center;padding:9px" data-a="pop" data-d="1.4">Confirm booking</div>
+              <div class="wlbl" style="text-align:center;margin-top:8px">TIMEZONE · ASIA/RIYADH (AST)</div>
+              <div class="wlbl" style="text-align:center;margin-top:5px;color:var(--book)">PRAYER GAPS BLOCKED IN FAISAL'S AVAILABILITY</div>
+            </div>
+          </div>
+          <!-- downstream -->
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div class="wlbl" data-a="fade" data-d="1.7">TRIGGERED ACROSS ZOHO</div>
+            <div class="wc" style="padding:9px 11px;display:flex;align-items:center;gap:8px;font-size:10.5px;border-left:3px solid var(--crm)" data-a="inR" data-d="1.9">
+              <span class="chan" style="background:var(--crm)">C</span><div><b>CRM</b><div class="wlbl">MEETING + STAGE UPDATED</div></div></div>
+            <div class="wc" style="padding:9px 11px;display:flex;align-items:center;gap:8px;font-size:10.5px;border-left:3px solid var(--z-blue)" data-a="inR" data-d="2.05">
+              <span class="chan" style="background:var(--z-blue)">📅</span><div><b>Calendar</b><div class="wlbl">INVITE SENT · BOTH SIDES</div></div></div>
+            <div class="wc" style="padding:9px 11px;display:flex;align-items:center;gap:8px;font-size:10.5px;border-left:3px solid var(--wa)" data-a="inR" data-d="2.2">
+              <span class="chan" style="background:var(--wa)">◍</span><div><b>WhatsApp</b><div class="wlbl">AR REMINDER QUEUED · T-1H</div></div></div>
+            <div class="wc" style="padding:9px 11px;display:flex;align-items:center;gap:8px;font-size:10.5px;border-left:3px solid var(--cliq)" data-a="inR" data-d="2.35">
+              <span class="chan" style="background:var(--cliq)">Q</span><div><b>Cliq</b><div class="wlbl">SALES CHANNEL NOTIFIED</div></div></div>
+            <div class="wc" style="padding:11px;margin-top:auto;background:#F2FBF5;border-color:#BFE3CB" data-a="pop" data-d="2.6">
+              <div class="wlbl">AD CLICK → MEETING BOOKED</div>
+              <div style="font-family:var(--display);font-weight:700;font-size:26px;color:#1E7C3A">2d 22h</div>
+              <div class="wmu" style="font-size:10px">zero manual data entry</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 11 CRM DEALS — kanban won ══════════ -->
+<section class="slide" data-node="8" data-title="Sara signs — CRM Deals">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 9 · <b>16:40</b></p><h2 data-a="up" data-d=".06">Sara signs for SAR 180,000.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">Zoho CRM</span><span class="chip" style="--c:var(--sign)"><img src="logos/sign.png" alt="sign">Zoho Sign</span><span class="chip" style="--c:var(--books)"><img src="logos/books.png" alt="books">Zoho Books</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--crm)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crm.png" alt="Zoho CRM"><span class="appname">Zoho <span>CRM</span></span>
+        <div class="spacer"></div><span class="pill g" style="margin-right:8px">PIPELINE SAR 1.54M</span><div class="uav">M</div>
+      </div>
+      <div class="win-tabs"><div class="tab">Leads</div><div class="tab">Contacts</div><div class="tab on">Deals</div>
+        <div class="tab">Activities</div><div class="spacer"></div><div class="tab">Kanban ⌄</div></div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--sign)"><img src="logos/sign.png" alt="sign"></div>
+          <div class="amk amk-logo" style="--c:var(--books)"><img src="logos/books.png" alt="books"></div><div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div></div>
+        <div class="win-body" style="display:flex;flex-direction:column;gap:11px;overflow:hidden">
+          <!-- kanban -->
+          <div style="flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:9px;min-height:0">
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><span class="wlbl">QUALIFIED</span><span class="wlbl">6</span></div>
+              <div class="wc" style="padding:8px;height:44px;opacity:.5"></div><div class="wc" style="padding:8px;height:44px;opacity:.5"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><span class="wlbl">MEETING</span><span class="wlbl">4</span></div>
+              <div class="wc" style="padding:8px;height:44px;opacity:.5"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;position:relative">
+              <div style="display:flex;justify-content:space-between;align-items:center"><span class="wlbl">PROPOSAL</span><span class="wlbl">3</span></div>
+              <!-- the dragging card -->
+              <div class="wc" style="padding:9px;position:relative;z-index:5;animation:kdrag 2.2s .9s cubic-bezier(.4,0,.2,1) both">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+                  <span class="wav" style="width:20px;height:20px;font-size:9px">S</span><b style="font-size:11px">Mazaya Retail</b></div>
+                <div style="font-family:var(--display);font-weight:700;font-size:16px">SAR 180,000</div>
+                <div class="wlbl" style="margin-top:3px">40 USERS · VAT 15% · FAISAL</div>
+              </div>
+              <div class="wc" style="padding:8px;height:44px;opacity:.5"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><span class="wlbl">NEGOTIATION</span><span class="wlbl">2</span></div>
+              <div class="wc" style="padding:8px;height:44px;opacity:.5"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;background:#F2FBF5;border-radius:8px;padding:7px;margin:-7px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><span class="wlbl" style="color:#1E7C3A">CLOSED WON</span><span class="wlbl" style="color:#1E7C3A">9</span></div>
+              <div style="position:relative;height:0">
+                <div style="position:absolute;left:50%;top:0;width:2px">
+                  <i style="--dx:-52px;position:absolute;width:5px;height:9px;background:var(--z-green);display:block;animation:fall 2.2s 3s ease-in both"></i>
+                  <i style="--dx:34px;position:absolute;width:5px;height:9px;background:var(--z-yellow);display:block;animation:fall 2.4s 3.1s ease-in both"></i>
+                  <i style="--dx:-14px;position:absolute;width:5px;height:5px;border-radius:99px;background:var(--z-red);display:block;animation:fall 2s 3.2s ease-in both"></i>
+                  <i style="--dx:60px;position:absolute;width:4px;height:10px;background:var(--z-blue);display:block;animation:fall 2.6s 3.05s ease-in both"></i>
+                  <i style="--dx:-70px;position:absolute;width:5px;height:5px;border-radius:99px;background:var(--z-green);display:block;animation:fall 2.3s 3.3s ease-in both"></i>
+                </div>
+              </div>
+              <div class="wc" style="padding:8px;height:44px;opacity:.4"></div>
+            </div>
+          </div>
+          <!-- downstream strip -->
+          <div style="flex:none;display:grid;grid-template-columns:repeat(4,1fr);gap:9px">
+            <div class="wc" style="padding:10px 12px;display:flex;align-items:center;gap:9px;border-left:3px solid var(--crm)" data-a="up" data-d="3.3">
+              <span class="chan" style="background:var(--crm)">◆</span><div><div class="wlbl">CRM</div><b style="font-size:11px">Quote #1042 sent</b></div></div>
+            <div class="wc" style="padding:10px 12px;display:flex;align-items:center;gap:9px;border-left:3px solid var(--sign)" data-a="up" data-d="3.45">
+              <span class="chan" style="background:var(--sign)">✍</span><div><div class="wlbl">ZOHO SIGN</div><b style="font-size:11px">Signed in 4 min · AR contract</b></div></div>
+            <div class="wc" style="padding:10px 12px;display:flex;align-items:center;gap:9px;border-left:3px solid var(--books)" data-a="up" data-d="3.6">
+              <span class="chan" style="background:var(--books)">B</span>
+              <div style="flex:1"><div class="wlbl">ZOHO BOOKS</div><b style="font-size:11px">ZATCA e-invoice cleared</b>
+                <div class="ar wmu" dir="rtl" style="font-size:9.5px">فاتورة إلكترونية · هيئة الزكاة والضريبة</div></div>
+              <svg width="24" height="24" viewBox="0 0 24 24" style="flex:none;opacity:.75">
+                <rect width="24" height="24" fill="#fff"/><g fill="#22272F">
+                <rect x="1" y="1" width="7" height="7"/><rect x="16" y="1" width="7" height="7"/><rect x="1" y="16" width="7" height="7"/>
+                <rect x="3" y="3" width="3" height="3" fill="#fff"/><rect x="18" y="3" width="3" height="3" fill="#fff"/><rect x="3" y="18" width="3" height="3" fill="#fff"/>
+                <rect x="10" y="1" width="2" height="2"/><rect x="13" y="4" width="2" height="2"/><rect x="10" y="7" width="2" height="2"/>
+                <rect x="1" y="10" width="2" height="2"/><rect x="4" y="13" width="2" height="2"/><rect x="7" y="10" width="2" height="2"/>
+                <rect x="10" y="10" width="3" height="3"/><rect x="16" y="10" width="2" height="2"/><rect x="19" y="13" width="2" height="2"/>
+                <rect x="10" y="16" width="2" height="2"/><rect x="13" y="19" width="2" height="2"/><rect x="16" y="16" width="2" height="2"/>
+                <rect x="19" y="19" width="3" height="3"/></g></svg></div>
+            <div class="wc" style="padding:10px 12px;display:flex;align-items:center;gap:9px;border-left:3px solid var(--desk)" data-a="up" data-d="3.75">
+              <span class="chan" style="background:var(--desk)">D</span><div><div class="wlbl">ZOHO DESK</div><b style="font-size:11px">Account provisioned</b></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 12 ZOHO DESK — omnichannel ticket ══════════ -->
+<section class="slide" data-node="9" data-title="Sara complains — Zoho Desk">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 34 · <b>11:02</b></p><h2 data-a="up" data-d=".06">Sara complains on three channels at once.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk">Zoho Desk</span><span class="chip" style="--c:var(--social)"><img src="logos/social.png" alt="social">Zoho Social</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM widget</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--desk)" data-a="win">
+      <!-- Desk top bar: department switcher, global search, + New, notifications -->
+      <div class="win-top">
+        <img class="applogo" src="logos/desk.png" alt="Zoho Desk"><span class="appname">Zoho <span>Desk</span></span>
+        <span class="deptsel">Mazaya Support ⌄</span>
+        <div class="spacer"></div>
+        <div class="searchpill" style="width:204px">⌕ Search tickets, contacts, articles</div>
+        <span class="wbtn" style="padding:4px 9px;font-size:10px">+ New Ticket</span>
+        <div class="tbtn">🔔</div><div class="tbtn">?</div><div class="uav">ن</div>
+      </div>
+      <div class="win-mid">
+        <!-- Desk module rail -->
+        <div class="rail">
+          <div class="amk" style="background:#4B5262" title="Home">⌂</div>
+          <div class="amk on amk-logo" style="--c:var(--desk)" title="Tickets"><img src="logos/desk.png" alt="desk"></div>
+          <div class="amk" style="background:#4B5262" title="Knowledge Base">▤</div>
+          <div class="amk" style="background:#4B5262" title="Community">◍</div>
+          <div class="amk" style="background:#4B5262" title="Customers">☺</div>
+          <div class="amk amk-logo" style="--c:var(--anal)" title="Analytics"><img src="logos/analytics.png" alt="analytics"></div>
+          <div style="margin-top:auto"><div class="amk" style="background:#4B5262" title="Setup">⚙</div></div>
+        </div>
+        <!-- ticket list with Desk views dropdown -->
+        <div style="width:196px;flex:none;border-right:1px solid var(--w-bd);background:var(--w-bg);display:flex;flex-direction:column">
+          <div style="padding:8px 10px;border-bottom:1px solid var(--w-bd);display:flex;align-items:center;justify-content:space-between">
+            <b style="font-size:11px">All Tickets ⌄</b><span class="wlbl">27</span>
+          </div>
+          <div style="padding:6px 10px;border-bottom:1px solid var(--w-bd);display:flex;gap:5px" class="wlbl">
+            <span style="color:var(--desk);font-weight:600">OPEN 9</span><span>ON HOLD 4</span><span>CLOSED 14</span>
+          </div>
+          <!-- the three incoming, then merged -->
+          <div class="tkrow" data-a="inL" data-d=".3">
+            <span class="chan" style="background:var(--social)">𝕏</span>
+            <div style="min-width:0"><div style="font-weight:700;font-size:10.5px">Sara Al-Otaibi</div>
+              <div class="wmu ar" dir="rtl" style="font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">ثالث انقطاع في المزامنة…</div>
+              <div class="wlbl">TWITTER · 11:02</div></div>
+          </div>
+          <div class="tkrow" data-a="inL" data-d=".45">
+            <span class="chan" style="background:var(--camp)">✉</span>
+            <div style="min-width:0"><div style="font-weight:700;font-size:10.5px">Sara Al-Otaibi</div>
+              <div class="wmu" style="font-size:10px">Sync failing again</div>
+              <div class="wlbl">EMAIL · 11:04</div></div>
+          </div>
+          <div class="tkrow" data-a="inL" data-d=".6">
+            <span class="chan" style="background:var(--siq)">☏</span>
+            <div style="min-width:0"><div style="font-weight:700;font-size:10.5px">Sara Al-Otaibi</div>
+              <div class="wmu" style="font-size:10px">Inbound call · 3m 12s</div>
+              <div class="wlbl">PHONE · 11:09</div></div>
+          </div>
+          <div style="margin:10px;padding:10px;border-radius:7px;background:#FDF0EE;border:1px solid #F6C9C4" data-a="pop" data-d="1.3">
+            <div class="wlbl" style="color:#B4322A">MERGE TICKETS</div>
+            <div style="font-size:10.5px;margin-top:4px;line-height:1.35">Same contact, same product, 7 min apart → merged into <b>#8841</b></div>
+          </div>
+          <div style="margin-top:auto;padding:8px 10px;border-top:1px solid var(--w-bd)" class="wlbl">SORT BY · PRIORITY ⌄</div>
+        </div>
+        <!-- ticket detail -->
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;background:var(--w-canvas)">
+          <!-- subject + Blueprint transition -->
+          <div style="padding:9px 14px;background:var(--w-bg);border-bottom:1px solid var(--w-bd)" data-a="fade" data-d="1.4">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;align-items:center;gap:7px">
+                  <b style="font-size:12.5px">Sync stopped this morning</b>
+                  <span class="wlbl">#8841</span><span class="pill r">HIGH</span><span class="pill y">ESCALATED</span>
+                </div>
+                <div class="wlbl" style="margin-top:3px">SARA AL-OTAIBI · MAZAYA RETAIL · MERGED FROM 3 CHANNELS</div>
+              </div>
+              <span class="wbtn ghost" style="font-size:10px">Add Comment</span>
+              <span class="wbtn" style="font-size:10px">Reply ⌄</span>
+              <span class="wbtn" style="font-size:10px;background:var(--sign)">Blueprint · Move to Fixed →</span>
+            </div>
+            <!-- agent collision, a real Desk touch -->
+            <div style="margin-top:7px;display:flex;align-items:center;gap:6px">
+              <span class="dotlive" style="animation:ping 2s infinite"></span>
+              <span class="wlbl">FAISAL (SALES) IS ALSO VIEWING THIS TICKET</span>
+            </div>
+          </div>
+          <!-- Desk ticket tab strip -->
+          <div class="tktabs">
+            <span class="on">CONVERSATION <b>4</b></span><span>RESOLUTION</span><span>HISTORY</span>
+            <span>ATTACHMENTS <b>1</b></span><span>TIME ENTRY</span><span>APPROVALS</span>
+          </div>
+          <!-- thread -->
+          <div style="flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:8px;overflow:hidden">
+            <div class="wc" style="padding:10px 12px" data-a="up" data-d="1.7">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+                <span class="chan" style="background:var(--social)">𝕏</span>
+                <b style="font-size:10.5px">Sara Al-Otaibi</b><span class="wlbl">PUBLIC POST · 11:02</span>
+                <div class="spacer"></div><span class="pill r">2.4K views</span>
+              </div>
+              <div class="ar" dir="rtl" style="font-size:12px;line-height:1.5">ثالث انقطاع في المزامنة هذا الأسبوع. في أحد يرد؟</div>
+            </div>
+            <div class="wc" style="padding:10px 12px;border-left:3px solid var(--desk)" data-a="up" data-d="2">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+                <span class="wav" style="width:18px;height:18px;font-size:8px;background:#8894A6">ن</span>
+                <b style="font-size:10.5px">Nouf Al-Dosari</b><span class="wlbl">AGENT · 11:11 · REPLIED ON 𝕏 + EMAIL</span>
+                <div class="spacer"></div><span class="pill g">FRT 9m</span>
+              </div>
+              <div class="ar" dir="rtl" style="font-size:12px;line-height:1.5">أهلاً سارة — أرى ثلاث حالات فشل في المزامنة منذ الثلاثاء. تم إصلاح السبب وأنا أراقب الوضع. أبلغت فيصل أيضاً.</div>
+              <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
+                <span class="pill b ar">مقال المساعدة مرفق</span>
+                <span class="wlbl">KB: "إعادة تشغيل المزامنة" · AR</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:7px;align-items:center;padding:0 2px" data-a="fade" data-d="2.4">
+              <span class="wlbl">TAGS</span><span class="pill y">sync</span><span class="pill y">integration</span><span class="pill p">zia-auto-tag</span>
+            </div>
+          </div>
+        </div>
+        <!-- right: Ticket Information + Zia + CRM widget -->
+        <div style="width:206px;flex:none;border-left:1px solid var(--w-bd);background:var(--w-bg);overflow:hidden" data-a="inR" data-d="1.8">
+          <div style="padding:10px 12px;border-bottom:1px solid var(--w-bd)"><span class="wlbl">TICKET INFORMATION</span></div>
+          <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;font-size:10.5px;border-bottom:1px solid var(--w-bd)">
+            <div class="kv"><span class="wmu">Status</span><span class="pill r">Escalated</span></div>
+            <div class="kv"><span class="wmu">Priority</span><b>High</b></div>
+            <div class="kv"><span class="wmu">Channel</span><b>Twitter, Email, Phone</b></div>
+            <div class="kv"><span class="wmu">Department</span><b>Mazaya Support</b></div>
+            <div class="kv"><span class="wmu">Assignee</span><b>Nouf Al-Dosari</b></div>
+            <div class="kv"><span class="wmu">Category</span><b>Integrations / Sync</b></div>
+            <div class="kv"><span class="wmu">Due date</span><b style="color:#C0281F">Today 13:16</b></div>
+          </div>
+          <!-- SLA -->
+          <div style="padding:10px 12px;border-bottom:1px solid var(--w-bd)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+              <span class="wlbl">SLA · RESPONSE DUE</span><b style="font-size:10.5px;color:#C0281F">2h 14m</b></div>
+            <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden">
+              <i style="--w:68%;display:block;height:100%;background:var(--desk);animation:barw 1.1s 2.2s ease both"></i></div>
+          </div>
+          <!-- Zia -->
+          <div style="padding:10px 12px;background:#FAF8FF;border-bottom:1px solid var(--w-bd)">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:7px">
+              <span style="width:15px;height:15px;border-radius:4px;background:var(--anal);color:#fff;display:grid;place-items:center;font-size:8px">✦</span>
+              <b style="font-size:10px;color:#4B2FBE">Zia</b></div>
+            <div class="kv" style="font-size:10px;margin-bottom:5px"><span class="wmu">Sentiment (AR)</span><b style="color:#C0281F">Negative</b></div>
+            <div style="height:6px;border-radius:99px;background:#E9E3FB;overflow:hidden;margin-bottom:6px">
+              <i style="--w:24%;display:block;height:100%;background:var(--desk);animation:barw 1s 2.4s ease both"></i></div>
+            <div style="font-size:9.5px;color:#3C3560;line-height:1.4">Anomaly: 3rd ticket in 7 days. Churn risk pushed to Faisal in Cliq.</div>
+          </div>
+          <!-- Happiness Rating -->
+          <div style="padding:10px 12px;border-bottom:1px solid var(--w-bd)">
+            <div class="wlbl" style="margin-bottom:7px">HAPPINESS RATING</div>
+            <div style="display:flex;gap:5px">
+              <span class="hr" style="background:#E6F6EC;color:#1E7C3A">☺ Good</span>
+              <span class="hr" style="background:var(--w-soft);color:var(--w-mu)">☹ Bad</span>
+            </div>
+          </div>
+          <!-- CRM widget inside Desk -->
+          <div style="padding:10px 12px;background:#FFF7F6">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:7px">
+              <span style="width:15px;height:15px;border-radius:4px;background:var(--crm);color:#fff;display:grid;place-items:center;font-size:8px">C</span>
+              <b style="font-size:10px;color:#B4322A">Zoho CRM</b></div>
+            <div class="kv" style="font-size:10px"><span class="wmu">Deal</span><b>SAR 180,000</b></div>
+            <div class="kv" style="font-size:10px"><span class="wmu">Owner</span><b>Faisal</b></div>
+            <div class="kv" style="font-size:10px"><span class="wmu">Renewal</span><b>11 months</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 13 SURVEY + SOCIAL — advocacy ══════════ -->
+<section class="slide" data-node="10" data-title="Sara advocates — Zoho Survey">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Day 60 · <b>09:00</b></p><h2 data-a="up" data-d=".06">Sara brings three more customers.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--survey)"><img src="logos/survey.png" alt="survey">Zoho Survey</span><span class="chip" style="--c:var(--social)"><img src="logos/social.png" alt="social">Zoho Social</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM · Referrals</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--survey)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/survey.png" alt="Zoho Survey"><span class="appname">Zoho <span>Survey</span> · NPS dashboard</span>
+        <div class="spacer"></div><span class="pill g" style="margin-right:8px">RESPONSE RATE 41%</span><div class="uav">M</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--survey)"><img src="logos/survey.png" alt="survey"></div><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div>
+          <div class="amk amk-logo" style="--c:var(--social)"><img src="logos/social.png" alt="social"></div><div class="amk amk-logo" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:250px 1fr 1fr;gap:13px">
+          <!-- NPS gauge -->
+          <div class="wc" style="padding:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px" data-a="up" data-d=".2">
+            <span class="wlbl">NET PROMOTER SCORE</span>
+            <svg width="150" height="92" viewBox="0 0 150 92">
+              <path d="M14 84 A 61 61 0 0 1 136 84" stroke="#E7ECF3" stroke-width="13" fill="none" stroke-linecap="round"/>
+              <path d="M14 84 A 61 61 0 0 1 136 84" stroke="var(--survey)" stroke-width="13" fill="none" stroke-linecap="round"
+                    stroke-dasharray="192" style="--from:192;--to:54;animation:drawto 1.4s .5s cubic-bezier(.3,.9,.3,1) both"/>
+              <text x="75" y="74" text-anchor="middle" font-family="Zoho Puvi, sans-serif" font-weight="700" font-size="34" fill="#22272F" data-count="72">0</text>
+            </svg>
+            <div style="display:flex;gap:12px;font-size:10px" class="wmu">
+              <span>Promoters <b style="color:#1E7C3A">78%</b></span><span>Detractors <b style="color:#C0281F">6%</b></span></div>
+            <div class="wc" style="width:100%;padding:9px;margin-top:5px;background:#FFFBEE;border-color:#F6E3B0" data-a="pop" data-d="1.2">
+              <div class="wlbl">SARA AL-OTAIBI · RIYADH</div>
+              <div style="display:flex;align-items:baseline;gap:5px;margin-top:2px"><b style="font-family:var(--display);font-size:22px">9</b><span class="wmu" style="font-size:10px">/10 · promoter</span></div>
+            </div>
+          </div>
+          <!-- verbatims + trend -->
+          <div style="display:flex;flex-direction:column;gap:11px;min-height:0">
+            <div class="wc" style="padding:12px;flex:none" data-a="up" data-d=".4">
+              <div class="wlbl" style="margin-bottom:9px">NPS TREND · 6 MONTHS</div>
+              <svg viewBox="0 0 260 74" style="width:100%;height:74px">
+                <path d="M6 62 L48 56 L90 48 L132 40 L174 26 L218 14" stroke="var(--survey)" stroke-width="2.5" fill="none"
+                      stroke-linecap="round" stroke-dasharray="300" style="--len:300;animation:draw 1.5s .7s ease both"/>
+                <g fill="var(--survey)">
+                  <circle cx="6" cy="62" r="3.5" data-a="pop" data-d="1"/><circle cx="48" cy="56" r="3.5" data-a="pop" data-d="1.1"/>
+                  <circle cx="90" cy="48" r="3.5" data-a="pop" data-d="1.2"/><circle cx="132" cy="40" r="3.5" data-a="pop" data-d="1.3"/>
+                  <circle cx="174" cy="26" r="3.5" data-a="pop" data-d="1.4"/><circle cx="218" cy="14" r="5" data-a="pop" data-d="1.5"/>
+                </g>
+              </svg>
+            </div>
+            <div class="wc" style="padding:12px;flex:1" data-a="up" data-d=".55">
+              <div class="wlbl" style="margin-bottom:9px">VERBATIM (AR) · PUSHED TO CRM + SOCIAL</div>
+              <div class="ar" dir="rtl" style="font-size:12px;line-height:1.6;padding-inline-start:9px;border-inline-start:2px solid var(--survey)">
+                استبدلنا ست أنظمة بنظام واحد. الآن فريق الدعم يعرف من أنا فعلاً.</div>
+              <div class="wmu" style="font-size:9.5px;margin-top:6px;padding-inline-start:9px">“We replaced six tools with one. Support actually knows who I am now.”</div>
+              <div style="display:flex;gap:6px;margin-top:10px">
+                <span class="pill g" data-a="pop" data-d="1.7">Approved as testimonial</span>
+                <span class="pill b" data-a="pop" data-d="1.85">Case study candidate</span></div>
+            </div>
+          </div>
+          <!-- advocacy loop -->
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div class="wc" style="padding:12px;border-left:3px solid var(--social)" data-a="inR" data-d=".7">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">
+                <span class="chan" style="background:var(--social)">◎</span><b style="font-size:10.5px">LinkedIn · organic</b></div>
+              <div style="display:flex;gap:14px">
+                <div><div class="wlbl">IMPRESSIONS</div><b style="font-family:var(--display);font-size:17px" data-count="2400" data-fmt="k">0</b></div>
+                <div><div class="wlbl">PROFILE VISITS</div><b style="font-family:var(--display);font-size:17px" data-count="184">0</b></div>
+              </div>
+            </div>
+            <div class="wc" style="padding:12px;border-left:3px solid var(--crm)" data-a="inR" data-d=".85">
+              <div class="wlbl" style="margin-bottom:8px">REFERRED LEADS → BACK TO DAY 1</div>
+              <div style="display:flex;align-items:center;gap:9px">
+                <div style="display:flex">
+                  <span class="wav" style="width:26px;height:26px;font-size:10px;background:linear-gradient(140deg,#7BA0F5,#1A4FD0)" data-a="pop" data-d="1.5">D</span>
+                  <span class="wav" style="width:26px;height:26px;font-size:10px;margin-left:-8px;background:linear-gradient(140deg,#7BDBA0,#1E7C3A)" data-a="pop" data-d="1.65">R</span>
+                  <span class="wav" style="width:26px;height:26px;font-size:10px;margin-left:-8px;background:linear-gradient(140deg,#B4A9FB,#5B3FD6)" data-a="pop" data-d="1.8">K</span>
+                </div>
+                <div><b style="font-family:var(--display);font-size:19px">3</b><div class="wlbl">NEW LEADS · SOURCE: REFERRAL</div></div>
+              </div>
+            </div>
+            <div class="wc" style="padding:12px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:#FFFBEE;border-color:#F6E3B0" data-a="pop" data-d="2">
+              <svg width="34" height="34" viewBox="0 0 34 34" fill="none" style="animation:spin 9s linear infinite">
+                <path d="M29 17a12 12 0 1 1-3.5-8.5M29 5v6h-6" stroke="#96650A" stroke-width="2" stroke-linecap="round"/></svg>
+              <div class="wlbl" style="text-align:center;color:#96650A">THE LOOP CLOSES<br>ADVOCACY BECOMES ACQUISITION</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 14 CRM TIMELINE — the payoff ══════════ -->
+<section class="slide" data-node="10" data-title="Sara's timeline — CRM">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The payoff</p><h2 data-a="up" data-d=".06">Sara's 60 days on one record.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Nobody asked Sara to repeat herself. Not once, in 60 days.</p>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--crm)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crm.png" alt="Zoho CRM"><span class="appname">Zoho <span>CRM</span> › Sara Al-Otaibi › Timeline</span>
+        <div class="spacer"></div><span class="pill b" style="margin-right:8px">60 DAYS · 9 TOUCHPOINTS · 2 LANGUAGES</span><div class="uav">M</div>
+      </div>
+      <div class="win-tabs"><div class="tab">Overview</div><div class="tab on">Timeline</div><div class="tab">WhatsApp</div>
+        <div class="tab">Emails</div><div class="tab">Tickets</div><div class="tab">Invoices</div></div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div>
+          <div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div><div class="amk amk-logo" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 232px;gap:13px;overflow:hidden">
+          <!-- timeline -->
+          <div style="position:relative;overflow:hidden;padding-left:6px">
+            <div style="position:absolute;left:19px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--social),var(--siq),var(--camp),var(--wa),var(--book),var(--crm),var(--desk),var(--survey))"></div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".3">
+                <span class="chan" style="background:var(--social);z-index:1">◎</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px">
+                  <span class="wlbl" style="width:76px">D1 · 09:12</span><b style="font-size:11px;flex:1">Clicked Snapchat ad · Arabic creative</b><span class="pill b">Zoho Social</span></div></div>
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".4">
+                <span class="chan" style="background:var(--siq);z-index:1">◔</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px">
+                  <span class="wlbl" style="width:76px">D1 · 09:13</span><b style="font-size:11px;flex:1">3 pages · intent 78</b><span class="pill b">SalesIQ</span></div></div>
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".5">
+                <span class="chan" style="background:var(--siq);z-index:1">◍</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px">
+                  <span class="wlbl" style="width:76px">D1 · 09:16</span><b style="font-size:11px;flex:1">Arabic chat · <span class="ar">هل تدعمون واتساب؟</span></b><span class="pill p">Zobot</span></div></div>
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".6">
+                <span class="chan" style="background:var(--crm);z-index:1">◆</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px">
+                  <span class="wlbl" style="width:76px">D1 · 09:21</span><b style="font-size:11px;flex:1">Lead created — no form filled</b><span class="pill r">Zoho CRM</span></div></div>
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".7">
+                <span class="chan" style="background:var(--camp);z-index:1">✉</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px">
+                  <span class="wlbl" style="width:76px">D3 · 10:00</span><b style="font-size:11px;flex:1">Email opened + clicked</b><span class="pill y">Campaigns</span></div></div>
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".8">
+                <span class="chan" style="background:var(--wa);z-index:1">◍</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px;border-color:#BFE3CB;background:#F7FDF9">
+                  <span class="wlbl" style="width:76px">D3 · 10:04</span><b style="font-size:11px;flex:1">Replied on WhatsApp in Arabic · 4 min</b><span class="pill g">CRM · WhatsApp</span></div></div>
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".9">
+                <span class="chan" style="background:var(--book);z-index:1">▤</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px">
+                  <span class="wlbl" style="width:76px">D3 · 10:09</span><b style="font-size:11px;flex:1">Meeting booked · 14:00</b><span class="pill b">Bookings</span></div></div>
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d="1">
+                <span class="chan" style="background:var(--z-green);z-index:1">✓</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px">
+                  <span class="wlbl" style="width:76px">D9 · 16:40</span><b style="font-size:11px;flex:1">Closed won · SAR 180,000 · ZATCA</b><span class="pill g">CRM · Sign · Books</span></div></div>
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d="1.1">
+                <span class="chan" style="background:var(--desk);z-index:1">☏</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px">
+                  <span class="wlbl" style="width:76px">D34 · 11:02</span><b style="font-size:11px;flex:1">Arabic ticket · merged from 3 channels</b><span class="pill r">Zoho Desk</span></div></div>
+              <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d="1.2">
+                <span class="chan" style="background:var(--survey);z-index:1">★</span>
+                <div class="wc" style="flex:1;padding:7px 11px;display:flex;align-items:center;gap:10px;border-color:#F6E3B0;background:#FFFBEE">
+                  <span class="wlbl" style="width:76px">D60 · 09:00</span><b style="font-size:11px;flex:1">NPS 9 → 3 referrals</b><span class="pill y">Survey · Social</span></div></div>
+            </div>
+          </div>
+          <!-- side stats -->
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div class="wc" style="padding:12px" data-a="inR" data-d="1.3">
+              <div class="wlbl">TIMES SHE REPEATED HERSELF</div>
+              <div style="font-family:var(--display);font-weight:700;font-size:40px;color:var(--z-green);line-height:1">0</div>
+            </div>
+            <div class="wc" style="padding:12px" data-a="inR" data-d="1.42">
+              <div class="wlbl">APPS INVOLVED</div>
+              <div style="font-family:var(--display);font-weight:700;font-size:26px" data-count="9">0</div>
+              <div style="display:flex;gap:4px;margin-top:7px;flex-wrap:wrap">
+                <span class="chan" style="background:var(--social);width:15px;height:15px;font-size:8px">◎</span>
+                <span class="chan" style="background:var(--siq);width:15px;height:15px;font-size:8px">◔</span>
+                <span class="chan" style="background:var(--camp);width:15px;height:15px;font-size:8px">✉</span>
+                <span class="chan" style="background:var(--ma);width:15px;height:15px;font-size:8px">A</span>
+                <span class="chan" style="background:var(--book);width:15px;height:15px;font-size:8px">▤</span>
+                <span class="chan" style="background:var(--crm);width:15px;height:15px;font-size:8px">◆</span>
+                <span class="chan" style="background:var(--sign);width:15px;height:15px;font-size:8px">✍</span>
+                <span class="chan" style="background:var(--desk);width:15px;height:15px;font-size:8px">D</span>
+                <span class="chan" style="background:var(--survey);width:15px;height:15px;font-size:8px">★</span>
+              </div>
+            </div>
+            <div class="wc" style="padding:12px" data-a="inR" data-d="1.54">
+              <div class="wlbl">HANDOFFS WITH CONTEXT LOST</div>
+              <div style="font-family:var(--display);font-weight:700;font-size:40px;color:var(--z-green);line-height:1">0</div>
+            </div>
+            <div class="wc" style="padding:12px;flex:1;background:#FFF7F6;border-color:#F6C9C4;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d="1.66">
+              <div class="wlbl" style="color:#B4322A">THE WHOLE PRODUCT</div>
+              <div style="font-size:11.5px;line-height:1.4;margin-top:5px">Every app writes to the same record — in the language she chose. That's a suite, not a stack.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 15 CRM PLUS DASHBOARD ══════════ -->
+<section class="slide" data-node="10" data-title="Sara at scale — CRM Plus">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Under the hood</p><h2 data-a="up" data-d=".06">Sara is one of 38,400 conversations.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics">Zoho Analytics</span><span class="chip" style="--c:var(--crm)"><img src="logos/crmplus.png" alt="crmplus">CRM Plus</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--anal)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crmplus.png" alt="Zoho CRM Plus"><span class="appname">Zoho <span>CRM Plus</span> · Customer Experience</span>
+        <div class="spacer"></div><span class="pill p" style="margin-right:8px">LAST 90 DAYS · AST</span><div class="uav">M</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail">
+          <div class="amk on amk-logo" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics"></div><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div>
+          <div class="amk amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div><div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div>
+          <div class="amk amk-logo" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns"></div><div class="amk amk-logo" style="--c:var(--social)"><img src="logos/social.png" alt="social"></div>
+        </div>
+        <div class="win-body" style="display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:auto 1fr;gap:10px">
+          <!-- KPIs -->
+          <div class="wc" style="padding:11px 13px" data-a="up" data-d=".2">
+            <div class="wlbl">CONVERSATIONS</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:24px" data-count="38400" data-fmt="k">0</div>
+            <span class="pill g">▲ 22%</span></div>
+          <div class="wc" style="padding:11px 13px" data-a="up" data-d=".3">
+            <div class="wlbl">FIRST RESPONSE · AR</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:24px">4<span style="font-size:13px">m 12s</span></div>
+            <span class="pill g">▼ 61%</span></div>
+          <div class="wc" style="padding:11px 13px" data-a="up" data-d=".4">
+            <div class="wlbl">WHATSAPP SHARE</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:24px;color:var(--wa)">74<span style="font-size:13px">%</span></div>
+            <span class="pill g">of all conversations</span></div>
+          <div class="wc" style="padding:11px 13px;border-color:#D8CEFB;background:#FAF8FF" data-a="up" data-d=".5">
+            <div class="wlbl">CSAT</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:24px;color:var(--anal)">94<span style="font-size:13px">%</span></div>
+            <span class="pill p">▲ 9 pts</span></div>
+          <!-- conversations by channel -->
+          <div class="wc" style="padding:12px;grid-column:span 2;display:flex;flex-direction:column" data-a="up" data-d=".6">
+            <div class="wlbl" style="margin-bottom:10px">CONVERSATIONS BY CHANNEL · SAUDI ARABIA</div>
+            <div style="flex:1;display:flex;align-items:flex-end;gap:11px">
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px">
+                <span class="wlbl">18.6k</span><div style="width:100%;height:94%;border-radius:5px 5px 0 0;background:var(--wa);transform-origin:bottom;animation:bargrow .8s .8s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">WHATSAPP</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px">
+                <span class="wlbl">7.9k</span><div style="width:100%;height:40%;border-radius:5px 5px 0 0;background:var(--desk);transform-origin:bottom;animation:bargrow .8s .9s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">PHONE</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px">
+                <span class="wlbl">6.4k</span><div style="width:100%;height:33%;border-radius:5px 5px 0 0;background:var(--siq);transform-origin:bottom;animation:bargrow .8s 1s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">LIVE CHAT</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px">
+                <span class="wlbl">5.1k</span><div style="width:100%;height:26%;border-radius:5px 5px 0 0;background:var(--social);transform-origin:bottom;animation:bargrow .8s 1.1s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">SNAP / X</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px">
+                <span class="wlbl">2.8k</span><div style="width:100%;height:15%;border-radius:5px 5px 0 0;background:var(--camp);transform-origin:bottom;animation:bargrow .8s 1.2s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">EMAIL</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px">
+                <span class="wlbl">1.9k</span><div style="width:100%;height:10%;border-radius:5px 5px 0 0;background:var(--book);transform-origin:bottom;animation:bargrow .8s 1.3s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">SELF-SERVE</span></div>
+            </div>
+          </div>
+          <!-- funnel -->
+          <div class="wc" style="padding:12px;display:flex;flex-direction:column" data-a="up" data-d=".72">
+            <div class="wlbl" style="margin-bottom:10px">JOURNEY FUNNEL · SUN–THU</div>
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:7px">
+              <div><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px"><span>Reached</span><span class="wmu">41.2k</span></div>
+                <div style="height:9px;border-radius:4px;background:var(--w-soft);overflow:hidden"><i style="--w:100%;display:block;height:100%;background:var(--social);animation:barw .9s 1s ease both"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px"><span>Engaged</span><span class="wmu">12.8k</span></div>
+                <div style="height:9px;border-radius:4px;background:var(--w-soft);overflow:hidden"><i style="--w:64%;display:block;height:100%;background:var(--siq);animation:barw .9s 1.1s ease both"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px"><span>Qualified</span><span class="wmu">3.1k</span></div>
+                <div style="height:9px;border-radius:4px;background:var(--w-soft);overflow:hidden"><i style="--w:38%;display:block;height:100%;background:var(--ma);animation:barw .9s 1.2s ease both"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px"><span>Won</span><span class="wmu">612</span></div>
+                <div style="height:9px;border-radius:4px;background:var(--w-soft);overflow:hidden"><i style="--w:18%;display:block;height:100%;background:var(--z-green);animation:barw .9s 1.3s ease both"></i></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px"><span>Advocates</span><span class="wmu">294</span></div>
+                <div style="height:9px;border-radius:4px;background:var(--w-soft);overflow:hidden"><i style="--w:9%;display:block;height:100%;background:var(--survey);animation:barw .9s 1.4s ease both"></i></div></div>
+            </div>
+          </div>
+          <!-- donut -->
+          <div class="wc" style="padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px" data-a="up" data-d=".84">
+            <div class="wlbl" style="align-self:flex-start">CONVERSATION LANGUAGE</div>
+            <svg width="108" height="108" viewBox="0 0 108 108">
+              <circle cx="54" cy="54" r="42" stroke="#E7ECF3" stroke-width="13" fill="none"/>
+              <circle cx="54" cy="54" r="42" stroke="var(--anal)" stroke-width="13" fill="none" stroke-linecap="round"
+                      transform="rotate(-90 54 54)" stroke-dasharray="264" style="--from:264;--to:55;animation:drawto 1.4s 1.1s cubic-bezier(.3,.9,.3,1) both"/>
+              <text x="54" y="57" text-anchor="middle" font-family="Zoho Puvi, sans-serif" font-weight="700" font-size="22" fill="#22272F" data-count="79" data-suffix="%">0</text>
+              <text x="54" y="70" text-anchor="middle" font-family="IBM Plex Sans Arabic, sans-serif" font-size="9" fill="#7A8494">عربي</text>
+            </svg>
+            <div class="wlbl" style="text-align:center">79% ARABIC · 21% ENGLISH<br>SAME RECORD, SAME AGENT</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+<!-- ══════════ 16 CLOSE — Zoho One grid ══════════ -->
+<section class="slide hero" data-node="10" data-title="Close">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:24px">
+    <div style="position:relative;display:grid;place-items:center;margin-bottom:4px" data-a="pop">
+      <svg width="268" height="268" viewBox="0 0 268 268" fill="none" style="position:absolute">
+        <circle cx="134" cy="134" r="108" stroke="#332941" stroke-width="1" stroke-dasharray="4 8"/>
+        <g style="animation:spin 24s linear infinite;transform-origin:134px 134px">
+          <circle cx="134" cy="26" r="6.5" fill="#E5487B"/><circle cx="227" cy="80" r="6.5" fill="#4E7BF0"/>
+          <circle cx="227" cy="188" r="6.5" fill="#F0A21B"/><circle cx="134" cy="242" r="6.5" fill="#25D366"/>
+          <circle cx="41" cy="188" r="6.5" fill="#E42527"/><circle cx="41" cy="80" r="6.5" fill="#7B61FF"/>
+        </g>
+      </svg>
+      <div style="width:72px;height:72px;border-radius:99px;background:linear-gradient(140deg,#F5B01A,#E14A3B);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:28px;color:#fff">S</div>
+    </div>
+    <h1 data-a="up" data-d=".3" style="font-size:60px">Every conversation<br>matters<span class="arh">كل محادثة مهمة</span></h1>
+    <p class="sub" style="max-width:42ch;font-size:16px" data-a="fade" data-d=".7">
+      Stop asking her which door she came in through — or which language to use. The record already knows.
+    </p>
+    <div class="chips" style="justify-content:center" data-a="fade" data-d=".9">
+      <span class="chip" style="--c:var(--crm)"><img src="logos/crmplus.png" alt="crmplus">Zoho CRM Plus</span>
+      <span class="chip" style="--c:var(--z-blue)"><i></i>One customer, one thread</span>
+      <span class="chip ar" style="--c:var(--z-green)"><i></i>عميل واحد · سجل واحد</span>
+    </div>
+  </div>
+  <div class="thread"></div>
+</section>
+
+</div><!-- /stage -->
+
+<div id="hud">
+  <button id="prev" aria-label="Previous slide">←</button>
+  <span id="count"><b>1</b> / 16</span>
+  <button id="next" aria-label="Next slide">→</button>
+  <button id="ov" aria-label="Slide overview">O</button>
+  <button id="fs" aria-label="Fullscreen">⤢</button>
+</div>
+<div id="grid" role="dialog" aria-label="Slide overview"></div>
+
+<style>
+/* app-mark used on cover */
+.amk{width:38px;height:38px;border-radius:10px;background:var(--c,#888);display:grid;place-items:center;
+  box-shadow:0 8px 20px -6px rgba(0,0,0,.6)}
+.amk::after{content:"";width:13px;height:13px;border-radius:3px;background:rgba(255,255,255,.9)}
+.rail .amk::after{display:none}
+</style>
+
+<script>
+/* ── journey thread ── */
+const NODES = ["Start","Ad","Website","Chat","Exit","Email","WhatsApp","Booking","Won","Support","Advocate"];
+const slides = [...document.querySelectorAll('.slide')];
+const stage  = document.getElementById('stage');
+const grid   = document.getElementById('grid');
+let i = 0;
+
+slides.forEach(s=>{
+  const at = +s.dataset.node, w = s.querySelector('.thread');
+  w.innerHTML = NODES.map((n,k)=>{
+    const cls = k < at ? 'done' : (k === at ? 'now' : '');
+    return `<i class="tnode ${cls}" data-l="${n}"></i>` +
+           (k < NODES.length-1 ? `<span class="tseg ${k < at ? 'done':''}"></span>` : '');
+  }).join('');
+});
+
+/* stagger delays while hidden so sequences start clean */
+document.querySelectorAll('[data-d]').forEach(el=>{ el.style.animationDelay = el.dataset.d + 's' });
+
+/* ── counting numbers (dashboard feel) ── */
+function fmt(v, mode){
+  if(mode === 'k') return v >= 1000 ? (v/1000).toFixed(1).replace(/\.0$/,'') + 'k' : v;
+  return v.toLocaleString();
+}
+function runCounters(slide){
+  slide.querySelectorAll('[data-count]').forEach(el=>{
+    const target = +el.dataset.count, mode = el.dataset.fmt, suffix = el.dataset.suffix || '';
+    const dur = 1000, t0 = performance.now();
+    el.textContent = fmt(0, mode) + suffix;
+    (function tick(now){
+      const p = Math.min(1, (now - t0)/dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(Math.round(target*e), mode) + suffix;
+      if(p < 1) requestAnimationFrame(tick);
+    })(t0);
+  });
+}
+
+/* ── nav ── */
+function show(n){
+  i = Math.max(0, Math.min(slides.length-1, n));
+  slides.forEach((s,k)=>s.classList.toggle('is-on', k===i));
+  document.querySelector('#count b').textContent = i+1;
+  setTimeout(()=>runCounters(slides[i]), 420);
+}
+const next = ()=>show(i+1), prev = ()=>show(i-1);
+document.getElementById('next').onclick = next;
+document.getElementById('prev').onclick = prev;
+document.getElementById('fs').onclick = ()=>
+  document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+
+slides.forEach((s,k)=>{
+  const b = document.createElement('button');
+  b.innerHTML = `<span>${String(k+1).padStart(2,'0')}</span>${s.dataset.title}`;
+  b.onclick = ()=>{ grid.classList.remove('on'); show(k) };
+  grid.appendChild(b);
+});
+document.getElementById('ov').onclick = ()=> grid.classList.toggle('on');
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ grid.classList.remove('on'); return }
+  if(['ArrowRight',' ','PageDown','Enter'].includes(e.key)){ e.preventDefault(); next() }
+  if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); prev() }
+  if(e.key==='Home') show(0);
+  if(e.key==='End') show(slides.length-1);
+  const k = e.key.toLowerCase();
+  if(k==='f') document.getElementById('fs').click();
+  if(k==='o') grid.classList.toggle('on');
+  if(k==='r'){ slides[i].classList.remove('is-on'); void slides[i].offsetWidth; show(i) }
+});
+stage.addEventListener('click', e=>{ if(e.target.tagName!=='BUTTON') next() });
+
+let sx=0;
+stage.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+stage.addEventListener('touchend',e=>{
+  const d = e.changedTouches[0].clientX - sx;
+  if(Math.abs(d)>44) d<0 ? next() : prev();
+},{passive:true});
+
+function fit(){
+  const s = Math.min(innerWidth/1280, innerHeight/720) * (innerWidth<700 ? 1 : .965);
+  stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize', fit);
+addEventListener('orientationchange', fit);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+fit(); show(0);
+</script>
+</body>
+</html>

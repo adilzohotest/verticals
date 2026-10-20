@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoho CRM Plus for Sports & Entertainment</title>
+
+<!--
+  ═══════════════════════════════════════════════════════════
+  PRESENTING
+  Arrows / Space / click = next    F = fullscreen
+  O = slide overview                R = replay slide animation
+
+  SWAPPING IN A REAL SCREEN RECORDING
+  Every app screen sits in <div class="art">. Replace its
+  contents with:
+     <video src="crm-sponsors.mp4" autoplay muted loop playsinline></video>
+     <img src="salesiq-matchday.gif" alt="SalesIQ on matchday">
+  ═══════════════════════════════════════════════════════════
+  Club, people and figures here are illustrative.
+  ═══════════════════════════════════════════════════════════
+-->
+
+
+<style>
+
+/* ════════ JetBrains Mono (local, self-hosted) ════════ */
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Regular.woff") format("woff");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
+
+/* ════════ Zoho Puvi (local, self-hosted) ════════ */
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Medium.woff") format("woff");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-SemiBold.woff") format("woff");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
+/* ════════ tokens: floodlit stadium at night ════════ */
+:root{
+  --ink:#081221; --ink2:#0E1B2E; --line:#25384F;
+  --text:#EFF4FA; --muted:#8296AC;
+
+  --z-red:#E42527; --z-green:#33A852; --z-blue:#1A73E8; --z-yellow:#F5B01A;
+
+  --flood:#FFB020;         /* floodlight amber — this deck's lead accent */
+  --pitch:#1FA86B;         /* pitch green */
+  --crm:#E14A3B; --desk:#E0483D; --camp:#F0A21B; --social:#E5487B;
+  --siq:#4E7BF0; --survey:#F2B21B; --anal:#7B61FF; --proj:#2B7FD4;
+  --wa:#25D366;
+
+  --w-bg:#FFFFFF; --w-canvas:#F4F6F9; --w-bd:#E1E7ED;
+  --w-tx:#1E2833; --w-mu:#74848F; --w-soft:#EBF0F4;
+
+  --arabic:"Geeza Pro","Segoe UI",Tahoma,Arial,sans-serif;
+  --display:"Zoho Puvi","Trebuchet MS",system-ui,sans-serif;
+  --body:"Zoho Puvi",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--body);overflow:hidden}
+/* floodlights + pitch markings */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(40vw 34vw at 12% -6%, rgba(255,176,32,.16), transparent 68%),
+    radial-gradient(40vw 34vw at 88% -6%, rgba(255,176,32,.13), transparent 68%),
+    radial-gradient(60vw 50vw at 50% 108%, rgba(31,168,107,.10), transparent 66%);
+}
+body::after{
+  content:"";position:fixed;left:50%;bottom:-16vw;width:44vw;height:44vw;transform:translateX(-50%);
+  border:1px solid rgba(255,255,255,.045);border-radius:50%;z-index:0;pointer-events:none;
+}
+
+#stage{width:1280px;height:720px;position:fixed;top:50%;left:50%;z-index:1;transform-origin:center}
+.slide{position:absolute;inset:0;display:none;padding:36px 54px 0;grid-template-rows:auto 1fr auto;gap:18px}
+.slide.is-on{display:grid}
+.slide.hero{grid-template-rows:1fr auto;place-items:center}
+
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+.eyebrow b{color:var(--text);font-weight:500}
+h1{font-family:var(--display);font-weight:700;letter-spacing:-.03em;font-size:70px;line-height:.98}
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.025em;font-size:37px;line-height:1.05;margin-top:6px}
+.sub{font-size:16.5px;line-height:1.4;color:var(--muted)}
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:28px}
+.shead .sub{max-width:36ch;font-size:14px;padding-bottom:3px}
+h1 .arh{display:block;font-family:var(--arabic);font-weight:600;font-size:.4em;letter-spacing:0;
+  line-height:1.4;margin-top:16px;color:#FFD68F}
+.ar{font-family:var(--arabic)}
+
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:5px 10px;border-radius:6px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.chip i{width:7px;height:7px;border-radius:2px;background:var(--c,#fff);display:block;flex:none}
+.chip img{width:13px;height:13px;object-fit:contain;display:block;flex:none}
+.chip.ar{font-family:var(--arabic);letter-spacing:0}
+
+.art{position:relative;width:100%;height:100%;border-radius:13px;overflow:hidden;
+  box-shadow:0 34px 70px -18px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.07)}
+.art > video,.art > img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ════════ Zoho app window ════════ */
+.win{width:100%;height:100%;background:var(--w-canvas);color:var(--w-tx);display:flex;flex-direction:column;
+  font-size:12px;--acc:var(--crm)}
+.win-top{height:36px;flex:none;background:var(--w-bg);border-bottom:1px solid var(--w-bd);
+  display:flex;align-items:center;gap:10px;padding:0 12px}
+.zlogo{display:flex;gap:2.5px;flex:none}
+.zlogo i{width:4px;height:13px;border-radius:1px;display:block}
+.zlogo i:nth-child(1){background:var(--z-red)}.zlogo i:nth-child(2){background:var(--z-green)}
+.zlogo i:nth-child(3){background:var(--z-blue)}.zlogo i:nth-child(4){background:var(--z-yellow)}
+.appname{font-weight:600;font-size:13px;letter-spacing:-.01em;white-space:nowrap}
+.appname span{color:var(--w-mu);font-weight:400}
+.spacer{flex:1}
+.searchpill{width:158px;height:21px;border-radius:5px;background:var(--w-soft);display:flex;align-items:center;
+  padding:0 8px;font-size:9.5px;color:var(--w-mu);gap:5px;white-space:nowrap;overflow:hidden;flex:none}
+.tbtn{width:21px;height:21px;border-radius:5px;background:var(--w-soft);display:grid;place-items:center;
+  font-size:10px;color:var(--w-mu);flex:none}
+.uav{width:22px;height:22px;border-radius:99px;background:linear-gradient(140deg,#FFB020,#E14A3B);flex:none;
+  display:grid;place-items:center;color:#fff;font-weight:700;font-size:10px}
+.win-tabs{height:31px;flex:none;background:var(--w-bg);border-bottom:1px solid var(--w-bd);
+  display:flex;align-items:stretch;padding:0 12px;gap:2px}
+.tab{display:flex;align-items:center;padding:0 11px;font-size:11.5px;color:var(--w-mu);
+  border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc);font-weight:600}
+.win-mid{flex:1;display:flex;min-height:0}
+.rail{width:44px;flex:none;background:#1B2836;display:flex;flex-direction:column;align-items:center;gap:7px;padding:9px 0}
+.rail .amk{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;
+  font-weight:700;font-size:11px;font-family:var(--display);opacity:.42}
+.rail .amk.on{opacity:1;box-shadow:0 0 0 2px rgba(255,255,255,.28)}
+.win-body{flex:1;padding:13px 15px;min-height:0;overflow:hidden}
+
+.wc{background:var(--w-bg);border:1px solid var(--w-bd);border-radius:8px}
+.wsk{height:7px;border-radius:99px;background:#E5EAEF;display:block}
+.wmu{color:var(--w-mu)}
+.wlbl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--w-mu)}
+.wlbl.ar{font-family:var(--arabic);letter-spacing:0;text-transform:none;font-size:10px}
+.wbtn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;background:var(--acc);
+  color:#fff;font-size:10.5px;font-weight:600;white-space:nowrap}
+.wbtn.ghost{background:var(--w-bg);color:var(--w-mu);border:1px solid var(--w-bd)}
+.wav{width:28px;height:28px;border-radius:99px;flex:none;display:grid;place-items:center;color:#fff;
+  font-family:var(--display);font-weight:700;font-size:12px;background:linear-gradient(140deg,#FFB020,#E14A3B)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:600;padding:3px 8px;border-radius:99px;white-space:nowrap}
+.pill.g{background:#E4F7EE;color:#0B7A50}.pill.r{background:#FDEBEA;color:#C0281F}
+.pill.b{background:#E8F1FE;color:#1257A8}.pill.y{background:#FEF4E1;color:#96650A}
+.pill.p{background:#EFEBFE;color:#5B3FD6}.pill.n{background:var(--w-soft);color:var(--w-mu)}
+.pill.ar{font-family:var(--arabic)}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.chan{width:19px;height:19px;border-radius:5px;display:grid;place-items:center;font-size:9.5px;color:#fff;flex:none}
+.dotlive{width:7px;height:7px;border-radius:99px;background:var(--z-green);display:block}
+.trow{display:flex;align-items:center;gap:9px;padding:7px 10px;border-bottom:1px solid var(--w-bd);font-size:11px}
+.trow:last-child{border-bottom:0}
+.tick{width:16px;height:16px;border-radius:99px;display:grid;place-items:center;font-size:9px;color:#fff;flex:none;background:var(--z-green)}
+.tick.wait{background:var(--z-yellow)}.tick.bot{background:var(--anal)}
+.tms{font-family:var(--mono);font-size:9px;color:var(--w-mu);width:52px;text-align:right;flex:none}
+.cb{max-width:78%;padding:8px 11px;border-radius:10px;font-size:11.5px;line-height:1.45;background:var(--w-soft)}
+.cb.me{margin-inline-start:auto;background:#E8F1FE;color:#123B77}
+.tping{display:inline-flex;gap:4px;padding:9px 11px;border-radius:10px;background:var(--w-soft)}
+.tping i{width:5px;height:5px;border-radius:99px;background:var(--w-mu);display:block}
+.node{background:var(--w-bg);border:1px solid var(--w-bd);border-radius:8px;padding:8px 10px;position:absolute;
+  box-shadow:0 3px 10px rgba(8,18,33,.08)}
+.node b{font-size:11px;display:block}
+
+/* ════════ signature: the fixture cycle ════════ */
+.cycle{padding:10px 0 20px;display:flex;align-items:center;gap:14px}
+.cwrap{flex:1;display:flex;align-items:center}
+.cnode{position:relative;flex:none;width:10px;height:10px;border-radius:99px;background:#152436;border:1px solid var(--line)}
+.cnode.done{background:var(--flood);border-color:var(--flood)}
+.cnode.now{width:14px;height:14px;background:#fff;border-color:#fff;box-shadow:0 0 0 5px rgba(255,176,32,.22)}
+.cnode.now::after{content:attr(data-l);position:absolute;top:-25px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.cseg{flex:1;height:2px;background:#152436}
+.cseg.done{background:linear-gradient(90deg,var(--flood),#FFD68F)}
+.clabel{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.clabel b{color:#fff}
+.cwhen{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 9px;border-radius:5px;border:1px solid var(--line);color:var(--flood);white-space:nowrap}
+
+/* ════════ animations ════════ */
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{opacity:0;transform:scale(.9)}60%{transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+@keyframes inR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@keyframes winIn{from{opacity:0;transform:translateY(24px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,176,32,.5)}100%{box-shadow:0 0 0 15px rgba(255,176,32,0)}}
+@keyframes glow{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes draw{from{stroke-dashoffset:var(--len,600)}to{stroke-dashoffset:0}}
+@keyframes drawto{from{stroke-dashoffset:var(--from,300)}to{stroke-dashoffset:var(--to,0)}}
+@keyframes flowline{to{stroke-dashoffset:-44}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes barw{from{width:0}to{width:var(--w,100%)}}
+@keyframes bargrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes rowin{from{opacity:0;transform:translateY(-8px);background:#FFF7E6}60%{background:#FFF7E6}to{opacity:1;transform:none;background:transparent}}
+@keyframes drift{0%{transform:translate(0,0) rotate(var(--r,0deg))}25%{transform:translate(4px,-5px) rotate(calc(var(--r,0deg) + 1.6deg))}
+  50%{transform:translate(-4px,4px) rotate(var(--r,0deg))}75%{transform:translate(5px,2px) rotate(calc(var(--r,0deg) - 1.6deg))}
+  100%{transform:translate(0,0) rotate(var(--r,0deg))}}
+@keyframes travel{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes caret{50%{opacity:0}}
+@keyframes converge{0%{opacity:0;transform:translate(var(--fx,0),var(--fy,0)) scale(.9)}
+  25%{opacity:1}100%{opacity:1;transform:translate(0,0) scale(1)}}
+
+.is-on [data-a]{opacity:0}
+.is-on [data-a="up"]{animation:up .58s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="fade"]{animation:fade .62s ease both}
+.is-on [data-a="pop"]{animation:pop .48s cubic-bezier(.2,.9,.3,1.15) both}
+.is-on [data-a="inR"]{animation:inR .5s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="inL"]{animation:inL .5s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="win"]{animation:winIn .68s cubic-bezier(.2,.85,.25,1) both}
+.is-on [data-a="row"]{animation:rowin .85s ease both}
+.is-on [data-a="conv"]{animation:converge .9s cubic-bezier(.22,.9,.25,1) both}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001s !important;animation-iteration-count:1 !important}}
+
+/* ════════ chrome ════════ */
+#brand{position:fixed;top:16px;right:20px;z-index:20;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.2em;text-transform:uppercase;color:#5A6D82;display:flex;align-items:center;gap:8px}
+#brand .zlogo i{height:10px}
+#hud{position:fixed;bottom:12px;right:18px;z-index:20;display:flex;gap:12px;align-items:center;
+  font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em}
+#hud button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:7px;font:inherit;padding:4px 8px;cursor:pointer}
+#hud button:hover,#hud button:focus-visible{color:#fff;border-color:#fff;outline:none}
+#count b{color:#fff}
+#grid{position:fixed;inset:0;z-index:30;background:rgba(5,10,18,.97);display:none;
+  grid-template-columns:repeat(4,1fr);gap:12px;padding:30px;align-content:start;overflow:auto}
+#grid.on{display:grid}
+#grid button{aspect-ratio:16/9;border:1px solid var(--line);background:var(--ink2);color:var(--text);border-radius:9px;
+  font-family:var(--display);font-size:13.5px;font-weight:600;text-align:left;padding:11px;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:space-between;line-height:1.2}
+#grid button:hover,#grid button:focus-visible{border-color:var(--flood);outline:none}
+#grid button span{font-family:var(--mono);font-size:8.5px;color:var(--muted);letter-spacing:.1em}
+
+/* ════════ responsive: fixed chrome + overview grid ════════ */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{overflow-x:hidden;max-width:100%}
+@media (max-width:820px){
+  #brand{font-size:8.5px;top:10px;right:10px;gap:6px}
+  #brand .zlogo i{height:8px}
+  #hud{font-size:9px;bottom:10px;right:10px;gap:7px}
+  #hud button{padding:3px 7px}
+  #grid{padding:16px;gap:8px;grid-template-columns:repeat(3,1fr)}
+  #grid button{padding:9px;font-size:12px}
+}
+@media (max-width:560px){
+  #brand{top:8px;right:8px;font-size:7.5px;gap:5px}
+  #hud{bottom:8px;right:8px;font-size:8px;gap:5px}
+  #grid{padding:10px;gap:6px;grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:380px){
+  #grid{grid-template-columns:1fr}
+}
+@media (max-height:420px) and (orientation:landscape){
+  #brand{top:4px;right:6px}
+  #hud{bottom:4px;right:6px}
+}
+
+/* ════════ product logos ════════ */
+.applogo{height:16px;width:auto;max-width:70px;object-fit:contain;flex:none;display:block}
+#brand .applogo{height:13px}
+.amk-logo{background:#fff !important;padding:6px}
+.amk-logo::after{display:none !important}
+.amk-logo img{width:100%;height:100%;object-fit:contain}
+.amk.on.amk-logo{box-shadow:0 0 0 2px var(--c,#888) inset,0 8px 20px -6px rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+
+<div id="brand"><img class="applogo" src="logos/zoho.png" alt="Zoho"> CRM Plus · Sport &amp; Entertainment</div>
+
+<div id="stage">
+
+<!-- ══════════ 01 COVER ══════════ -->
+<section class="slide hero" data-step="-1" data-when="SEASON" data-title="The club behind the club">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px">
+    <p class="eyebrow" data-a="fade" data-d=".1">Zoho CRM Plus</p>
+    <h1 data-a="up" data-d=".2">World-class on the pitch.<br>World-class behind it.<span class="arh">احترافية على الملعب، واحترافية خلفه</span></h1>
+    <!-- the eight apps, arriving as a squad -->
+    <div style="display:flex;gap:9px;margin-top:2px">
+      <span class="chip" style="--c:var(--crm)" data-a="pop" data-d=".6"><img src="logos/crm.png" alt="crm">CRM</span>
+      <span class="chip" style="--c:var(--desk)" data-a="pop" data-d=".68"><img src="logos/desk.png" alt="desk">Desk</span>
+      <span class="chip" style="--c:var(--camp)" data-a="pop" data-d=".76"><img src="logos/campaigns.png" alt="campaigns">Campaigns</span>
+      <span class="chip" style="--c:var(--social)" data-a="pop" data-d=".84"><img src="logos/social.png" alt="social">Social</span>
+      <span class="chip" style="--c:var(--siq)" data-a="pop" data-d=".92"><img src="logos/salesiq.png" alt="salesiq">SalesIQ</span>
+      <span class="chip" style="--c:var(--proj)" data-a="pop" data-d="1"><img src="logos/projects.png" alt="projects">Projects</span>
+      <span class="chip" style="--c:var(--survey)" data-a="pop" data-d="1.08"><img src="logos/survey.png" alt="survey">Survey</span>
+      <span class="chip" style="--c:var(--anal)" data-a="pop" data-d="1.16"><img src="logos/analytics.png" alt="analytics">Analytics</span>
+    </div>
+    <p class="sub" style="max-width:54ch;font-size:15.5px" data-a="fade" data-d="1.4">
+      Eight applications, one fan record, one fixture cycle. What the commercial side of a club looks like when it runs on a single platform.
+    </p>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 02 THE STRUCTURAL GAP ══════════ -->
+<section class="slide" data-step="-1" data-when="—" data-title="Six systems, one supporter">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The structural gap</p><h2 data-a="up" data-d=".06">Sports technology grew up in silos.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Strong individual systems. Nobody making them play as a team.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 300px;gap:14px">
+        <div class="wc" style="padding:15px;position:relative;overflow:hidden">
+          <div class="wlbl" style="margin-bottom:10px">THE SAME PERSON, SIX TIMES, NEVER JOINED UP</div>
+          <div style="position:relative;height:calc(100% - 26px)">
+            <div class="wc" style="position:absolute;left:1%;top:2%;width:190px;padding:10px;--r:-2deg;animation:drift 6s infinite" data-a="pop" data-d=".2">
+              <div class="wlbl">TICKETING PLATFORM</div><b style="font-size:11.5px">Seat 14, Block C</b>
+              <div class="wmu" style="font-size:10.5px;margin-top:3px">Knows the buyer. Not the member.</div></div>
+            <div class="wc" style="position:absolute;left:38%;top:0;width:190px;padding:10px;--r:3deg;animation:drift 5.4s .5s infinite" data-a="pop" data-d=".3">
+              <div class="wlbl">PUBLISHING / CMS</div><b style="font-size:11.5px">Reads 4 articles a week</b>
+              <div class="wmu" style="font-size:10.5px;margin-top:3px">Audience data stays behind vendor walls.</div></div>
+            <div class="wc" style="position:absolute;right:1%;top:4%;width:180px;padding:10px;--r:-3deg;animation:drift 6.6s .3s infinite" data-a="pop" data-d=".4">
+              <div class="wlbl">MERCH STORE</div><b style="font-size:11.5px">Two shirts, size L</b>
+              <div class="wmu" style="font-size:10.5px;margin-top:3px">A customer ID, not a fan.</div></div>
+            <div class="wc" style="position:absolute;left:4%;top:52%;width:180px;padding:10px;--r:2deg;animation:drift 5.8s .8s infinite" data-a="pop" data-d=".5">
+              <div class="wlbl">MEMBERSHIP SHEET</div><b style="font-size:11.5px">Renewed 3 seasons</b>
+              <div class="wmu" style="font-size:10.5px;margin-top:3px">Column K. Someone's laptop.</div></div>
+            <div class="wc" style="position:absolute;left:38%;top:54%;width:190px;padding:10px;--r:-2deg;animation:drift 6.2s 1s infinite" data-a="pop" data-d=".6">
+              <div class="wlbl">CLUB APP</div><b style="font-size:11.5px">Opens it at 46'</b>
+              <div class="wmu" style="font-size:10.5px;margin-top:3px">Device ID. No name attached.</div></div>
+            <div class="wc" style="position:absolute;right:2%;top:56%;width:180px;padding:10px;--r:4deg;animation:drift 5.6s .2s infinite" data-a="pop" data-d=".7">
+              <div class="wlbl">SHARED INBOX</div><b style="font-size:11.5px">Complained once</b>
+              <div class="wmu" style="font-size:10.5px;margin-top:3px">Nobody knows he's a member.</div></div>
+            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3" data-a="pop" data-d="1">
+              <span class="pill r" style="font-size:11px;padding:7px 13px;box-shadow:0 6px 18px rgba(0,0,0,.14)">ONE SUPPORTER · SIX RECORDS</span></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:14px" data-a="up" data-d=".9">
+            <div class="wlbl">WHAT THE CLUB CAN'T ANSWER</div>
+            <div style="display:flex;flex-direction:column;gap:7px;margin-top:9px;font-size:11.5px;line-height:1.4">
+              <div>· Which members haven't attended since October?</div>
+              <div>· Did the campaign sell seats, or just get opened?</div>
+              <div>· What did we actually deliver for that sponsor?</div>
+              <div>· Is the complainer a 12-year season-ticket holder?</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:14px;flex:1;display:flex;flex-direction:column;justify-content:center;background:#FFF9F8;border-color:#F6CBC5" data-a="up" data-d="1.05">
+            <div class="wlbl" style="color:#B4322A">AND THE MONTHLY RITUAL</div>
+            <div style="font-size:12.5px;line-height:1.5;margin-top:6px">The board report gets assembled by hand, from six exports, by someone who spends three days a month doing it — and it's already out of date by the meeting.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 03 ONE FAN RECORD ══════════ -->
+<section class="slide" data-step="-1" data-when="ALWAYS ON" data-title="One fan, one record">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The foundation</p><h2 data-a="up" data-d=".06">Faris is one person, not six rows.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">Zoho CRM</span><span class="chip" style="--c:var(--flood)"><i></i>Single fan record</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--crm)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crmplus.png" alt="Zoho CRM Plus"><span class="appname">Zoho <span>CRM Plus</span> › Fans › Faris Al-Otaibi</span>
+        <div class="spacer"></div><div class="searchpill">⌕ Search fans, members, partners</div><div class="uav">ن</div>
+      </div>
+      <div class="win-tabs">
+        <div class="tab on">Overview</div><div class="tab">Attendance</div><div class="tab">Membership</div>
+        <div class="tab">Purchases</div><div class="tab">Cases</div><div class="tab">Campaigns</div><div class="tab">App activity</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div>
+          <div class="amk amk-logo" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns"></div><div class="amk amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div>
+          <div class="amk amk-logo" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:250px 1fr 236px;gap:12px">
+          <div class="wc" style="padding:13px" data-a="inL" data-d=".2">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:7px;padding-bottom:11px;border-bottom:1px solid var(--w-bd)">
+              <div class="wav" style="width:52px;height:52px;font-size:20px">ف</div>
+              <div style="font-weight:700;font-size:14px">Faris Al-Otaibi</div>
+              <div class="ar" style="font-size:11.5px;color:var(--w-mu);direction:rtl">فارس العتيبي · الرياض</div>
+              <span class="pill y">MEMBER · 12 SEASONS</span>
+            </div>
+            <div style="padding-top:10px;display:flex;flex-direction:column;gap:7px;font-size:11px">
+              <div class="kv"><span class="wmu">Membership</span><b>Gold · renews May</b></div>
+              <div class="kv"><span class="wmu">Seat</span><b>Block C · 14</b></div>
+              <div class="kv"><span class="wmu">Language</span><b>العربية</b></div>
+              <div class="kv"><span class="wmu">Preferred channel</span><b>WhatsApp</b></div>
+              <div class="kv"><span class="wmu">Lifetime value</span><b>SAR 18,400</b></div>
+            </div>
+          </div>
+          <!-- the six sources converging -->
+          <div class="wc" style="padding:13px;display:flex;flex-direction:column" data-a="up" data-d=".3">
+            <div class="wlbl" style="margin-bottom:10px">EVERY SOURCE WRITES TO THE SAME RECORD</div>
+            <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start">
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--siq);--fx:-70px;--fy:-40px" data-a="conv" data-d=".5">
+                <div class="wlbl">TICKETING</div><b style="font-size:11px">31 of 34 home matches</b></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--camp);--fx:70px;--fy:-40px" data-a="conv" data-d=".62">
+                <div class="wlbl">CAMPAIGNS</div><b style="font-size:11px">Opens 84%, clicks 41%</b></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--flood);--fx:-70px;--fy:0px" data-a="conv" data-d=".74">
+                <div class="wlbl">MERCHANDISE</div><b style="font-size:11px">SAR 2,180 this season</b></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--desk);--fx:70px;--fy:0" data-a="conv" data-d=".86">
+                <div class="wlbl">FAN SERVICES</div><b style="font-size:11px">1 case · resolved 41 min</b></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--proj);--fx:-70px;--fy:40px" data-a="conv" data-d=".98">
+                <div class="wlbl">CLUB APP</div><b style="font-size:11px">Streak 22 · 3,400 points</b></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--social);--fx:70px;--fy:40px" data-a="conv" data-d="1.1">
+                <div class="wlbl">SOCIAL</div><b style="font-size:11px">Replied to 6 club posts</b></div>
+            </div>
+            <div class="wc" style="margin-top:10px;padding:10px;background:#FFF7E6;border-color:#F6DFAE" data-a="up" data-d="1.3">
+              <div style="font-size:11.5px;line-height:1.5">Now the club can answer the question that matters: <b>he has missed the last three matches for the first time in twelve seasons.</b> That's a renewal conversation, not a marketing blast.</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="wc" style="padding:12px" data-a="inR" data-d=".6">
+              <div class="wlbl" style="margin-bottom:8px">ATTENDANCE · THIS SEASON</div>
+              <div style="display:flex;align-items:flex-end;gap:3px;height:56px">
+                <i style="flex:1;height:100%;background:var(--pitch);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .7s both"></i>
+                <i style="flex:1;height:100%;background:var(--pitch);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .74s both"></i>
+                <i style="flex:1;height:100%;background:var(--pitch);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .78s both"></i>
+                <i style="flex:1;height:100%;background:var(--pitch);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .82s both"></i>
+                <i style="flex:1;height:100%;background:var(--pitch);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .86s both"></i>
+                <i style="flex:1;height:100%;background:var(--pitch);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .9s both"></i>
+                <i style="flex:1;height:18%;background:#E5EAEF;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .94s both"></i>
+                <i style="flex:1;height:18%;background:#E5EAEF;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .98s both"></i>
+                <i style="flex:1;height:18%;background:#F6CBC5;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s 1.02s both"></i>
+              </div>
+              <div class="wlbl" style="margin-top:7px;color:#C0281F">3 CONSECUTIVE NO-SHOWS · FLAGGED</div>
+            </div>
+            <div class="wc" style="padding:12px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".75">
+              <div class="wlbl">WHAT THE CLUB DOES NEXT</div>
+              <div style="font-size:11.5px;line-height:1.5;margin-top:6px">A call from member services, not a discount code. The record tells you which one he'd want.</div>
+              <div class="ar" dir="rtl" style="font-size:11.5px;line-height:1.7;margin-top:9px;color:var(--w-mu)">اتصال من خدمة الأعضاء — لا رسالة تسويقية</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 04 THE EIGHT APPS ══════════ -->
+<section class="slide" data-step="-1" data-when="ALWAYS ON" data-title="Eight apps, in club language">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">What CRM Plus is</p><h2 data-a="up" data-d=".06">Eight applications, translated into club.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Built together, sharing one database, one login, one admin console.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:11px">
+        <div class="wc" style="padding:14px;border-top:3px solid var(--crm);display:flex;flex-direction:column;gap:8px" data-a="up" data-d=".2">
+          <div class="kv"><b style="font-size:13.5px">Zoho CRM</b><span class="chan" style="background:var(--crm)">C</span></div>
+          <div class="wlbl">THE SPINE</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Sponsors, partners, members, hospitality clients and every fan in one database. Pipelines for deals that happen to be sponsorships.</div>
+        </div>
+        <div class="wc" style="padding:14px;border-top:3px solid var(--camp);display:flex;flex-direction:column;gap:8px" data-a="up" data-d=".28">
+          <div class="kv"><b style="font-size:13.5px">Campaigns</b><span class="chan" style="background:var(--camp)">✉</span></div>
+          <div class="wlbl">THE RIGHT FANS</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Segmented matchday comms, renewal journeys, lapsed win-backs — in Arabic or English, and you can see what sold seats.</div>
+        </div>
+        <div class="wc" style="padding:14px;border-top:3px solid var(--social);display:flex;flex-direction:column;gap:8px" data-a="up" data-d=".36">
+          <div class="kv"><b style="font-size:13.5px">Social</b><span class="chan" style="background:var(--social)">◎</span></div>
+          <div class="wlbl">THE TERRACES ONLINE</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Publish across channels, monitor the mentions during a match, and turn a reply into a case instead of losing it in a feed.</div>
+        </div>
+        <div class="wc" style="padding:14px;border-top:3px solid var(--siq);display:flex;flex-direction:column;gap:8px" data-a="up" data-d=".44">
+          <div class="kv"><b style="font-size:13.5px">SalesIQ</b><span class="chan" style="background:var(--siq)">◔</span></div>
+          <div class="wlbl">THE FRONT DOOR</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Live chat and an FAQ bot on the ticketing pages, holding the matchday spike so humans handle only what needs them.</div>
+        </div>
+        <div class="wc" style="padding:14px;border-top:3px solid var(--desk);display:flex;flex-direction:column;gap:8px" data-a="up" data-d=".52">
+          <div class="kv"><b style="font-size:13.5px">Desk</b><span class="chan" style="background:var(--desk)">D</span></div>
+          <div class="wlbl">FAN SERVICES</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Every contact — gate, refund, accessibility, hospitality — with response targets, and every contact enriches the record.</div>
+        </div>
+        <div class="wc" style="padding:14px;border-top:3px solid var(--proj);display:flex;flex-direction:column;gap:8px" data-a="up" data-d=".6">
+          <div class="kv"><b style="font-size:13.5px">Projects</b><span class="chan" style="background:var(--proj)">▦</span></div>
+          <div class="wlbl">DELIVERY</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Matchday run-of-show, sponsor activations, club events and stadium works — with owners, dates and dependencies.</div>
+        </div>
+        <div class="wc" style="padding:14px;border-top:3px solid var(--survey);display:flex;flex-direction:column;gap:8px" data-a="up" data-d=".68">
+          <div class="kv"><b style="font-size:13.5px">Survey</b><span class="chan" style="background:var(--survey)">★</span></div>
+          <div class="wlbl">THE FAN'S VOICE</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Post-match sentiment by stand, player-of-the-match votes, hospitality feedback — landing back on the fan's record.</div>
+        </div>
+        <div class="wc" style="padding:14px;border-top:3px solid var(--anal);display:flex;flex-direction:column;gap:8px" data-a="up" data-d=".76">
+          <div class="kv"><b style="font-size:13.5px">Analytics + Zia</b><span class="chan" style="background:var(--anal)">▦</span></div>
+          <div class="wlbl">ONE TRUTH</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Board-level KPIs across revenue, engagement and operations — asked in plain language, answered live.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 05 SPONSORSHIP PIPELINE ══════════ -->
+<section class="slide" data-step="-1" data-when="SEASON-LONG" data-title="Sponsorship run like enterprise sales">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Commercial · CRM</p><h2 data-a="up" data-d=".06">A shirt sponsorship is an enterprise deal.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM pipeline</span><span class="chip" style="--c:var(--proj)"><img src="logos/projects.png" alt="projects">Activation delivery</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--crm)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crm.png" alt="Zoho CRM"><span class="appname">Zoho <span>CRM</span> · Partnerships pipeline</span>
+        <div class="spacer"></div><span class="pill g">SEASON 26/27 · SAR 41.2M IN PLAY</span><div class="uav">ن</div>
+      </div>
+      <div class="win-tabs"><div class="tab">Partners</div><div class="tab on">Deals</div><div class="tab">Inventory</div><div class="tab">Contracts</div><div class="tab">Renewals</div></div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--proj)"><img src="logos/projects.png" alt="projects"></div><div class="amk amk-logo" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics"></div></div>
+        <div class="win-body" style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:9px;flex:1">
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div class="kv"><span class="wlbl">PROSPECTING</span><span class="wlbl">7</span></div>
+              <div class="wc" style="padding:9px" data-a="up" data-d=".2"><div class="wlbl">TIER 3 · SLEEVE</div><b style="font-size:11px">Regional telco</b><div class="wmu" style="font-size:10px;margin-top:3px">SAR 2.4M</div></div>
+              <div class="wc" style="padding:9px;opacity:.5" data-a="up" data-d=".26"><div class="wlbl">TIER 3</div><b style="font-size:11px">Beverage brand</b></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div class="kv"><span class="wlbl">PROPOSAL</span><span class="wlbl">4</span></div>
+              <div class="wc" style="padding:9px" data-a="up" data-d=".32"><div class="wlbl">TIER 2 · TRAINING KIT</div><b style="font-size:11px">Mazaya Group</b><div class="wmu" style="font-size:10px;margin-top:3px">SAR 6.8M · 3 seasons</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div class="kv"><span class="wlbl">NEGOTIATION</span><span class="wlbl">2</span></div>
+              <div class="wc" style="padding:9px;border-color:var(--flood);box-shadow:0 0 0 3px rgba(255,176,32,.16)" data-a="up" data-d=".38">
+                <div class="wlbl" style="color:#96650A">TIER 1 · FRONT OF SHIRT</div><b style="font-size:11px">Rawaf Group</b>
+                <div style="font-family:var(--display);font-weight:700;font-size:15px;margin-top:3px">SAR 24M</div>
+                <div class="wmu" style="font-size:10px">4 seasons · legal review</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div class="kv"><span class="wlbl">CONTRACTED</span><span class="wlbl">9</span></div>
+              <div class="wc" style="padding:9px" data-a="up" data-d=".44"><div class="wlbl">TIER 2 · STAND NAMING</div><b style="font-size:11px">Nakhla Bank</b><div class="wmu" style="font-size:10px;margin-top:3px">SAR 5.2M</div></div>
+              <div class="wc" style="padding:9px;opacity:.55" data-a="up" data-d=".5"><div class="wlbl">TIER 3</div><b style="font-size:11px">Airline partner</b></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;background:#FFF9EE;border-radius:8px;padding:7px;margin:-7px">
+              <div class="kv"><span class="wlbl" style="color:#96650A">RENEWAL AT RISK</span><span class="wlbl" style="color:#96650A">2</span></div>
+              <div class="wc" style="padding:9px;border-color:#F6CBC5" data-a="up" data-d=".56">
+                <div class="wlbl" style="color:#C0281F">EXPIRES IN 74 DAYS</div><b style="font-size:11px">Energy sponsor</b>
+                <div class="wmu" style="font-size:10px;margin-top:3px">Activation delivery 61%</div></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px 15px;flex:none;display:flex;gap:20px;align-items:center" data-a="up" data-d=".8">
+            <div style="flex:1">
+              <div class="wlbl" style="margin-bottom:7px">WHY IT BELONGS IN A CRM AND NOT A SPREADSHEET</div>
+              <div style="font-size:11.5px;line-height:1.5">Multi-season contracts, tiered inventory, renewal windows, deliverable obligations, multiple stakeholders on both sides, and a legal review stage. That's an enterprise sales cycle with a badge on it — and it deserves a pipeline, a forecast and a renewal alarm.</div>
+            </div>
+            <div style="display:flex;gap:9px;flex:none">
+              <div class="wc" style="padding:10px 13px;text-align:center"><div class="wlbl">AVG CYCLE</div><b style="font-family:var(--display);font-size:19px">148d</b></div>
+              <div class="wc" style="padding:10px 13px;text-align:center"><div class="wlbl">RENEWAL RATE</div><b style="font-family:var(--display);font-size:19px;color:var(--pitch)">78%</b></div>
+              <div class="wc" style="padding:10px 13px;text-align:center"><div class="wlbl">INVENTORY SOLD</div><b style="font-family:var(--display);font-size:19px">83%</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 06 ACTIVATION PROOF ══════════ -->
+<section class="slide" data-step="-1" data-when="SEASON-LONG" data-title="Proof for the partner">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Commercial · Analytics + Projects</p><h2 data-a="up" data-d=".06">The renewal is won by the proof, not the pitch.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics">Analytics</span><span class="chip" style="--c:var(--proj)"><img src="logos/projects.png" alt="projects">Projects</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--anal)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/analytics.png" alt="Zoho Analytics"><span class="appname">Zoho <span>Analytics</span> · Partner delivery report › Rawaf Group</span>
+        <div class="spacer"></div><span class="pill p">SHARED WITH THE PARTNER · LIVE</span><div class="uav">ن</div>
+      </div>
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 1fr 270px;gap:12px">
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:10px" data-a="up" data-d=".2">
+          <div class="wlbl">CONTRACTED DELIVERABLES · SEASON TO DATE</div>
+          <div style="display:flex;flex-direction:column;gap:10px;flex:1;justify-content:center">
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>LED board minutes</span><span><b>412</b> / 400</span></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:100%;display:block;height:100%;background:var(--pitch);animation:barw 1s .5s ease both"></i></div></div>
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>Social co-branded posts</span><span><b>18</b> / 24</span></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:75%;display:block;height:100%;background:var(--flood);animation:barw 1s .6s ease both"></i></div></div>
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>Hospitality seats used</span><span><b>96</b> / 120</span></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:80%;display:block;height:100%;background:var(--flood);animation:barw 1s .7s ease both"></i></div></div>
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>Player appearances</span><span><b>2</b> / 4</span></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:50%;display:block;height:100%;background:#E0483D;animation:barw 1s .8s ease both"></i></div></div>
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>Fan competitions run</span><span><b>3</b> / 3</span></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:100%;display:block;height:100%;background:var(--pitch);animation:barw 1s .9s ease both"></i></div></div>
+          </div>
+          <div class="wc" style="padding:10px;background:#FFF9EE;border-color:#F6DFAE">
+            <div style="font-size:11px;line-height:1.45">Two obligations behind. Both are Projects tasks with an owner and a date — visible before the renewal meeting, not after it.</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:14px;flex:1;display:flex;flex-direction:column" data-a="up" data-d=".35">
+            <div class="wlbl" style="margin-bottom:10px">FAN ENGAGEMENT ON PARTNER CONTENT</div>
+            <div style="flex:1;display:flex;align-items:flex-end;gap:9px">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+                <span class="wlbl">1.9M</span><div style="width:100%;height:88%;border-radius:4px 4px 0 0;background:var(--anal);transform-origin:bottom;animation:bargrow .8s .7s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">REACH</span></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+                <span class="wlbl">214k</span><div style="width:100%;height:52%;border-radius:4px 4px 0 0;background:var(--anal);transform-origin:bottom;animation:bargrow .8s .8s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">ENGAGED</span></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+                <span class="wlbl">38k</span><div style="width:100%;height:26%;border-radius:4px 4px 0 0;background:#C7B6FB;transform-origin:bottom;animation:bargrow .8s .9s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">CLICKED</span></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+                <span class="wlbl">4.1k</span><div style="width:100%;height:12%;border-radius:4px 4px 0 0;background:var(--pitch);transform-origin:bottom;animation:bargrow .8s 1s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">REDEEMED</span></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="up" data-d=".5">
+            <div class="wlbl" style="margin-bottom:8px">WHAT THE PARTNER ACTUALLY ASKS FOR</div>
+            <div style="font-size:11.5px;line-height:1.5">Not impressions. <b>Attributable outcomes</b> — how many fans saw it, engaged, clicked, and redeemed. Because the fan record connects the campaign to the purchase, the club can answer that.</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".6">
+            <div class="wlbl">DELIVERY SCORE</div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-top:5px">
+              <b style="font-family:var(--display);font-size:34px;color:var(--flood)">81<span style="font-size:16px">%</span></b>
+              <span class="pill y">2 GAPS</span></div>
+            <div class="wmu" style="font-size:10.5px;margin-top:6px">Calculated from the contract, not from memory.</div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".72">
+            <div class="wlbl" style="margin-bottom:8px">RENEWAL SIGNAL</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+              <div class="kv"><span class="wmu">Contract ends</span><b>31 May</b></div>
+              <div class="kv"><span class="wmu">Alarm set</span><b>120 days out</b></div>
+              <div class="kv"><span class="wmu">Owner</span><b>Noura · commercial</b></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;background:#F1FBF6;border-color:#B8E8D2;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".84">
+            <div class="wlbl" style="color:#0B7A50">THE OLD VERSION OF THIS SLIDE</div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:5px">A PowerPoint made the week before the renewal meeting, with numbers gathered by asking four departments nicely.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 07 T-14 MEMBERSHIPS ══════════ -->
+<section class="slide" data-step="0" data-when="T−14 DAYS" data-title="T−14 · memberships and renewals">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Fourteen days out</p><h2 data-a="up" data-d=".06">Renewals stop being a season-end panic.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM</span><span class="chip" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns">Campaigns</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--camp)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 296px;gap:13px;padding:14px 15px">
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="overflow:hidden">
+            <div style="padding:9px 12px;border-bottom:1px solid var(--w-bd);display:flex;align-items:center;gap:8px">
+              <span class="chan" style="background:var(--crm)">C</span><b style="font-size:11.5px">Member segments · built from behaviour, not a mailing list</b>
+              <div class="spacer"></div><span class="wlbl">18,400 MEMBERS</span>
+            </div>
+            <div class="trow" data-a="row" data-d=".3">
+              <span class="pill g">4,120</span>
+              <div style="flex:1"><b style="font-size:11.5px">Attends everything, buys merch</b><div class="wlbl">ASK THEM TO BRING SOMEONE · REFERRAL OFFER</div></div>
+            </div>
+            <div class="trow" data-a="row" data-d=".42">
+              <span class="pill y">2,860</span>
+              <div style="flex:1"><b style="font-size:11.5px">Renewed but stopped attending</b><div class="wlbl">THE REAL CHURN RISK · CALL, DON'T EMAIL</div></div>
+            </div>
+            <div class="trow" data-a="row" data-d=".54">
+              <span class="pill b">5,340</span>
+              <div style="flex:1"><b style="font-size:11.5px">Attends, never opened the app</b><div class="wlbl">ONBOARD TO THE APP · POINTS ON FIRST CHECK-IN</div></div>
+            </div>
+            <div class="trow" data-a="row" data-d=".66">
+              <span class="pill n">3,210</span>
+              <div style="flex:1"><b style="font-size:11.5px">Away-match loyalists</b><div class="wlbl">TRAVEL PACKAGES · DIFFERENT MESSAGE ENTIRELY</div></div>
+            </div>
+            <div class="trow" data-a="row" data-d=".78">
+              <span class="pill r">1,470</span>
+              <div style="flex:1"><b style="font-size:11.5px">Lapsed last season</b><div class="wlbl">WIN-BACK · REFERENCE WHAT THEY USED TO ATTEND</div></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;display:flex;gap:16px;align-items:center" data-a="up" data-d=".95">
+            <div style="flex:1">
+              <div class="wlbl" style="margin-bottom:7px">THE JOURNEY, NOT THE BLAST</div>
+              <div style="font-size:11.5px;line-height:1.5">Each segment enters a different journey with its own timing and language. The renewal reminder that goes to a twelve-season member does not look like the one that goes to a first-year member who came for one derby.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex:none">
+              <span class="pill p ar">عربي · ٧٤٪</span>
+              <span class="pill n">English · 26%</span>
+              <span class="pill y">Send window: Sun–Thu</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc ar" dir="rtl" style="padding:0;overflow:hidden;display:flex;flex-direction:column" data-a="inR" data-d=".5">
+            <div style="padding:9px 12px;border-bottom:1px solid var(--w-bd);background:var(--camp);color:#fff">
+              <b style="font-size:11.5px">تجديد العضوية</b><div style="font-size:10px;opacity:.9">إلى: فارس العتيبي</div></div>
+            <div style="padding:13px;display:flex;flex-direction:column;gap:9px;flex:1">
+              <div style="font-size:12px;line-height:1.8">فارس، اثنتا عشرة سنة في المدرج الشمالي — مقعدك محفوظ لك.</div>
+              <div class="wc" style="padding:10px;background:var(--w-soft);font-size:11px;line-height:1.7">
+                ٣١ مباراة هذا الموسم<br>٢٢ يوماً متتالياً في التطبيق<br>عضو ذهبي منذ ٢٠١٤</div>
+              <div class="wbtn" style="justify-content:center;background:var(--camp);margin-top:auto">جدّد الآن — نفس المقعد</div>
+              <div class="wlbl ar" style="text-align:center">لا خصم. فقط مقعده.</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".68">
+            <div class="wlbl">AND IT CLOSES THE LOOP</div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:6px">Renewal completed writes straight back to the member record — so the next campaign already knows, and nobody gets chased for something they've paid for.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 08 T-7 CAMPAIGN + SOCIAL ══════════ -->
+<section class="slide" data-step="1" data-when="T−7 DAYS" data-title="T−7 · selling the fixture">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Seven days out</p><h2 data-a="up" data-d=".06">Which post sold seats, and which one just got liked.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--social)"><img src="logos/social.png" alt="social">Social</span><span class="chip" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns">Campaigns</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--social)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/social.png" alt="Zoho Social"><span class="appname">Zoho <span>Social</span> · Al-Nakhla SC vs Al-Bahr · Sat 20:00</span>
+        <div class="spacer"></div><span class="pill y">11,200 SEATS REMAINING</span><div class="uav">ن</div>
+      </div>
+      <div class="win-tabs"><div class="tab">Dashboard</div><div class="tab on">Posts</div><div class="tab">Monitor</div><div class="tab">Reports</div><div class="tab">Inbox</div></div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--social)"><img src="logos/social.png" alt="social"></div><div class="amk amk-logo" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns"></div>
+          <div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 264px;gap:13px">
+          <div class="wc" style="overflow:hidden;display:flex;flex-direction:column">
+            <div class="trow" style="background:#FAFBFC">
+              <span class="wlbl" style="flex:1">POST</span><span class="wlbl" style="width:78px">REACH</span>
+              <span class="wlbl" style="width:70px">CLICKS</span><span class="wlbl" style="width:86px">SEATS SOLD</span></div>
+            <div class="trow" data-a="row" data-d=".3">
+              <span style="flex:1;display:flex;align-items:center;gap:8px"><span class="chan" style="background:var(--social)">◎</span>
+                <span><b style="font-size:11px">Lineup reveal video</b><div class="wlbl">TIKTOK · T−3</div></span></span>
+              <span style="width:78px">840k</span><span style="width:70px">3.1k</span>
+              <span style="width:86px"><span class="pill n">104</span></span></div>
+            <div class="trow" data-a="row" data-d=".42">
+              <span style="flex:1;display:flex;align-items:center;gap:8px"><span class="chan" style="background:var(--social)">◎</span>
+                <span><b style="font-size:11px">Derby history thread</b><div class="wlbl">X · T−5</div></span></span>
+              <span style="width:78px">312k</span><span style="width:70px">1.4k</span>
+              <span style="width:86px"><span class="pill n">61</span></span></div>
+            <div class="trow" style="background:#FFFBF0" data-a="row" data-d=".54">
+              <span style="flex:1;display:flex;align-items:center;gap:8px"><span class="chan" style="background:var(--camp)">✉</span>
+                <span><b style="font-size:11px">“Your seat is still free” · to lapsed members, Arabic</b><div class="wlbl">EMAIL · T−4 · SEGMENTED</div></span></span>
+              <span style="width:78px">14.7k</span><span style="width:70px">2.9k</span>
+              <span style="width:86px"><span class="pill g">1,880</span></span></div>
+            <div class="trow" data-a="row" data-d=".66">
+              <span style="flex:1;display:flex;align-items:center;gap:8px"><span class="chan" style="background:var(--wa)">◍</span>
+                <span><b style="font-size:11px">Family stand offer · WhatsApp</b><div class="wlbl">T−2 · OPT-IN LIST</div></span></span>
+              <span style="width:78px">6.2k</span><span style="width:70px">1.9k</span>
+              <span style="width:86px"><span class="pill g">910</span></span></div>
+            <div class="trow" data-a="row" data-d=".78">
+              <span style="flex:1;display:flex;align-items:center;gap:8px"><span class="chan" style="background:var(--social)">◎</span>
+                <span><b style="font-size:11px">Training ground gallery</b><div class="wlbl">INSTAGRAM · T−6</div></span></span>
+              <span style="width:78px">610k</span><span style="width:70px">420</span>
+              <span style="width:86px"><span class="pill n">8</span></span></div>
+            <div style="margin-top:auto;padding:11px 12px;border-top:1px solid var(--w-bd);display:flex;align-items:center;gap:12px">
+              <span class="wlbl">THE VIDEO WON THE INTERNET. THE SEGMENTED EMAIL FILLED THE STAND.</span>
+              <div class="spacer"></div><span class="pill b">ATTRIBUTED VIA THE FAN RECORD</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="wc" style="padding:13px" data-a="inR" data-d=".5">
+              <div class="wlbl" style="margin-bottom:9px">WHY THE CLUB CAN SEE THIS AT ALL</div>
+              <div style="font-size:11.5px;line-height:1.5">Because the campaign, the click and the ticket purchase all land on the same fan record. Take one of those three away and this table is guesswork.</div>
+            </div>
+            <div class="wc" style="padding:13px" data-a="inR" data-d=".64">
+              <div class="wlbl" style="margin-bottom:9px">TICKETING STAYS WHERE IT IS</div>
+              <div style="font-size:11.5px;line-height:1.5">CRM Plus doesn't replace the ticketing platform. It integrates with it — WeBook or equivalent — so the club keeps the seat map and gains the fan.</div>
+              <div style="display:flex;gap:6px;margin-top:9px"><span class="pill n">SEAT MAP</span><span class="pill n">PAYMENT GATEWAY</span><span class="pill g">FAN RECORD</span></div>
+            </div>
+            <div class="wc" style="padding:13px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".78">
+              <div class="wlbl">SEATS SOLD FROM SEGMENTED COMMS</div>
+              <div style="font-family:var(--display);font-weight:700;font-size:34px;color:var(--pitch)"><span data-count="2963">0</span></div>
+              <div class="wmu" style="font-size:10.5px;margin-top:4px">of 4,150 sold this week</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 09 T-2 HOSPITALITY + PROJECTS ══════════ -->
+<section class="slide" data-step="2" data-when="T−2 DAYS" data-title="T−2 · hospitality and the run-of-show">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Two days out</p><h2 data-a="up" data-d=".06">Matchday is a project, so run it like one.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--proj)"><img src="logos/projects.png" alt="projects">Projects</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM hospitality</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--proj)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/projects.png" alt="Zoho Projects"><span class="appname">Zoho <span>Projects</span> · Matchday 19 · run-of-show</span>
+        <div class="spacer"></div><span class="pill g">34 TASKS · 6 TEAMS · 2 BLOCKED</span><div class="uav">ن</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--proj)"><img src="logos/projects.png" alt="projects"></div><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 274px;gap:13px">
+          <div class="wc" style="overflow:hidden;display:flex;flex-direction:column">
+            <div class="trow" style="background:#FAFBFC"><span class="wlbl" style="flex:1">TASK</span><span class="wlbl" style="width:96px">OWNER</span><span class="wlbl" style="width:78px">DUE</span><span class="wlbl" style="width:74px">STATUS</span></div>
+            <div class="trow" data-a="row" data-d=".28"><span class="tick">✓</span><span style="flex:1">Accreditation issued · 214 media &amp; staff</span><span style="width:96px">Ops</span><span style="width:78px">T−2</span><span style="width:74px"><span class="pill g">Done</span></span></div>
+            <div class="trow" data-a="row" data-d=".38"><span class="tick">✓</span><span style="flex:1">Hospitality manifest · 96 partner seats confirmed</span><span style="width:96px">Commercial</span><span style="width:78px">T−2</span><span style="width:74px"><span class="pill g">Done</span></span></div>
+            <div class="trow" data-a="row" data-d=".48"><span class="tick wait">⏱</span><span style="flex:1">Sponsor LED reel · final version to control room</span><span style="width:96px">Commercial</span><span style="width:78px">T−1</span><span style="width:74px"><span class="pill y">Today</span></span></div>
+            <div class="trow" data-a="row" data-d=".58"><span class="tick" style="background:#C0281F">!</span><span style="flex:1"><b>Player appearance for Rawaf activation — unconfirmed</b><div class="wlbl">BLOCKS A CONTRACTED DELIVERABLE</div></span><span style="width:96px">Commercial</span><span style="width:78px">T−1</span><span style="width:74px"><span class="pill r">Blocked</span></span></div>
+            <div class="trow" data-a="row" data-d=".68"><span class="tick wait">⏱</span><span style="flex:1">Steward briefing pack · North Stand family zone</span><span style="width:96px">Safety</span><span style="width:78px">T−1</span><span style="width:74px"><span class="pill y">Today</span></span></div>
+            <div class="trow" data-a="row" data-d=".78"><span class="tick">✓</span><span style="flex:1">Fan services rota · 14 agents, Arabic &amp; English</span><span style="width:96px">Fan services</span><span style="width:78px">T−2</span><span style="width:74px"><span class="pill g">Done</span></span></div>
+            <div class="trow" data-a="row" data-d=".88"><span class="tick wait">⏱</span><span style="flex:1">Concourse kiosk stock check · merch</span><span style="width:96px">Retail</span><span style="width:78px">T−1</span><span style="width:74px"><span class="pill y">Today</span></span></div>
+            <div style="margin-top:auto;padding:10px 12px;border-top:1px solid var(--w-bd)">
+              <span class="wlbl">EVERY MATCHDAY USES THE SAME TEMPLATE · 34 TASKS, GENERATED, DATED BACKWARD FROM KICK-OFF</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="wc" style="padding:13px" data-a="inR" data-d=".5">
+              <div class="wlbl" style="margin-bottom:9px">HOSPITALITY · FROM CRM</div>
+              <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+                <div class="kv"><span class="wmu">Partner seats</span><b>96 of 120</b></div>
+                <div class="kv"><span class="wmu">Corporate boxes</span><b>11 of 12</b></div>
+                <div class="kv"><span class="wmu">Guest names collected</span><b>91%</b></div>
+                <div class="kv"><span class="wmu">Dietary requirements</span><b>14 logged</b></div>
+              </div>
+              <div style="font-size:10.5px;line-height:1.45;margin-top:9px" class="wmu">Each guest becomes a contact, so next season's invitation goes to a person and not a company switchboard.</div>
+            </div>
+            <div class="wc" style="padding:13px;background:#FFF9F8;border-color:#F6CBC5" data-a="inR" data-d=".64">
+              <div class="wlbl" style="color:#B4322A;margin-bottom:7px">THE BLOCKED TASK MATTERS</div>
+              <div style="font-size:11.5px;line-height:1.5">That unconfirmed player appearance is one of the two gaps on the partner's delivery report. The commercial team can see the consequence before the renewal meeting, not in it.</div>
+            </div>
+            <div class="wc" style="padding:13px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".78">
+              <div class="wlbl">HANDOVER TO FAN SERVICES</div>
+              <div style="font-size:11.5px;line-height:1.5;margin-top:5px">The rota, the FAQ list and the known issues go straight into Desk and SalesIQ before gates open.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 10 GATES OPEN — SALESIQ ══════════ -->
+<section class="slide" data-step="3" data-when="GATES OPEN · 18:00" data-title="Gates open · SalesIQ holds the spike">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Two hours to kick-off</p><h2 data-a="up" data-d=".06">Nine thousand questions in ninety minutes.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq">SalesIQ</span><span class="chip" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk">Desk</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--siq)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/salesiq.png" alt="Zoho SalesIQ"><span class="appname">Zoho <span>SalesIQ</span> · Matchday operations</span>
+        <div class="spacer"></div><span class="pill g"><i class="dotlive" style="animation:ping 2s infinite"></i>2,914 FANS ON SITE NOW</span><div class="uav">ن</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div><div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:290px 1fr 250px;gap:12px">
+          <!-- the bot handling volume -->
+          <div class="wc" style="padding:13px;display:flex;flex-direction:column;gap:10px" data-a="inL" data-d=".2">
+            <div class="wlbl">WHAT FANS ASK, EVERY SINGLE MATCH</div>
+            <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+              <div><div class="kv" style="font-size:11px;margin-bottom:3px"><span>Where is my ticket / QR?</span><b>31%</b></div>
+                <div style="height:7px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:31%;display:block;height:100%;background:var(--siq);animation:barw .9s .5s ease both"></i></div></div>
+              <div><div class="kv" style="font-size:11px;margin-bottom:3px"><span>Which gate for Block C?</span><b>22%</b></div>
+                <div style="height:7px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:22%;display:block;height:100%;background:var(--siq);animation:barw .9s .58s ease both"></i></div></div>
+              <div><div class="kv" style="font-size:11px;margin-bottom:3px"><span>Parking and shuttle</span><b>17%</b></div>
+                <div style="height:7px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:17%;display:block;height:100%;background:var(--siq);animation:barw .9s .66s ease both"></i></div></div>
+              <div><div class="kv" style="font-size:11px;margin-bottom:3px"><span>Family / accessibility seating</span><b>11%</b></div>
+                <div style="height:7px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:11%;display:block;height:100%;background:var(--flood);animation:barw .9s .74s ease both"></i></div></div>
+              <div><div class="kv" style="font-size:11px;margin-bottom:3px"><span>Everything else</span><b>19%</b></div>
+                <div style="height:7px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:19%;display:block;height:100%;background:#C9D3DA;animation:barw .9s .82s ease both"></i></div></div>
+            </div>
+            <div class="wc" style="padding:10px;background:#F1FBF6;border-color:#B8E8D2">
+              <div class="kv"><span class="wlbl" style="color:#0B7A50">ANSWERED BY THE BOT</span><b style="font-family:var(--display);font-size:19px;color:#0B7A50">81%</b></div>
+              <div style="font-size:10.5px;line-height:1.4;margin-top:4px">The 14 agents handle the 19% that actually needs a person.</div>
+            </div>
+          </div>
+          <!-- live chat -->
+          <div class="wc" style="padding:0;overflow:hidden;display:flex;flex-direction:column" data-a="up" data-d=".3">
+            <div style="padding:9px 13px;border-bottom:1px solid var(--w-bd);display:flex;align-items:center;gap:9px">
+              <span style="width:22px;height:22px;border-radius:6px;background:var(--siq);color:#fff;display:grid;place-items:center;font-size:10px">◔</span>
+              <div><b style="font-size:11.5px">Fan assistant</b><div class="wlbl">ARABIC &amp; ENGLISH · IN-APP AND WEB</div></div>
+              <div class="spacer"></div><span class="pill y">QUEUE 0:12</span>
+            </div>
+            <div class="ar" dir="rtl" style="flex:1;padding:13px;display:flex;flex-direction:column;gap:9px;background:var(--w-canvas)">
+              <div class="cb me" data-a="inR" data-d=".6">وين بوابة المدرج C؟ ومعي طفلين</div>
+              <div class="tping" style="width:50px" data-a="fade" data-d="1.1">
+                <i style="animation:blink 1.2s infinite"></i><i style="animation:blink 1.2s .18s infinite"></i><i style="animation:blink 1.2s .36s infinite"></i></div>
+              <div class="cb" data-a="inL" data-d="1.6">أهلاً فارس 👋 مقعدك بلوك C رقم ١٤ — البوابة ٤، الجهة الشمالية. مدخل العائلات ومنطقة الأطفال في نفس البوابة.</div>
+              <div class="wc" style="padding:9px 11px;font-size:11px;line-height:1.6" data-a="pop" data-d="2">
+                🅿️ موقف السيارات: P3 · ٦ دقائق مشياً<br>🎟️ تذكرتك: <b>جاهزة في التطبيق</b></div>
+              <div class="cb me" data-a="inR" data-d="2.4">تمام، شكراً</div>
+              <div style="margin-top:auto;padding-top:9px;border-top:1px dashed var(--w-bd)">
+                <div class="wlbl ar" style="color:#0B7A50">لم يحتج الأمر إلى موظف · ٩ ثوانٍ</div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="wc" style="padding:13px" data-a="inR" data-d=".5">
+              <div class="wlbl" style="margin-bottom:8px">IT KNEW WHO HE WAS</div>
+              <div style="font-size:11.5px;line-height:1.5">The bot didn't ask for his booking reference. It read the fan record: his seat, his ticket, his language, and that he has two children on the account.</div>
+            </div>
+            <div class="wc" style="padding:13px" data-a="inR" data-d=".64">
+              <div class="wlbl" style="margin-bottom:8px">WHEN IT ESCALATES</div>
+              <div style="display:flex;flex-direction:column;gap:5px;font-size:11px">
+                <div>· Refunds and payment disputes</div>
+                <div>· Accessibility needs on the day</div>
+                <div>· Anything with a safety word in it</div>
+                <div>· A member of 10+ seasons, always</div>
+              </div>
+            </div>
+            <div class="wc" style="padding:13px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".78">
+              <div class="wlbl">CHATS THIS MATCHDAY</div>
+              <div style="font-family:var(--display);font-weight:700;font-size:32px" data-count="9140">0</div>
+              <div class="wmu" style="font-size:10.5px;margin-top:4px">1,737 reached a human. Nobody waited more than a minute.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 11 KICK-OFF — DESK + SOCIAL ══════════ -->
+<section class="slide" data-step="4" data-when="46'" data-title="46' · the spike nobody plans for">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Second half · <b>46'</b></p><h2 data-a="up" data-d=".06">Something goes wrong in the North Stand.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk">Desk</span><span class="chip" style="--c:var(--social)"><img src="logos/social.png" alt="social">Social monitor</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--desk)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/desk.png" alt="Zoho Desk"><span class="appname">Zoho <span>Desk</span> · Matchday queue</span>
+        <div class="spacer"></div><span class="pill r">VOLUME 6× BASELINE</span><div class="uav">ن</div>
+      </div>
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 1fr 254px;gap:12px">
+        <!-- the spike chart -->
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column" data-a="up" data-d=".2">
+          <div class="kv" style="margin-bottom:11px"><span class="wlbl">CONTACTS PER 5 MINUTES</span><span class="pill r">SPIKE AT 46'</span></div>
+          <div style="flex:1;display:flex;align-items:flex-end;gap:3px">
+            <i style="flex:1;height:14%;background:#C9D3DA;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .5s .5s both"></i>
+            <i style="flex:1;height:18%;background:#C9D3DA;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .5s .54s both"></i>
+            <i style="flex:1;height:44%;background:var(--siq);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .5s .58s both"></i>
+            <i style="flex:1;height:38%;background:var(--siq);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .5s .62s both"></i>
+            <i style="flex:1;height:22%;background:#C9D3DA;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .5s .66s both"></i>
+            <i style="flex:1;height:16%;background:#C9D3DA;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .5s .7s both"></i>
+            <i style="flex:1;height:20%;background:#C9D3DA;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .5s .74s both"></i>
+            <i style="flex:1;height:100%;background:var(--desk);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .8s both"></i>
+            <i style="flex:1;height:82%;background:var(--desk);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .86s both"></i>
+            <i style="flex:1;height:54%;background:var(--flood);border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .92s both"></i>
+            <i style="flex:1;height:30%;background:#C9D3DA;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s .98s both"></i>
+            <i style="flex:1;height:22%;background:#C9D3DA;border-radius:2px 2px 0 0;transform-origin:bottom;animation:bargrow .6s 1.04s both"></i>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px" class="wlbl">
+            <span>17:00</span><span>GATES</span><span>KO</span><span>46'</span><span>FT</span></div>
+          <div class="wc" style="padding:10px;margin-top:11px;background:#FFF9F8;border-color:#F6CBC5">
+            <div style="font-size:11px;line-height:1.45"><b>Cause:</b> one turnstile bank down at Gate 4. 340 fans affected, all in Block C and D — the system knows exactly which fans, by name.</div></div>
+        </div>
+        <!-- unified queue -->
+        <div class="wc" style="overflow:hidden;display:flex;flex-direction:column" data-a="up" data-d=".35">
+          <div style="padding:9px 12px;border-bottom:1px solid var(--w-bd)">
+            <span class="wlbl">ONE QUEUE · FOUR CHANNELS · AUTO-GROUPED BY CAUSE</span></div>
+          <div class="trow" data-a="row" data-d=".6"><span class="chan" style="background:var(--social)">𝕏</span>
+            <div style="flex:1"><b style="font-size:11px">62 public posts about Gate 4</b><div class="wlbl">SOCIAL MONITOR · SENTIMENT ↓</div></div></div>
+          <div class="trow" data-a="row" data-d=".7"><span class="chan" style="background:var(--siq)">◔</span>
+            <div style="flex:1"><b style="font-size:11px">148 in-app chats</b><div class="wlbl">BOT DEFLECTED 96 · 52 TO AGENTS</div></div></div>
+          <div class="trow" data-a="row" data-d=".8"><span class="chan" style="background:var(--desk)">☏</span>
+            <div style="flex:1"><b style="font-size:11px">31 calls to fan services</b><div class="wlbl">AVG WAIT 24s</div></div></div>
+          <div class="trow" data-a="row" data-d=".9"><span class="chan" style="background:var(--camp)">✉</span>
+            <div style="flex:1"><b style="font-size:11px">19 emails</b><div class="wlbl">MERGED INTO THE SAME INCIDENT</div></div></div>
+          <div style="padding:12px;flex:1;display:flex;flex-direction:column;gap:9px;background:var(--w-canvas)">
+            <div class="wc" style="padding:11px;border-left:3px solid var(--pitch)" data-a="up" data-d="1.1">
+              <div class="wlbl" style="margin-bottom:6px">ONE RESPONSE, EVERY CHANNEL, 49'</div>
+              <div class="ar" dir="rtl" style="font-size:11.5px;line-height:1.7">نعتذر عن التأخير في البوابة ٤ — تم فتح مسار إضافي. تفضلوا بالدخول من البوابة ٥ مباشرة.</div>
+              <div style="display:flex;gap:6px;margin-top:9px"><span class="pill b">Posted to 𝕏</span><span class="pill b">In-app push</span><span class="pill b">Chat auto-reply</span></div>
+            </div>
+            <div class="wlbl" style="margin-top:auto">340 AFFECTED FANS TAGGED ON THEIR RECORDS FOR FOLLOW-UP</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".7">
+            <div class="wlbl" style="margin-bottom:8px">WHAT MAKES THIS POSSIBLE</div>
+            <div style="font-size:11.5px;line-height:1.5">The complaint arriving on X, the chat in the app and the phone call are the same incident about the same 340 people. Four inboxes couldn't see that. One platform can.</div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".84">
+            <div class="wlbl" style="margin-bottom:8px">RESPONSE TARGETS HELD</div>
+            <div style="display:flex;flex-direction:column;gap:5px;font-size:11px">
+              <div class="kv"><span class="wmu">First response</span><b style="color:var(--pitch)">3m 10s</b></div>
+              <div class="kv"><span class="wmu">Public reply</span><b style="color:var(--pitch)">49'</b></div>
+              <div class="kv"><span class="wmu">Escalated to safety</span><b>1</b></div>
+              <div class="kv"><span class="wmu">Unanswered at FT</span><b style="color:var(--pitch)">0</b></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;background:#FFF7E6;border-color:#F6DFAE;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".98">
+            <div class="wlbl" style="color:#96650A">AND IT DOESN'T END AT FULL TIME</div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:5px">Those 340 fans get a personal follow-up on Sunday. That's the difference between a bad memory and a story about how the club handled it.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 12 FULL TIME — SURVEY ══════════ -->
+<section class="slide" data-step="5" data-when="FULL TIME" data-title="Full time · the fan's voice">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Full time · <b>21:52</b></p><h2 data-a="up" data-d=".06">Ask while they're still in their seat.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--survey)"><img src="logos/survey.png" alt="survey">Survey</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">Back to the record</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--survey)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/survey.png" alt="Zoho Survey"><span class="appname">Zoho <span>Survey</span> · Matchday 19 experience</span>
+        <div class="spacer"></div><span class="pill g">4,180 RESPONSES · 23% OF ATTENDANCE</span><div class="uav">ن</div>
+      </div>
+      <div class="win-body" style="display:grid;grid-template-columns:250px 1fr 1fr;gap:12px">
+        <!-- score by stand -->
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:10px" data-a="up" data-d=".2">
+          <div class="wlbl">EXPERIENCE SCORE BY STAND</div>
+          <div style="display:flex;flex-direction:column;gap:9px;flex:1;justify-content:center">
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>West / main</span><b>8.8</b></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:88%;display:block;height:100%;background:var(--pitch);animation:barw .9s .5s ease both"></i></div></div>
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>East</span><b>8.4</b></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:84%;display:block;height:100%;background:var(--pitch);animation:barw .9s .58s ease both"></i></div></div>
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>South / ultras</span><b>9.1</b></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:91%;display:block;height:100%;background:var(--pitch);animation:barw .9s .66s ease both"></i></div></div>
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>North · Blocks C &amp; D</span><b style="color:#C0281F">5.2</b></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:52%;display:block;height:100%;background:#E0483D;animation:barw .9s .74s ease both"></i></div></div>
+            <div><div class="kv" style="font-size:11px;margin-bottom:4px"><span>Hospitality</span><b>8.9</b></div>
+              <div style="height:8px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:89%;display:block;height:100%;background:var(--pitch);animation:barw .9s .82s ease both"></i></div></div>
+          </div>
+          <div class="wc" style="padding:10px;background:#FFF9F8;border-color:#F6CBC5">
+            <div style="font-size:10.5px;line-height:1.45">The gate failure is visible in the data within an hour, located to two blocks.</div></div>
+        </div>
+        <!-- verbatims -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:14px;flex:1" data-a="up" data-d=".35">
+            <div class="wlbl" style="margin-bottom:10px">WHAT THEY WROTE · 71% IN ARABIC</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <div class="ar" dir="rtl" style="font-size:11.5px;line-height:1.7;padding-inline-start:9px;border-inline-start:2px solid var(--desk)" data-a="up" data-d=".55">
+                انتظرنا أربعين دقيقة على البوابة ٤ مع الأطفال.</div>
+              <div class="ar" dir="rtl" style="font-size:11.5px;line-height:1.7;padding-inline-start:9px;border-inline-start:2px solid var(--pitch)" data-a="up" data-d=".68">
+                الجو في المدرج الجنوبي كان رهيباً. أفضل مباراة هذا الموسم.</div>
+              <div style="font-size:11.5px;line-height:1.6;padding-left:9px;border-left:2px solid var(--flood)" data-a="up" data-d=".81">
+                Card machines at the kiosk were down again at half time.</div>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:11px" data-a="up" data-d=".95">
+              <span class="pill r">Gate delay · 214 mentions</span>
+              <span class="pill y">Payments · 88</span>
+              <span class="pill g">Atmosphere · 640</span>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="up" data-d="1.05">
+            <div class="wlbl" style="margin-bottom:8px">PLAYER OF THE MATCH · FAN VOTE</div>
+            <div class="kv" style="font-size:11.5px;margin-bottom:6px"><span>Al-Harbi</span><span><b>58%</b></span></div>
+            <div style="height:7px;border-radius:99px;background:var(--w-soft);overflow:hidden;margin-bottom:8px"><i style="--w:58%;display:block;height:100%;background:var(--survey);animation:barw .9s 1.2s ease both"></i></div>
+            <div class="wmu" style="font-size:10.5px">31,400 votes in twelve minutes. The engagement mechanic and the research instrument are the same thing.</div>
+          </div>
+        </div>
+        <!-- back to the record -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:14px" data-a="inR" data-d=".5">
+            <div class="wlbl" style="margin-bottom:9px">WHERE THE ANSWERS GO</div>
+            <div style="display:flex;flex-direction:column;gap:7px;font-size:11px">
+              <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">→</span>Score written to each fan's record</div>
+              <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">→</span>Gate complaints become Desk cases</div>
+              <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">→</span>Kiosk issue becomes a Projects task</div>
+              <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">→</span>Detractors excluded from the next upsell</div>
+              <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">→</span>Promoters invited to the referral offer</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:14px;flex:1;display:flex;flex-direction:column;justify-content:center;background:#F1FBF6;border-color:#B8E8D2" data-a="inR" data-d=".68">
+            <div class="wlbl" style="color:#0B7A50">THE POINT OF ASKING</div>
+            <div style="font-size:12px;line-height:1.55;margin-top:6px">A survey that produces a PDF is theatre. A survey that reassigns a task, opens a case and changes who gets the next email is an operating system.</div>
+            <div class="ar" dir="rtl" style="font-size:11.5px;line-height:1.7;margin-top:9px;color:#0B7A50">الاستبيان الذي لا يُغيّر شيئاً ليس استبياناً</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 13 FT+1H — RECOVERY ══════════ -->
+<section class="slide" data-step="6" data-when="FT + 1 HOUR" data-title="FT+1h · recovery and revenue">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">An hour after the whistle</p><h2 data-a="up" data-d=".06">The ninety minutes are over. The relationship isn't.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk">Desk</span><span class="chip" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns">Campaigns</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--camp)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:14px 15px">
+        <!-- recovery -->
+        <div class="wc" style="padding:15px;display:flex;flex-direction:column;gap:11px" data-a="inL" data-d=".2">
+          <div class="kv"><b style="font-size:13.5px">Service recovery · 340 fans</b><span class="chan" style="background:var(--desk)">D</span></div>
+          <div class="wlbl">TARGETED BY WHO WAS ACTUALLY AFFECTED, NOT BY WHO COMPLAINED LOUDEST</div>
+          <div class="wc ar" dir="rtl" style="padding:12px;background:var(--w-canvas)">
+            <div style="font-size:11.5px;line-height:1.8">فارس، نعلم أنك انتظرت على البوابة ٤ الليلة مع عائلتك. هذا ليس المستوى الذي نريده لك بعد اثنتي عشرة سنة.<br>
+              أضفنا لك ولضيوفك دخولاً مبكراً لمباراة الجولة القادمة، ومشروبات مجانية في المدرج الشمالي.</div>
+            <div style="display:flex;gap:6px;margin-top:10px"><span class="pill g ar">تم الإرسال ٢٢:٥٤</span><span class="pill n ar">واتساب</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div class="wc" style="padding:10px;text-align:center"><div class="wlbl">SENT</div><b style="font-family:var(--display);font-size:18px">340</b></div>
+            <div class="wc" style="padding:10px;text-align:center"><div class="wlbl">OPENED</div><b style="font-family:var(--display);font-size:18px">91%</b></div>
+            <div class="wc" style="padding:10px;text-align:center;border-color:#B8E8D2;background:#F1FBF6"><div class="wlbl" style="color:#0B7A50">ATTENDED NEXT</div><b style="font-family:var(--display);font-size:18px;color:#0B7A50">88%</b></div>
+          </div>
+          <div style="font-size:11.5px;line-height:1.5;margin-top:auto" class="wmu">A recovered complaint retains better than a fan who never had a problem. That's only possible if you know who was standing at Gate 4.</div>
+        </div>
+        <!-- revenue -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:15px;flex:1;display:flex;flex-direction:column;gap:10px" data-a="up" data-d=".35">
+            <div class="kv"><b style="font-size:13.5px">The same evening, for everyone else</b><span class="chan" style="background:var(--camp)">✉</span></div>
+            <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+              <div class="wc" style="padding:11px;border-left:3px solid var(--pitch)">
+                <div class="kv"><b style="font-size:11.5px">Man of the match shirt</b><span class="pill g">SAR 214k</span></div>
+                <div class="wlbl" style="margin-top:3px">TO THE 640 FANS WHO PRAISED THE ATMOSPHERE</div></div>
+              <div class="wc" style="padding:11px;border-left:3px solid var(--flood)">
+                <div class="kv"><b style="font-size:11.5px">Match highlights + next fixture pre-sale</b><span class="pill y">1,940 seats</span></div>
+                <div class="wlbl" style="margin-top:3px">TO EVERYONE WHO ATTENDED TONIGHT</div></div>
+              <div class="wc" style="padding:11px;border-left:3px solid var(--siq)">
+                <div class="kv"><b style="font-size:11.5px">“You missed a good one”</b><span class="pill b">312 seats</span></div>
+                <div class="wlbl" style="margin-top:3px">TO MEMBERS WHO DIDN'T TURN UP — NO GUILT, JUST HIGHLIGHTS</div></div>
+              <div class="wc" style="padding:11px;border-left:3px solid var(--anal)">
+                <div class="kv"><b style="font-size:11.5px">Partner competition entry</b><span class="pill p">4.1k entries</span></div>
+                <div class="wlbl" style="margin-top:3px">CONTRACTED DELIVERABLE, TICKED OFF AUTOMATICALLY</div></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px;display:flex;align-items:center;gap:16px" data-a="up" data-d=".55">
+            <div style="flex:1;font-size:11.5px;line-height:1.5">Four different messages, four different segments, one hour after full time — while the emotion is still live. Sent by a journey, not by someone staying late.</div>
+            <div style="text-align:center;flex:none">
+              <div style="font-family:var(--display);font-weight:700;font-size:26px;color:var(--pitch)">0</div>
+              <div class="wlbl">PEOPLE WORKING</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 14 NEXT FIXTURE ══════════ -->
+<section class="slide" data-step="7" data-when="NEXT FIXTURE" data-title="Next fixture · the cycle compounds">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">And then it starts again</p><h2 data-a="up" data-d=".06">Every fixture makes the next one smarter.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">One database</span><span class="chip" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics">Compounding</span></div>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 300px;gap:13px">
+        <div class="wc" style="padding:15px;position:relative;overflow:hidden">
+          <div class="wlbl" style="margin-bottom:12px">WHAT MATCHDAY 19 TAUGHT MATCHDAY 20</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="wc" style="padding:12px;border-left:3px solid var(--camp)" data-a="up" data-d=".2">
+              <div class="wlbl">CAMPAIGNS</div>
+              <div style="font-size:11.5px;line-height:1.5;margin-top:5px">The segmented Arabic email outsold the lineup video 18 to 1 on seats. Budget moves accordingly.</div></div>
+            <div class="wc" style="padding:12px;border-left:3px solid var(--proj)" data-a="up" data-d=".3">
+              <div class="wlbl">PROJECTS</div>
+              <div style="font-size:11.5px;line-height:1.5;margin-top:5px">“Turnstile bank check at T−3h” is now a permanent task on the matchday template.</div></div>
+            <div class="wc" style="padding:12px;border-left:3px solid var(--siq)" data-a="up" data-d=".4">
+              <div class="wlbl">SALESIQ</div>
+              <div style="font-size:11.5px;line-height:1.5;margin-top:5px">Gate and parking answers rewritten from the 9,140 real questions. Deflection target 88%.</div></div>
+            <div class="wc" style="padding:12px;border-left:3px solid var(--crm)" data-a="up" data-d=".5">
+              <div class="wlbl">CRM</div>
+              <div style="font-size:11.5px;line-height:1.5;margin-top:5px">340 fans carry a recovery flag. Member services calls them before they call the club.</div></div>
+            <div class="wc" style="padding:12px;border-left:3px solid var(--desk)" data-a="up" data-d=".6">
+              <div class="wlbl">DESK</div>
+              <div style="font-size:11.5px;line-height:1.5;margin-top:5px">Gate incidents get their own macro and a pre-approved public reply. Next time: minutes, not the half.</div></div>
+            <div class="wc" style="padding:12px;border-left:3px solid var(--survey)" data-a="up" data-d=".7">
+              <div class="wlbl">SURVEY</div>
+              <div style="font-size:11.5px;line-height:1.5;margin-top:5px">North Stand gets a follow-up question next match. Did we actually fix it, in their words?</div></div>
+          </div>
+          <div class="wc" style="padding:13px;margin-top:12px;background:#FFF7E6;border-color:#F6DFAE" data-a="up" data-d=".9">
+            <div style="font-size:12px;line-height:1.55">None of this is an insight report. Each one is a change to a template, a segment, a macro or a task — living in the platform, applied automatically next Saturday. <b>The cycle is the asset.</b></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:14px" data-a="inR" data-d=".5">
+            <div class="wlbl" style="margin-bottom:9px">AFTER ONE SEASON</div>
+            <div style="display:flex;flex-direction:column;gap:7px;font-size:11px">
+              <div class="kv"><span class="wmu">Fixtures run on the template</span><b>34</b></div>
+              <div class="kv"><span class="wmu">Fans with a full history</span><b>112k</b></div>
+              <div class="kv"><span class="wmu">Attendance predictable to</span><b>±3%</b></div>
+              <div class="kv"><span class="wmu">Renewal conversations</span><b>Started 120d out</b></div>
+              <div class="kv"><span class="wmu">Board report</span><b>Always current</b></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:14px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".68">
+            <div class="wlbl">THE THING NOBODY BUDGETS FOR</div>
+            <div style="font-size:12px;line-height:1.55;margin-top:6px">A club that has run 34 matchdays on one platform knows its fanbase in a way that no amount of spend can buy back later. The data only compounds if it lands somewhere.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 15 ANALYTICS + ASK ZIA ══════════ -->
+<section class="slide" data-step="7" data-when="ANY TIME" data-title="One truth · Analytics and Ask Zia">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Intelligence</p><h2 data-a="up" data-d=".06">The board question, answered in the meeting.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics">Zoho Analytics</span><span class="chip" style="--c:var(--anal)"><img src="logos/zia.png" alt="zia">Ask Zia</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--anal)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/analytics.png" alt="Zoho Analytics"><span class="appname">Zoho <span>Analytics</span> · Club overview</span>
+        <div class="spacer"></div><span class="pill p">LIVE · ALL SOURCES</span><div class="uav">ن</div>
+      </div>
+      <div class="win-body" style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:linear-gradient(160deg,#F8F6FF,#fff);border:1px solid #DED5FB;border-radius:8px;padding:13px 15px;flex:none" data-a="up" data-d=".2">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+            <span style="width:17px;height:17px;border-radius:5px;background:var(--anal);color:#fff;display:grid;place-items:center;font-size:9px">✦</span>
+            <b style="font-size:10.5px;color:#4B2FBE">Ask Zia</b>
+            <div class="spacer"></div><span class="wlbl">ARABIC &amp; ENGLISH</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="flex:1;background:#fff;border:1px solid #DED5FB;border-radius:7px;padding:9px 12px;font-size:12.5px;overflow:hidden;white-space:nowrap">
+              <span style="display:inline-block;overflow:hidden;white-space:nowrap;animation:typing 2.4s .5s steps(64,end) both;vertical-align:bottom">Which member segments are we losing, and what did they used to spend?</span><span style="animation:caret .9s 10 both;color:var(--anal)">▌</span>
+            </div>
+            <span class="wbtn" style="background:var(--anal)">Ask</span>
+          </div>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:auto 1fr;gap:11px;min-height:0">
+          <div class="wc" style="padding:12px" data-a="up" data-d="2.8"><div class="wlbl">MATCHDAY REVENUE</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:22px">SAR 4.1M</div><span class="pill g">▲ 11% vs LY</span></div>
+          <div class="wc" style="padding:12px" data-a="up" data-d="2.88"><div class="wlbl">MEMBERS</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:22px" data-count="18400">0</div><span class="pill g">▲ 1,240</span></div>
+          <div class="wc" style="padding:12px" data-a="up" data-d="2.96"><div class="wlbl">PARTNER DELIVERY</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:22px;color:var(--flood)">81%</div><span class="pill y">2 gaps open</span></div>
+          <div class="wc" style="padding:12px" data-a="up" data-d="3.04"><div class="wlbl">FAN SATISFACTION</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:22px;color:var(--pitch)">8.3</div><span class="pill r">North Stand 5.2</span></div>
+          <!-- the answer -->
+          <div class="wc" style="padding:14px;grid-column:span 2;display:flex;flex-direction:column" data-a="up" data-d="3.2">
+            <div class="kv" style="margin-bottom:10px"><span class="wlbl">SEGMENTS LOSING MEMBERS · LAST 3 MONTHS</span><span class="pill p">GENERATED FROM THE QUESTION</span></div>
+            <div style="flex:1;display:flex;align-items:flex-end;gap:12px">
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">−1,470</span><div style="width:100%;height:84%;border-radius:4px 4px 0 0;background:#E0483D;transform-origin:bottom;animation:bargrow .8s 3.5s cubic-bezier(.2,.9,.3,1) both"></div>
+                <span class="wlbl" style="text-align:center">FAMILY<br>NORTH</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">−610</span><div style="width:100%;height:36%;border-radius:4px 4px 0 0;background:var(--flood);transform-origin:bottom;animation:bargrow .8s 3.6s cubic-bezier(.2,.9,.3,1) both"></div>
+                <span class="wlbl" style="text-align:center">UNDER<br>25</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">−240</span><div style="width:100%;height:15%;border-radius:4px 4px 0 0;background:#C9D3DA;transform-origin:bottom;animation:bargrow .8s 3.7s cubic-bezier(.2,.9,.3,1) both"></div>
+                <span class="wlbl" style="text-align:center">AWAY<br>LOYAL</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">+380</span><div style="width:100%;height:22%;border-radius:4px 4px 0 0;background:var(--pitch);transform-origin:bottom;animation:bargrow .8s 3.8s cubic-bezier(.2,.9,.3,1) both"></div>
+                <span class="wlbl" style="text-align:center">HOSPI<br>TALITY</span></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:14px;grid-column:span 2;display:flex;flex-direction:column;gap:10px" data-a="up" data-d="3.4">
+            <div class="wlbl">AND THE ANSWER TO THE SECOND HALF OF THE QUESTION</div>
+            <div style="font-size:12px;line-height:1.6">The 1,470 lapsed family members averaged <b>SAR 2,240 a season</b> each — tickets, merch and food — which is <b>SAR 3.3M</b> of annual revenue walking out of the North Stand. Two thirds of them sat in Blocks C and D.</div>
+            <div style="display:flex;gap:7px;margin-top:auto;flex-wrap:wrap">
+              <span class="pill r">Same blocks as the gate failure</span>
+              <span class="pill y">Same blocks scoring 5.2</span>
+              <span class="pill b">Now a named win-back segment</span>
+            </div>
+            <div class="wmu" style="font-size:11px;line-height:1.45">Three separate systems could each show you one of those facts. Only one platform puts them in the same sentence.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+<!-- ══════════ 16 BEYOND FOOTBALL + CLOSE ══════════ -->
+<section class="slide hero" data-step="7" data-when="EVERY VENUE" data-title="Beyond the club · close">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px;width:100%">
+    <p class="eyebrow" data-a="fade" data-d=".1">The same cycle, other venues</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px;width:100%;max-width:1000px">
+      <div style="border:1px solid var(--line);border-radius:9px;padding:13px;text-align:left;background:rgba(255,255,255,.02)" data-a="up" data-d=".2">
+        <div class="eyebrow" style="font-size:9.5px">LEAGUE</div>
+        <div style="font-family:var(--display);font-weight:700;font-size:15px;margin-top:5px">Fans of clubs you don't own</div>
+        <div style="font-size:11.5px;line-height:1.45;color:var(--muted);margin-top:5px">One audience database across every club and every fixture in the competition.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:9px;padding:13px;text-align:left;background:rgba(255,255,255,.02)" data-a="up" data-d=".3">
+        <div class="eyebrow" style="font-size:9.5px">RACECOURSE</div>
+        <div style="font-family:var(--display);font-weight:700;font-size:15px;margin-top:5px">Six marquee days a year</div>
+        <div style="font-size:11.5px;line-height:1.45;color:var(--muted);margin-top:5px">Hospitality, owners, trainers and a general-admission crowd that changes every meeting.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:9px;padding:13px;text-align:left;background:rgba(255,255,255,.02)" data-a="up" data-d=".4">
+        <div class="eyebrow" style="font-size:9.5px">ARENA &amp; FESTIVAL</div>
+        <div style="font-family:var(--display);font-weight:700;font-size:15px;margin-top:5px">A different crowd every night</div>
+        <div style="font-size:11.5px;line-height:1.45;color:var(--muted);margin-top:5px">The venue keeps the audience relationship even when the act moves on.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:9px;padding:13px;text-align:left;background:rgba(255,255,255,.02)" data-a="up" data-d=".5">
+        <div class="eyebrow" style="font-size:9.5px">ACADEMY &amp; COMMUNITY</div>
+        <div style="font-family:var(--display);font-weight:700;font-size:15px;margin-top:5px">Parents are fans too</div>
+        <div style="font-size:11.5px;line-height:1.45;color:var(--muted);margin-top:5px">Trials, programmes and outreach — the same records, a different door in.</div>
+      </div>
+    </div>
+    <h1 data-a="up" data-d=".8" style="font-size:46px;max-width:26ch;margin-top:6px">Every fan interaction lands in one place, or it doesn't count.<span class="arh">كل تفاعل مع المشجع يُسجَّل في مكان واحد</span></h1>
+    <div class="chips" style="justify-content:center" data-a="fade" data-d="1.2">
+      <span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM</span>
+      <span class="chip" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns">Campaigns</span>
+      <span class="chip" style="--c:var(--social)"><img src="logos/social.png" alt="social">Social</span>
+      <span class="chip" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq">SalesIQ</span>
+      <span class="chip" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk">Desk</span>
+      <span class="chip" style="--c:var(--proj)"><img src="logos/projects.png" alt="projects">Projects</span>
+      <span class="chip" style="--c:var(--survey)"><img src="logos/survey.png" alt="survey">Survey</span>
+      <span class="chip" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics">Analytics</span>
+    </div>
+  </div>
+  <div class="cycle"></div>
+</section>
+
+</div><!-- /stage -->
+
+<div id="hud">
+  <button id="prev" aria-label="Previous slide">←</button>
+  <span id="count"><b>1</b> / 16</span>
+  <button id="next" aria-label="Next slide">→</button>
+  <button id="ov" aria-label="Slide overview">O</button>
+  <button id="fs" aria-label="Fullscreen">⤢</button>
+</div>
+<div id="grid" role="dialog" aria-label="Slide overview"></div>
+
+<script>
+/* the fixture cycle: the club's week, and the deck's spine */
+const CYCLE = ["T−14","T−7","T−2","Gates","Kick-off","Full time","FT+1h","Next fixture"];
+const slides = [...document.querySelectorAll('.slide')];
+const stage  = document.getElementById('stage');
+const grid   = document.getElementById('grid');
+let i = 0;
+
+slides.forEach(s=>{
+  const at = +s.dataset.step;           /* -1 = outside the matchday cycle */
+  const nodes = CYCLE.map((n,k)=>{
+    const cls = at < 0 ? '' : (k < at ? 'done' : (k === at ? 'now' : ''));
+    return `<i class="cnode ${cls}" data-l="${n}"></i>` +
+           (k < CYCLE.length-1 ? `<span class="cseg ${at >= 0 && k < at ? 'done':''}"></span>` : '');
+  }).join('');
+  s.querySelector('.cycle').innerHTML =
+    `<span class="clabel">Fixture cycle</span>
+     <div class="cwrap">${nodes}</div>
+     <span class="cwhen">${s.dataset.when}</span>`;
+});
+
+/* stagger delays while hidden so each sequence starts clean */
+document.querySelectorAll('[data-d]').forEach(el=>{ el.style.animationDelay = el.dataset.d + 's' });
+
+function runCounters(slide){
+  slide.querySelectorAll('[data-count]').forEach(el=>{
+    const target = +el.dataset.count, dur = 950, t0 = performance.now();
+    (function tick(now){
+      const p = Math.min(1, (now - t0)/dur);
+      el.textContent = Math.round(target*(1 - Math.pow(1-p,3))).toLocaleString();
+      if(p < 1) requestAnimationFrame(tick);
+    })(t0);
+  });
+}
+
+function show(n){
+  i = Math.max(0, Math.min(slides.length-1, n));
+  slides.forEach((s,k)=>s.classList.toggle('is-on', k===i));
+  document.querySelector('#count b').textContent = i+1;
+  setTimeout(()=>runCounters(slides[i]), 400);
+}
+const next = ()=>show(i+1), prev = ()=>show(i-1);
+document.getElementById('next').onclick = next;
+document.getElementById('prev').onclick = prev;
+document.getElementById('fs').onclick = ()=>
+  document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+
+slides.forEach((s,k)=>{
+  const b = document.createElement('button');
+  b.innerHTML = `<span>${String(k+1).padStart(2,'0')}</span>${s.dataset.title}`;
+  b.onclick = ()=>{ grid.classList.remove('on'); show(k) };
+  grid.appendChild(b);
+});
+document.getElementById('ov').onclick = ()=> grid.classList.toggle('on');
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ grid.classList.remove('on'); return }
+  if(['ArrowRight',' ','PageDown','Enter'].includes(e.key)){ e.preventDefault(); next() }
+  if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); prev() }
+  if(e.key==='Home') show(0);
+  if(e.key==='End') show(slides.length-1);
+  const k = e.key.toLowerCase();
+  if(k==='f') document.getElementById('fs').click();
+  if(k==='o') grid.classList.toggle('on');
+  if(k==='r'){ slides[i].classList.remove('is-on'); void slides[i].offsetWidth; show(i) }
+});
+stage.addEventListener('click', e=>{ if(e.target.tagName!=='BUTTON') next() });
+
+let sx=0;
+stage.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+stage.addEventListener('touchend',e=>{
+  const d = e.changedTouches[0].clientX - sx;
+  if(Math.abs(d)>44) d<0 ? next() : prev();
+},{passive:true});
+
+function fit(){
+  const s = Math.min(innerWidth/1280, innerHeight/720) * (innerWidth<700 ? 1 : .965);
+  stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize', fit);
+addEventListener('orientationchange', fit);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+fit(); show(0);
+</script>
+</body>
+</html>

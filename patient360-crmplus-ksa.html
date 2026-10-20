@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patient 360 — Zoho CRM Plus for Healthcare · Saudi Arabia</title>
+
+<!--
+  ═══════════════════════════════════════════════════════════
+  PRESENTING
+  Arrows / Space / click = next    F = fullscreen
+  O = slide overview                R = replay slide animation
+
+  SWAPPING IN A REAL SCREEN RECORDING
+  Every app screen sits in <div class="art">. Replace its
+  contents with:
+     <video src="patient-timeline.mp4" autoplay muted loop playsinline></video>
+     <img src="whatsapp-booking.gif" alt="WhatsApp booking flow">
+  ═══════════════════════════════════════════════════════════
+  Hospital, patients, staff and figures are illustrative.
+  CRM Plus is positioned as the engagement layer: the HIS /
+  RCM owns NPHIES transactions and the clinical record.
+  ═══════════════════════════════════════════════════════════
+-->
+
+
+<style>
+
+/* ════════ JetBrains Mono (local, self-hosted) ════════ */
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Regular.woff") format("woff");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
+
+/* ════════ Zoho Puvi (local, self-hosted) ════════ */
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Medium.woff") format("woff");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-SemiBold.woff") format("woff");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
+/* ════════ tokens ════════ */
+:root{
+  --ink:#08191F; --ink2:#0E242C; --line:#254049;
+  --text:#ECF4F6; --muted:#87A0A8;
+
+  --z-red:#E42527; --z-green:#33A852; --z-blue:#1A73E8; --z-yellow:#F5B01A;
+
+  --care:#23C4A7;          /* the engagement layer accent */
+  --clinical:#2D9CDB;      /* HIS / clinical */
+  --finance:#F0A21B;       /* ERP / financial */
+  --crm:#E14A3B; --desk:#E0483D; --camp:#F0A21B; --social:#E5487B;
+  --siq:#4E7BF0; --survey:#F2B21B; --anal:#7B61FF; --proj:#2B7FD4;
+  --wa:#25D366;
+
+  --w-bg:#FFFFFF; --w-canvas:#F3F7F8; --w-bd:#DFE7EA;
+  --w-tx:#1C2A30; --w-mu:#70858D; --w-soft:#EAF0F2;
+
+  --arabic:"Geeza Pro","Segoe UI",Tahoma,Arial,sans-serif;
+  --display:"Zoho Puvi","Trebuchet MS",system-ui,sans-serif;
+  --body:"Zoho Puvi",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--body);overflow:hidden}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(56vw 50vw at 6% 2%, rgba(35,196,167,.15), transparent 64%),
+    radial-gradient(50vw 46vw at 96% 96%, rgba(45,156,219,.13), transparent 66%);
+}
+/* ambient ECG trace */
+#ecg{position:fixed;left:0;right:0;bottom:8vh;height:120px;z-index:0;pointer-events:none;opacity:.07}
+#ecg path{stroke:#23C4A7;stroke-width:2;fill:none;stroke-dasharray:1400;animation:trace 9s linear infinite}
+@keyframes trace{from{stroke-dashoffset:1400}to{stroke-dashoffset:-1400}}
+
+#stage{width:1280px;height:720px;position:fixed;top:50%;left:50%;z-index:1;transform-origin:center}
+.slide{position:absolute;inset:0;display:none;padding:34px 52px 0;grid-template-rows:auto 1fr auto;gap:16px}
+.slide.is-on{display:grid}
+.slide.hero{grid-template-rows:1fr auto;place-items:center}
+
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+.eyebrow b{color:var(--text);font-weight:500}
+h1{font-family:var(--display);font-weight:700;letter-spacing:-.03em;font-size:66px;line-height:1}
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.025em;font-size:36px;line-height:1.05;margin-top:6px}
+.sub{font-size:16px;line-height:1.4;color:var(--muted)}
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:26px}
+.shead .sub{max-width:36ch;font-size:13.5px;padding-bottom:3px}
+h1 .arh{display:block;font-family:var(--arabic);font-weight:600;font-size:.38em;letter-spacing:0;
+  line-height:1.4;margin-top:15px;color:#96E4D2}
+.ar{font-family:var(--arabic)}
+
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:5px 10px;border-radius:6px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.chip i{width:7px;height:7px;border-radius:2px;background:var(--c,#fff);display:block;flex:none}
+.chip img{width:13px;height:13px;object-fit:contain;display:block;flex:none}
+.chip.ar{font-family:var(--arabic);letter-spacing:0}
+
+.art{position:relative;width:100%;height:100%;border-radius:13px;overflow:hidden;
+  box-shadow:0 32px 68px -18px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.07)}
+.art > video,.art > img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ════════ Zoho app window ════════ */
+.win{width:100%;height:100%;background:var(--w-canvas);color:var(--w-tx);display:flex;flex-direction:column;
+  font-size:12px;--acc:var(--care)}
+.win-top{height:35px;flex:none;background:var(--w-bg);border-bottom:1px solid var(--w-bd);
+  display:flex;align-items:center;gap:10px;padding:0 12px}
+.zlogo{display:flex;gap:2.5px;flex:none}
+.zlogo i{width:4px;height:13px;border-radius:1px;display:block}
+.zlogo i:nth-child(1){background:var(--z-red)}.zlogo i:nth-child(2){background:var(--z-green)}
+.zlogo i:nth-child(3){background:var(--z-blue)}.zlogo i:nth-child(4){background:var(--z-yellow)}
+.appname{font-weight:600;font-size:13px;letter-spacing:-.01em;white-space:nowrap}
+.appname span{color:var(--w-mu);font-weight:400}
+.spacer{flex:1}
+.searchpill{width:170px;height:21px;border-radius:5px;background:var(--w-soft);display:flex;align-items:center;
+  padding:0 8px;font-size:9.5px;color:var(--w-mu);gap:5px;white-space:nowrap;overflow:hidden;flex:none}
+.tbtn{width:21px;height:21px;border-radius:5px;background:var(--w-soft);display:grid;place-items:center;
+  font-size:10px;color:var(--w-mu);flex:none}
+.uav{width:22px;height:22px;border-radius:99px;background:linear-gradient(140deg,#23C4A7,#2D9CDB);flex:none;
+  display:grid;place-items:center;color:#fff;font-weight:700;font-size:10px}
+.win-tabs{height:31px;flex:none;background:var(--w-bg);border-bottom:1px solid var(--w-bd);
+  display:flex;align-items:stretch;padding:0 12px;gap:2px}
+.tab{display:flex;align-items:center;padding:0 11px;font-size:11.5px;color:var(--w-mu);
+  border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc);font-weight:600}
+.win-mid{flex:1;display:flex;min-height:0}
+.rail{width:44px;flex:none;background:#1A2C33;display:flex;flex-direction:column;align-items:center;gap:7px;padding:9px 0}
+.rail .amk{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;
+  font-weight:700;font-size:11px;font-family:var(--display);opacity:.42}
+.rail .amk.on{opacity:1;box-shadow:0 0 0 2px rgba(255,255,255,.28)}
+.win-body{flex:1;padding:13px 15px;min-height:0;overflow:hidden}
+
+.wc{background:var(--w-bg);border:1px solid var(--w-bd);border-radius:8px}
+.wsk{height:7px;border-radius:99px;background:#E3EAED;display:block}
+.wmu{color:var(--w-mu)}
+.wlbl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--w-mu)}
+.wlbl.ar{font-family:var(--arabic);letter-spacing:0;text-transform:none;font-size:10px}
+.wbtn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;background:var(--acc);
+  color:#fff;font-size:10.5px;font-weight:600;white-space:nowrap}
+.wbtn.ghost{background:var(--w-bg);color:var(--w-mu);border:1px solid var(--w-bd)}
+.wav{width:28px;height:28px;border-radius:99px;flex:none;display:grid;place-items:center;color:#fff;
+  font-family:var(--display);font-weight:700;font-size:12px;background:linear-gradient(140deg,#23C4A7,#1B8C9E)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:600;padding:3px 8px;border-radius:99px;white-space:nowrap}
+.pill.g{background:#E1F7F1;color:#0A7A63}.pill.r{background:#FDEBEA;color:#C0281F}
+.pill.b{background:#E8F1FE;color:#1257A8}.pill.y{background:#FEF4E1;color:#96650A}
+.pill.p{background:#EFEBFE;color:#5B3FD6}.pill.n{background:var(--w-soft);color:var(--w-mu)}
+.pill.ar{font-family:var(--arabic)}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.chan{width:19px;height:19px;border-radius:5px;display:grid;place-items:center;font-size:9.5px;color:#fff;flex:none}
+.dotlive{width:7px;height:7px;border-radius:99px;background:var(--z-green);display:block}
+.trow{display:flex;align-items:center;gap:9px;padding:7px 10px;border-bottom:1px solid var(--w-bd);font-size:11px}
+.trow:last-child{border-bottom:0}
+.tick{width:16px;height:16px;border-radius:99px;display:grid;place-items:center;font-size:9px;color:#fff;flex:none;background:var(--care)}
+.tick.wait{background:var(--z-yellow)}.tick.cl{background:var(--clinical)}.tick.fi{background:var(--finance)}
+.tms{font-family:var(--mono);font-size:9px;color:var(--w-mu);width:54px;text-align:right;flex:none}
+.cb{max-width:78%;padding:8px 11px;border-radius:10px;font-size:11.5px;line-height:1.5;background:var(--w-soft)}
+.cb.me{margin-inline-start:auto;background:#E1F7F1;color:#0A5A4A}
+.cb.wa{background:#fff;border:1px solid var(--w-bd)}
+.cb.wame{margin-inline-start:auto;background:#DCF8C6;color:#123B22}
+.tping{display:inline-flex;gap:4px;padding:9px 11px;border-radius:10px;background:var(--w-soft)}
+.tping i{width:5px;height:5px;border-radius:99px;background:var(--w-mu);display:block}
+.node{background:var(--w-bg);border:1px solid var(--w-bd);border-radius:8px;padding:8px 10px;position:absolute;
+  box-shadow:0 3px 10px rgba(8,25,31,.08)}
+.node b{font-size:11px;display:block}
+.zia{background:linear-gradient(160deg,#F8F6FF,#fff);border:1px solid #DED5FB;border-radius:8px}
+.ziamk{width:17px;height:17px;border-radius:5px;background:var(--anal);color:#fff;display:grid;place-items:center;font-size:9px;flex:none}
+
+/* ════════ signature: the patient journey rail ════════ */
+.jrail{padding:9px 0 18px;display:flex;align-items:center;gap:13px}
+.jwrap{flex:1;display:flex;align-items:center}
+.jnode{position:relative;flex:none;width:10px;height:10px;border-radius:99px;background:#13272E;border:1px solid var(--line)}
+.jnode.done{background:var(--care);border-color:var(--care)}
+.jnode.now{width:14px;height:14px;background:#fff;border-color:#fff;box-shadow:0 0 0 5px rgba(35,196,167,.22)}
+.jnode.now::after{content:attr(data-l);position:absolute;top:-24px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.jseg{flex:1;height:2px;background:#13272E}
+.jseg.done{background:linear-gradient(90deg,var(--care),#7FE0CD)}
+.jlabel{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.jbadge{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 9px;border-radius:5px;border:1px solid var(--line);color:var(--care);white-space:nowrap}
+
+/* ════════ animations ════════ */
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{opacity:0;transform:scale(.9)}60%{transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+@keyframes inR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@keyframes winIn{from{opacity:0;transform:translateY(24px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(35,196,167,.5)}100%{box-shadow:0 0 0 15px rgba(35,196,167,0)}}
+@keyframes glow{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes draw{from{stroke-dashoffset:var(--len,600)}to{stroke-dashoffset:0}}
+@keyframes drawto{from{stroke-dashoffset:var(--from,300)}to{stroke-dashoffset:var(--to,0)}}
+@keyframes flowline{to{stroke-dashoffset:-44}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes barw{from{width:0}to{width:var(--w,100%)}}
+@keyframes bargrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes rowin{from{opacity:0;transform:translateY(-8px);background:#E1F7F1}60%{background:#E1F7F1}to{opacity:1;transform:none;background:transparent}}
+@keyframes drift{0%{transform:translate(0,0) rotate(var(--r,0deg))}25%{transform:translate(4px,-5px) rotate(calc(var(--r,0deg) + 1.5deg))}
+  50%{transform:translate(-4px,4px) rotate(var(--r,0deg))}75%{transform:translate(5px,2px) rotate(calc(var(--r,0deg) - 1.5deg))}
+  100%{transform:translate(0,0) rotate(var(--r,0deg))}}
+@keyframes converge{0%{opacity:0;transform:translate(var(--fx,0),var(--fy,0)) scale(.92)}
+  25%{opacity:1}100%{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes caret{50%{opacity:0}}
+
+.is-on [data-a]{opacity:0}
+.is-on [data-a="up"]{animation:up .56s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="fade"]{animation:fade .6s ease both}
+.is-on [data-a="pop"]{animation:pop .46s cubic-bezier(.2,.9,.3,1.15) both}
+.is-on [data-a="inR"]{animation:inR .5s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="inL"]{animation:inL .5s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="win"]{animation:winIn .66s cubic-bezier(.2,.85,.25,1) both}
+.is-on [data-a="row"]{animation:rowin .85s ease both}
+.is-on [data-a="conv"]{animation:converge .88s cubic-bezier(.22,.9,.25,1) both}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001s !important;animation-iteration-count:1 !important}}
+
+/* ════════ chrome ════════ */
+#brand{position:fixed;top:16px;right:20px;z-index:20;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.2em;text-transform:uppercase;color:#56707A;display:flex;align-items:center;gap:8px}
+#brand .zlogo i{height:10px}
+#hud{position:fixed;bottom:12px;right:18px;z-index:20;display:flex;gap:12px;align-items:center;
+  font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em}
+#hud button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:7px;font:inherit;padding:4px 8px;cursor:pointer}
+#hud button:hover,#hud button:focus-visible{color:#fff;border-color:#fff;outline:none}
+#count b{color:#fff}
+#grid{position:fixed;inset:0;z-index:30;background:rgba(4,12,16,.97);display:none;
+  grid-template-columns:repeat(5,1fr);gap:11px;padding:28px;align-content:start;overflow:auto}
+#grid.on{display:grid}
+#grid button{aspect-ratio:16/9;border:1px solid var(--line);background:var(--ink2);color:var(--text);border-radius:9px;
+  font-family:var(--display);font-size:12.5px;font-weight:600;text-align:left;padding:10px;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:space-between;line-height:1.2}
+#grid button:hover,#grid button:focus-visible{border-color:var(--care);outline:none}
+#grid button span{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em}
+
+/* ════════ responsive: fixed chrome + overview grid ════════ */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{overflow-x:hidden;max-width:100%}
+@media (max-width:820px){
+  #brand{font-size:8.5px;top:10px;right:10px;gap:6px}
+  #brand .zlogo i{height:8px}
+  #hud{font-size:9px;bottom:10px;right:10px;gap:7px}
+  #hud button{padding:3px 7px}
+  #grid{padding:16px;gap:8px;grid-template-columns:repeat(3,1fr)}
+  #grid button{padding:9px;font-size:12px}
+}
+@media (max-width:560px){
+  #brand{top:8px;right:8px;font-size:7.5px;gap:5px}
+  #hud{bottom:8px;right:8px;font-size:8px;gap:5px}
+  #grid{padding:10px;gap:6px;grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:380px){
+  #grid{grid-template-columns:1fr}
+}
+@media (max-height:420px) and (orientation:landscape){
+  #brand{top:4px;right:6px}
+  #hud{bottom:4px;right:6px}
+}
+
+/* ════════ product logos ════════ */
+.applogo{height:16px;width:auto;max-width:70px;object-fit:contain;flex:none;display:block}
+#brand .applogo{height:13px}
+.amk-logo{background:#fff !important;padding:6px}
+.amk-logo::after{display:none !important}
+.amk-logo img{width:100%;height:100%;object-fit:contain}
+.amk.on.amk-logo{box-shadow:0 0 0 2px var(--c,#888) inset,0 8px 20px -6px rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+
+<svg id="ecg" viewBox="0 0 1400 120" preserveAspectRatio="none"><path d="M0 60 H180 l14 0 l10 -34 l12 60 l10 -26 H420 l14 0 l10 -34 l12 60 l10 -26 H700 l14 0 l10 -34 l12 60 l10 -26 H980 l14 0 l10 -34 l12 60 l10 -26 H1400"/></svg>
+
+<div id="brand"><img class="applogo" src="logos/zoho.png" alt="Zoho"> Patient 360 · KSA</div>
+
+<div id="stage">
+
+<!-- ══════════ 01 COVER ══════════ -->
+<section class="slide hero" data-step="-1" data-when="—" data-title="Patient 360">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px">
+    <p class="eyebrow" data-a="fade" data-d=".1">Zoho CRM Plus · Healthcare · Saudi Arabia</p>
+    <h1 data-a="up" data-d=".2">Patient 360<span class="arh">تجربة المريض تبدأ قبل العيادة، وتستمر بعدها</span></h1>
+    <p class="sub" style="max-width:50ch;font-size:17px;color:var(--text)" data-a="up" data-d=".5">
+      Your HIS runs the clinic. Your ERP runs the business.<br>Who runs the relationship?
+    </p>
+    <div style="display:flex;gap:9px;margin-top:4px;align-items:center">
+      <span class="chip" style="--c:var(--care);font-size:11.5px;padding:7px 13px" data-a="pop" data-d=".8"><img src="logos/crmplus.png" alt="crmplus">Patient 360 · on Zoho CRM Plus</span>
+      <span class="eyebrow" style="letter-spacing:.1em">integrates</span>
+      <span class="chip" style="--c:var(--clinical)" data-a="pop" data-d=".9"><i></i>HIS · EMR · LIS</span>
+      <span class="chip" style="--c:var(--finance)" data-a="pop" data-d=".96"><i></i>ERP · NPHIES</span>
+    </div>
+    <p class="sub" style="max-width:52ch;font-size:14px" data-a="fade" data-d="1.2">
+      One platform for the patient relationship. Your HIS, ERP and the national platforms connect into it through a single integration layer.
+    </p>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 02 THE NEW ERA ══════════ -->
+<section class="slide" data-step="-1" data-when="—" data-title="Clinical excellence is no longer enough">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Where the money already went</p><h2 data-a="up" data-d=".06">Five systems. None of them was built for the patient.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Each is excellent at its job. In a Patient 360 architecture each becomes an integration source — not a platform anyone has to open.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:repeat(5,1fr) 1.1fr;gap:11px">
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--clinical)" data-a="up" data-d=".2">
+          <div class="chan" style="background:var(--clinical);width:26px;height:26px">⌗</div>
+          <b style="font-size:13px">HIS</b>
+          <div class="wmu" style="font-size:11px;line-height:1.45;flex:1">Core clinical and administrative workflow. Appointments, orders, encounters.</div>
+          <div class="wlbl">BUILT FOR: THE VISIT</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--clinical)" data-a="up" data-d=".28">
+          <div class="chan" style="background:var(--clinical);width:26px;height:26px">✚</div>
+          <b style="font-size:13px">EMR</b>
+          <div class="wmu" style="font-size:11px;line-height:1.45;flex:1">The clinical record. Diagnoses, medications, history, notes.</div>
+          <div class="wlbl">BUILT FOR: THE CHART</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--finance)" data-a="up" data-d=".36">
+          <div class="chan" style="background:var(--finance);width:26px;height:26px">₪</div>
+          <b style="font-size:13px">ERP &amp; finance</b>
+          <div class="wmu" style="font-size:11px;line-height:1.45;flex:1">Revenue cycle, procurement, payroll, planning, ZATCA invoicing.</div>
+          <div class="wlbl">BUILT FOR: THE LEDGER</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--clinical)" data-a="up" data-d=".44">
+          <div class="chan" style="background:var(--clinical);width:26px;height:26px">⚗</div>
+          <b style="font-size:13px">LIS / RIS</b>
+          <div class="wmu" style="font-size:11px;line-height:1.45;flex:1">Diagnostics and imaging. Orders in, results out.</div>
+          <div class="wlbl">BUILT FOR: THE RESULT</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--finance)" data-a="up" data-d=".52">
+          <div class="chan" style="background:var(--finance);width:26px;height:26px">⛨</div>
+          <b style="font-size:13px">Insurance / RCM</b>
+          <div class="wmu" style="font-size:11px;line-height:1.45;flex:1">Eligibility, pre-authorisation and claims through <b>NPHIES</b>.</div>
+          <div class="wlbl">BUILT FOR: THE CLAIM</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--desk);background:#FFF8F7;border-color:#F6CBC5" data-a="pop" data-d=".8">
+          <div class="chan" style="background:var(--desk);width:26px;height:26px">?</div>
+          <b style="font-size:13px;color:#B4322A">And the patient?</b>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Nobody owns whether she was reminded, whether her complaint was closed, whether anyone followed up after the abnormal result, or whether she ever came back.</div>
+          <div class="wlbl" style="color:#B4322A">BUILT FOR: NOBODY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 03 PATIENTS EXPECT MORE ══════════ -->
+<section class="slide" data-step="-1" data-when="—" data-title="What patients compare you to">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The new benchmark</p><h2 data-a="up" data-d=".06">She isn't comparing you to the hospital down the road.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">She's comparing you to the last four apps she opened this morning.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto 1fr;gap:11px">
+        <div class="wc" style="padding:13px" data-a="up" data-d=".2">
+          <div class="kv" style="margin-bottom:7px"><b style="font-size:12.5px">Government services</b><span class="chan" style="background:var(--z-green)">✓</span></div>
+          <div class="wmu" style="font-size:11px;line-height:1.45">One national identity, instant verification, status she can check herself. She logs in with <b>Nafath</b> and it just works.</div>
+        </div>
+        <div class="wc" style="padding:13px" data-a="up" data-d=".28">
+          <div class="kv" style="margin-bottom:7px"><b style="font-size:12.5px">Her bank</b><span class="chan" style="background:var(--clinical)">₪</span></div>
+          <div class="wmu" style="font-size:11px;line-height:1.45">Every transaction visible in real time, a notification within a second, and a chat that already knows who she is.</div>
+        </div>
+        <div class="wc" style="padding:13px" data-a="up" data-d=".36">
+          <div class="kv" style="margin-bottom:7px"><b style="font-size:12.5px">Delivery apps</b><span class="chan" style="background:var(--finance)">◷</span></div>
+          <div class="wmu" style="font-size:11px;line-height:1.45">She watches the driver on a map. Nobody ever told her to call between 9 and 11 to find out where her order is.</div>
+        </div>
+        <div class="wc" style="padding:13px" data-a="up" data-d=".44">
+          <div class="kv" style="margin-bottom:7px"><b style="font-size:12.5px">National health apps</b><span class="chan" style="background:var(--care)">✚</span></div>
+          <div class="wmu" style="font-size:11px;line-height:1.45">Appointments, prescriptions and records on her phone. The public sector already set this expectation for her.</div>
+        </div>
+        <div class="wc" style="padding:13px" data-a="up" data-d=".52">
+          <div class="kv" style="margin-bottom:7px"><b style="font-size:12.5px">Retail &amp; airlines</b><span class="chan" style="background:var(--social)">◎</span></div>
+          <div class="wmu" style="font-size:11px;line-height:1.45">Remembered preferences, one thread across channels, a message before she has to ask.</div>
+        </div>
+        <div class="wc" style="padding:13px;background:#FFF8F7;border-color:#F6CBC5" data-a="up" data-d=".6">
+          <div class="kv" style="margin-bottom:7px"><b style="font-size:12.5px;color:#B4322A">Her hospital</b><span class="chan" style="background:var(--desk)">✕</span></div>
+          <div style="font-size:11px;line-height:1.45">“Please call the reception.” Three departments, three phone numbers, and she explains herself again each time.</div>
+        </div>
+        <!-- the killer comparison -->
+        <div class="wc" style="grid-column:span 3;padding:15px;display:flex;align-items:center;gap:24px" data-a="up" data-d=".85">
+          <div style="flex:1">
+            <div class="wlbl" style="margin-bottom:8px">THE GAP ISN'T CLINICAL</div>
+            <div style="font-size:13px;line-height:1.55">Nobody chooses a hospital because the reminder SMS was elegant. But they leave one, and tell forty people why, because the lab result never arrived and nobody called back. <b>Clinical quality earns the first visit. Experience earns the next eight.</b></div>
+          </div>
+          <div class="ar" dir="rtl" style="flex:none;width:280px;font-size:13px;line-height:1.9;color:var(--w-mu);border-inline-start:2px solid var(--care);padding-inline-start:14px">
+            المريض لا يقارن مستشفاك بمستشفى آخر — بل يقارنه بتطبيق بنكه.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 04 THE MISSING LAYER ══════════ -->
+<section class="slide" data-step="-1" data-when="—" data-title="The missing layer">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The structural gap</p><h2 data-a="up" data-d=".06">Operations are solved. Relationships are nobody's job.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">These experiences exist today — scattered across inboxes, spreadsheets and one person's memory.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 90px 1fr;gap:12px;align-items:stretch">
+        <!-- what you own -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:14px;flex:1" data-a="inL" data-d=".2">
+            <div class="kv" style="margin-bottom:10px"><b style="font-size:13px">HIS · EMR · LIS</b><span class="pill b">INTEGRATION SOURCE</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:11.5px">
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick cl">✓</span>Patient records</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick cl">✓</span>Clinical history</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick cl">✓</span>Doctors &amp; rosters</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick cl">✓</span>Appointments</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick cl">✓</span>Orders &amp; results</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick cl">✓</span>Wasfaty scripts</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:14px;flex:1" data-a="inL" data-d=".32">
+            <div class="kv" style="margin-bottom:10px"><b style="font-size:13px">ERP · RCM</b><span class="pill y">INTEGRATION SOURCE</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:11.5px">
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick fi">✓</span>Billing</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick fi">✓</span>Finance</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick fi">✓</span>NPHIES claims</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick fi">✓</span>Procurement</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick fi">✓</span>ZATCA invoices</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick fi">✓</span>Payer settlement</div>
+            </div>
+          </div>
+        </div>
+        <!-- the gap -->
+        <div style="display:grid;place-items:center;position:relative">
+          <div style="position:absolute;inset:0;display:grid;place-items:center">
+            <div style="width:2px;height:100%;background:repeating-linear-gradient(180deg,#C9D6DA 0 6px,transparent 6px 12px)"></div>
+          </div>
+          <div style="position:relative;background:#FFF8F7;border:1px solid #F6CBC5;border-radius:8px;padding:10px 6px;text-align:center" data-a="pop" data-d=".6">
+            <div style="font-family:var(--display);font-weight:700;font-size:15px;color:#B4322A;line-height:1.1">GAP</div>
+            <div class="wlbl" style="color:#B4322A;margin-top:4px;font-size:8px">NO OWNER</div>
+          </div>
+        </div>
+        <!-- what nobody owns -->
+        <div class="wc" style="padding:15px;display:flex;flex-direction:column;gap:10px;border-color:#F6CBC5" data-a="inR" data-d=".45">
+          <div class="kv"><b style="font-size:13px">But who owns…</b><span class="pill r">UNASSIGNED</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1">
+            <div class="wc" style="padding:10px;--r:-2deg;animation:drift 6s infinite"><b style="font-size:11px">Patient engagement</b><div class="wlbl" style="margin-top:3px">MARKETING'S SPREADSHEET</div></div>
+            <div class="wc" style="padding:10px;--r:2deg;animation:drift 5.6s .4s infinite"><b style="font-size:11px">Follow-up after results</b><div class="wlbl" style="margin-top:3px">A NURSE'S NOTEBOOK</div></div>
+            <div class="wc" style="padding:10px;--r:3deg;animation:drift 6.4s .8s infinite"><b style="font-size:11px">Patient satisfaction</b><div class="wlbl" style="margin-top:3px">AN ANNUAL PDF</div></div>
+            <div class="wc" style="padding:10px;--r:-3deg;animation:drift 5.8s .2s infinite"><b style="font-size:11px">Complaint resolution</b><div class="wlbl" style="margin-top:3px">A SHARED INBOX</div></div>
+            <div class="wc" style="padding:10px;--r:2deg;animation:drift 6.2s 1s infinite"><b style="font-size:11px">Preventive care recall</b><div class="wlbl" style="margin-top:3px">NOBODY, HONESTLY</div></div>
+            <div class="wc" style="padding:10px;--r:-2deg;animation:drift 5.4s .6s infinite"><b style="font-size:11px">Loyalty &amp; retention</b><div class="wlbl" style="margin-top:3px">HOPE</div></div>
+          </div>
+          <div style="font-size:11.5px;line-height:1.5">Six functions, no platform. This is what Patient 360 is — and the only thing in this diagram you haven't already bought.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 05 PATIENT 360 ══════════ -->
+<section class="slide" data-step="-1" data-when="ONE RECORD" data-title="Introducing Patient 360">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The idea</p><h2 data-a="up" data-d=".06">Four journeys, one patient record.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--care)"><img src="logos/crmplus.png" alt="crmplus">Zoho CRM Plus</span><span class="chip" style="--c:var(--clinical)"><i></i>via HIS</span><span class="chip" style="--c:var(--finance)"><i></i>via ERP</span></div>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crmplus.png" alt="Zoho CRM Plus"><span class="appname">Zoho <span>CRM Plus</span> › Patients › Noura Al-Shehri</span>
+        <div class="spacer"></div><div class="searchpill">⌕ Search by MRN, national ID, phone</div><div class="uav">ع</div>
+      </div>
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 236px 1fr;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:13px;flex:1;border-left:3px solid var(--care);--fx:-60px;--fy:-30px" data-a="conv" data-d=".3">
+            <div class="kv" style="margin-bottom:8px"><b style="font-size:12.5px">Identity</b><span class="wlbl">PATIENT 360</span></div>
+            <div class="wmu" style="font-size:11px;line-height:1.5">Profile, national ID verified via Nafath, family links, employer and payer, preferred language, VIP and interpreter flags, consent and channel opt-ins.</div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;border-left:3px solid var(--care);--fx:-60px;--fy:30px" data-a="conv" data-d=".54">
+            <div class="kv" style="margin-bottom:8px"><b style="font-size:12.5px">Experience journey</b><span class="wlbl">PATIENT 360 · NATIVE</span></div>
+            <div class="wmu" style="font-size:11px;line-height:1.5">Calls, WhatsApp, email, web chat, walk-in notes, complaints, campaigns, surveys, service requests, no-shows and every follow-up promised.</div>
+          </div>
+        </div>
+        <!-- the record in the middle -->
+        <div style="display:grid;place-items:center">
+          <div style="position:relative;display:grid;place-items:center" data-a="pop" data-d=".2">
+            <div style="position:absolute;width:190px;height:190px;border-radius:99px;background:radial-gradient(circle,rgba(35,196,167,.2),transparent 70%);animation:glow 3s infinite"></div>
+            <div class="wc" style="width:206px;padding:14px;text-align:center;position:relative;border-color:#A9E6DA">
+              <div class="wav" style="width:46px;height:46px;font-size:18px;margin:0 auto 9px">ن</div>
+              <b style="font-size:14px">Noura Al-Shehri</b>
+              <div class="ar" style="font-size:11.5px;color:var(--w-mu);direction:rtl;margin-top:2px">نورة الشهري · ٤٦ سنة</div>
+              <div class="wlbl" style="margin-top:7px">MRN 44-1908 · RIYADH</div>
+              <div style="display:flex;gap:5px;justify-content:center;margin-top:9px;flex-wrap:wrap">
+                <span class="pill g ar">عربي</span><span class="pill b">Insured</span><span class="pill y">Chronic care</span>
+              </div>
+              <div style="margin-top:10px;padding-top:9px;border-top:1px solid var(--w-bd)">
+                <div class="wlbl">ONE TIMELINE · 4 JOURNEYS</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:13px;flex:1;border-left:3px solid var(--clinical);--fx:60px;--fy:-30px" data-a="conv" data-d=".42">
+            <div class="kv" style="margin-bottom:8px"><b style="font-size:12.5px">Clinical journey</b><span class="wlbl">VIA INTEGRATION</span></div>
+            <div class="wmu" style="font-size:11px;line-height:1.5">Appointments, treating physician, encounters, lab and imaging status, prescriptions, care plan and next review date. Surfaced, never duplicated.</div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;border-left:3px solid var(--finance);--fx:60px;--fy:30px" data-a="conv" data-d=".66">
+            <div class="kv" style="margin-bottom:8px"><b style="font-size:12.5px">Financial journey</b><span class="wlbl">VIA INTEGRATION</span></div>
+            <div class="wmu" style="font-size:11px;line-height:1.5">Eligibility and pre-authorisation status from NPHIES, co-payment due, invoices, packages, outstanding balance and payment links.</div>
+          </div>
+        </div>
+        <div class="wc" style="grid-column:span 3;padding:12px 15px;display:flex;align-items:center;gap:18px" data-a="up" data-d="1">
+          <span class="wlbl" style="flex:none">WHERE THE FOUR JOURNEYS LIVE</span>
+          <div style="flex:1;font-size:11.5px;line-height:1.5">All four sit in <b>Patient 360</b>. Clinical and financial events arrive through the integration layer rather than being retyped — so nobody opens four systems to answer one question, and Patient 360 never becomes a second chart or a second ledger.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 06 THE ENGAGEMENT LAYER ══════════ -->
+<section class="slide" data-step="-1" data-when="ARCHITECTURE" data-title="CRM Plus as the engagement layer">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">How it sits</p><h2 data-a="up" data-d=".06">One platform for the patient. Everything else is an integration.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--care)"><i></i>API / FHIR</span><span class="chip" style="--c:var(--z-green)"><i></i>No rip-and-replace</span></div>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-mid">
+        <div style="flex:1;position:relative;min-width:0;background:var(--w-canvas);overflow:hidden">
+          <div style="position:absolute;inset:0;background-image:radial-gradient(circle,#D2DEE2 1px,transparent 1px);background-size:18px 18px"></div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:1020px;height:400px">
+            <svg width="1020" height="400" viewBox="0 0 1020 400" style="position:absolute;left:0;top:0">
+              <g stroke="#23C4A7" stroke-width="1.7" fill="none" stroke-dasharray="7 5" style="animation:flowline 1.5s linear infinite">
+                <path d="M150 60 H250"/><path d="M150 128 H250"/><path d="M150 196 H250"/><path d="M150 264 H250"/><path d="M150 332 H250"/>
+                <path d="M410 196 H470"/>
+                <path d="M700 196 H760"/>
+              </g>
+              <g stroke="#9FB4BA" stroke-width="1.5" fill="none">
+                <path d="M760 196 H790 M790 60 V332" stroke-dasharray="600" style="--len:600;animation:draw 1.4s .8s ease both"/>
+                <path d="M790 60 H840 M790 128 H840 M790 196 H840 M790 264 H840 M790 332 H840"
+                      stroke-dasharray="400" style="--len:400;animation:draw 1.2s 1.2s ease both"/>
+              </g>
+            </svg>
+            <!-- channels -->
+            <div class="wlbl" style="position:absolute;left:0;top:14px">WHERE THE PATIENT IS</div>
+            <div class="node" style="left:0;top:44px;width:150px;border-left:3px solid var(--wa)" data-a="inL" data-d=".3"><b>WhatsApp</b><div class="wlbl">HER DEFAULT</div></div>
+            <div class="node" style="left:0;top:112px;width:150px;border-left:3px solid var(--siq)" data-a="inL" data-d=".38"><b>Website &amp; chat</b><div class="wlbl">BOT + AGENT</div></div>
+            <div class="node" style="left:0;top:180px;width:150px;border-left:3px solid var(--desk)" data-a="inL" data-d=".46"><b>Call centre</b><div class="wlbl">INBOUND / OUTBOUND</div></div>
+            <div class="node" style="left:0;top:248px;width:150px;border-left:3px solid var(--camp)" data-a="inL" data-d=".54"><b>Email &amp; SMS</b><div class="wlbl">TRANSACTIONAL</div></div>
+            <div class="node" style="left:0;top:316px;width:150px;border-left:3px solid var(--anal)" data-a="inL" data-d=".62"><b>Walk-in &amp; kiosk</b><div class="wlbl">LOGGED, NOT LOST</div></div>
+            <!-- CRM Plus -->
+            <div style="position:absolute;left:250px;top:44px;width:160px;height:312px;border-radius:10px;
+                        background:linear-gradient(160deg,#E4F9F4,#fff);border:1px solid #A9E6DA;
+                        display:flex;flex-direction:column;padding:13px;gap:7px" data-a="pop" data-d=".75">
+              <div style="display:flex;gap:3px"><i style="width:4px;height:11px;background:var(--z-red);display:block"></i><i style="width:4px;height:11px;background:var(--z-green);display:block"></i><i style="width:4px;height:11px;background:var(--z-blue);display:block"></i><i style="width:4px;height:11px;background:var(--z-yellow);display:block"></i></div>
+              <b style="font-size:12.5px">Patient 360</b>
+              <div class="wlbl">ON ZOHO CRM PLUS</div>
+              <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px;font-size:10px;color:#0A5A4A">
+                <div>CRM · patient record</div><div>Desk · complaints &amp; SLA</div>
+                <div>SalesIQ · chat &amp; bot</div><div>Campaigns · recall</div>
+                <div>Survey · experience</div><div>Projects · programmes</div>
+                <div>Social · reputation</div><div>Analytics + Zia</div>
+              </div>
+              <div class="pill g" style="margin-top:auto;justify-content:center">ONE PATIENT TIMELINE</div>
+            </div>
+            <!-- integration -->
+            <div class="node" style="left:470px;top:170px;width:230px;border-left:3px solid var(--z-blue)" data-a="pop" data-d="1">
+              <b>One integration layer</b>
+              <div class="wlbl" style="margin-top:3px">REST APIs · HL7 FHIR R4 · WEBHOOKS · EVENT SUBSCRIPTIONS</div>
+              <div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap">
+                <span class="pill n">Bi-directional</span><span class="pill n">Event-driven</span></div>
+            </div>
+            <!-- systems of record -->
+            <div class="wlbl" style="position:absolute;left:840px;top:14px">WHAT PLUGS IN · INTEGRATION LAYER</div>
+            <div class="node" style="left:840px;top:44px;width:170px;border-left:3px solid var(--clinical)" data-a="inR" data-d="1.3"><b>HIS / EMR</b><div class="wlbl">APPOINTMENTS · ENCOUNTERS</div></div>
+            <div class="node" style="left:840px;top:112px;width:170px;border-left:3px solid var(--clinical)" data-a="inR" data-d="1.38"><b>LIS / RIS</b><div class="wlbl">RESULT READY EVENTS</div></div>
+            <div class="node" style="left:840px;top:180px;width:170px;border-left:3px solid var(--finance)" data-a="inR" data-d="1.46"><b>ERP / RCM · NPHIES</b><div class="wlbl">ELIGIBILITY · PRE-AUTH · CLAIM STATUS</div></div>
+            <div class="node" style="left:840px;top:248px;width:170px;border-left:3px solid var(--z-green)" data-a="inR" data-d="1.54"><b>Nafath · Wasfaty</b><div class="wlbl">IDENTITY · E-PRESCRIPTION</div></div>
+            <div class="node" style="left:840px;top:316px;width:170px;border-left:3px solid var(--anal)" data-a="inR" data-d="1.62"><b>Payment gateway</b><div class="wlbl">MADA · APPLE PAY · SADAD</div></div>
+            <!-- the honest caption -->
+            <div class="wc" style="position:absolute;left:250px;top:368px;width:450px;padding:9px 12px" data-a="up" data-d="1.8">
+              <div style="font-size:11px;line-height:1.45">Your teams and your patients work in <b>one place</b>. HIS, ERP, LIS and the national platforms sit behind a single integration surface — clinical and billing events flow in, patient communication flows out. Nobody opens five systems to answer one question.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 07 THE JOURNEY ══════════ -->
+<section class="slide" data-step="0" data-when="DAY 0" data-title="The complete patient journey">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Nine stages</p><h2 data-a="up" data-d=".06">Patient 360 covers all nine stages.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">The relationship starts three stages before a record is opened, and continues for years after it closes.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:grid;grid-template-columns:repeat(9,1fr);gap:8px;flex:1">
+          <div class="wc" style="padding:11px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--care)" data-a="up" data-d=".2">
+            <div class="wlbl">01</div><b style="font-size:11.5px">Discover</b>
+            <div class="wmu" style="font-size:10.5px;line-height:1.4;flex:1">Search, social, a cousin's recommendation</div>
+            <span class="pill g">CRM PLUS</span></div>
+          <div class="wc" style="padding:11px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--care)" data-a="up" data-d=".26">
+            <div class="wlbl">02</div><b style="font-size:11.5px">Enquire</b>
+            <div class="wmu" style="font-size:10.5px;line-height:1.4;flex:1">WhatsApp, chat, a call that nobody logs today</div>
+            <span class="pill g">CRM PLUS</span></div>
+          <div class="wc" style="padding:11px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--care)" data-a="up" data-d=".32">
+            <div class="wlbl">03</div><b style="font-size:11.5px">Book</b>
+            <div class="wmu" style="font-size:10.5px;line-height:1.4;flex:1">Slot chosen, written to the HIS</div>
+            <span class="pill g">PATIENT 360</span></div>
+          <div class="wc" style="padding:11px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--clinical)" data-a="up" data-d=".38">
+            <div class="wlbl">04</div><b style="font-size:11.5px">Visit</b>
+            <div class="wmu" style="font-size:10.5px;line-height:1.4;flex:1">Arrival, consultation, orders <b>· HIS data in</b></div>
+            <span class="pill g">PATIENT 360</span></div>
+          <div class="wc" style="padding:11px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--clinical)" data-a="up" data-d=".44">
+            <div class="wlbl">05</div><b style="font-size:11.5px">Diagnose</b>
+            <div class="wmu" style="font-size:10.5px;line-height:1.4;flex:1">Labs, imaging, care plan <b>· LIS data in</b></div>
+            <span class="pill g">PATIENT 360</span></div>
+          <div class="wc" style="padding:11px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--finance)" data-a="up" data-d=".5">
+            <div class="wlbl">06</div><b style="font-size:11.5px">Settle</b>
+            <div class="wmu" style="font-size:10.5px;line-height:1.4;flex:1">Pre-auth, co-pay, claim, invoice <b>· ERP data in</b></div>
+            <span class="pill g">PATIENT 360</span></div>
+          <div class="wc" style="padding:11px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--care)" data-a="up" data-d=".56">
+            <div class="wlbl">07</div><b style="font-size:11.5px">Follow up</b>
+            <div class="wmu" style="font-size:10.5px;line-height:1.4;flex:1">Results explained, adherence, next review</div>
+            <span class="pill g">CRM PLUS</span></div>
+          <div class="wc" style="padding:11px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--care)" data-a="up" data-d=".62">
+            <div class="wlbl">08</div><b style="font-size:11.5px">Prevent</b>
+            <div class="wmu" style="font-size:10.5px;line-height:1.4;flex:1">Chronic programmes, screening recall</div>
+            <span class="pill g">CRM PLUS</span></div>
+          <div class="wc" style="padding:11px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--care);background:#F1FBF8" data-a="up" data-d=".68">
+            <div class="wlbl">09</div><b style="font-size:11.5px">Return</b>
+            <div class="wmu" style="font-size:10.5px;line-height:1.4;flex:1">Chooses you again, brings the family</div>
+            <span class="pill g">CRM PLUS</span></div>
+        </div>
+        <div class="wc" style="padding:13px 15px;flex:none;display:flex;align-items:center;gap:22px" data-a="up" data-d=".9">
+          <div style="flex:none;text-align:center">
+            <div style="font-family:var(--display);font-weight:700;font-size:28px;color:var(--care)">9</div>
+            <div class="wlbl">STAGES IN PATIENT 360</div></div>
+          <div style="width:1px;height:44px;background:var(--w-bd)"></div>
+          <div style="flex:none;text-align:center">
+            <div style="font-family:var(--display);font-weight:700;font-size:28px;color:var(--clinical)">3</div>
+            <div class="wlbl">WHERE HIS &amp; ERP FEED DATA IN</div></div>
+          <div style="width:1px;height:44px;background:var(--w-bd)"></div>
+          <div style="flex:none;text-align:center">
+            <div style="font-family:var(--display);font-weight:700;font-size:28px">1</div>
+            <div class="wlbl">PLATFORM YOUR TEAMS OPEN</div></div>
+          <div style="flex:1;font-size:12px;line-height:1.5;padding-left:8px">
+            Three stages need data your operational systems already hold — they supply it through the integration layer and stay exactly where they are. The other six have no home at all today, and that is precisely where patients are lost.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 08 WHATSAPP BOOKING ══════════ -->
+<section class="slide" data-step="1" data-when="DAY 0 · 21:14" data-title="Enquire & book on WhatsApp">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Stage 2–3 · Thursday <b>21:14</b></p><h2 data-a="up" data-d=".06">Noura books at nine at night, in Arabic.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--wa)"><img src="logos/whatsapp.png" alt="whatsapp">WhatsApp for CRM</span><span class="chip" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq">SalesIQ bot</span><span class="chip" style="--c:var(--clinical)"><i></i>Slot written to HIS</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--care)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:290px 1fr 268px;gap:12px;padding:13px 15px">
+        <!-- phone -->
+        <div style="display:grid;place-items:center">
+          <div style="width:250px;border-radius:24px;background:#0C1418;border:1px solid #254049;padding:8px" data-a="pop">
+            <div style="width:48px;height:4px;border-radius:99px;background:#254049;margin:2px auto 8px"></div>
+            <div style="background:#EFE7DE;border-radius:15px;overflow:hidden">
+              <div style="padding:8px 11px;background:#0B1410;color:#fff;display:flex;align-items:center;gap:7px">
+                <span style="width:20px;height:20px;border-radius:99px;background:var(--wa);display:grid;place-items:center;color:#08130C;font-size:10px;font-weight:700">✚</span>
+                <div><b style="font-size:10.5px">Al-Waha Medical City</b><div style="font-size:8.5px;opacity:.7">Business · verified</div></div>
+              </div>
+              <div class="ar" dir="rtl" style="padding:10px;display:flex;flex-direction:column;gap:7px">
+                <div class="cb wame" data-a="inR" data-d=".4" style="font-size:11px">أبحث عن موعد مع استشاري الغدد الصمّاء
+                  <div style="text-align:end;font-size:8px;color:#4B7C5A;margin-top:2px">٩:١٤ م ✓✓</div></div>
+                <div class="cb wa" data-a="inL" data-d="1" style="font-size:11px">أهلاً نورة 👋 لديك ملف عندنا برقم ٤٤-١٩٠٨. هل تفضّلين متابعة مع د. حصة المطيري؟</div>
+                <div class="cb wame" data-a="inR" data-d="1.6" style="font-size:11px">نعم، وأفضّل الصباح
+                  <div style="text-align:end;font-size:8px;color:#4B7C5A;margin-top:2px">٩:١٦ م ✓✓</div></div>
+                <div class="wc" style="padding:8px;font-size:10px;line-height:1.6" data-a="pop" data-d="2.1">
+                  <b>المواعيد المتاحة</b><br>
+                  الأحد ١٠:٣٠ ص<br>الاثنين ٩:٠٠ ص<br>الثلاثاء ١١:١٥ ص</div>
+                <div class="cb wa" data-a="inL" data-d="2.6" style="font-size:11px">✅ تم الحجز — الأحد ١٠:٣٠ ص، العيادة ٣، الدور الثاني.
+                  <div style="font-size:8px;color:#70858D;margin-top:3px">تغطيتك التأمينية سارية · التحمّل ٥٠ ر.س</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- what happened behind it -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="overflow:hidden">
+            <div style="padding:9px 12px;border-bottom:1px solid var(--w-bd)"><span class="wlbl">WHAT RAN IN THOSE 118 SECONDS</span></div>
+            <div class="trow" data-a="row" data-d=".5"><span class="tick">✓</span><div style="flex:1">Phone number matched to an existing patient record</div><span class="tms">CRM</span></div>
+            <div class="trow" data-a="row" data-d=".62"><span class="tick cl">✓</span><div style="flex:1">Pulled her treating physician and last encounter</div><span class="tms">HIS</span></div>
+            <div class="trow" data-a="row" data-d=".74"><span class="tick fi">✓</span><div style="flex:1">Eligibility confirmed and co-payment retrieved</div><span class="tms">RCM</span></div>
+            <div class="trow" data-a="row" data-d=".86"><span class="tick cl">✓</span><div style="flex:1">Morning slots read from the live clinic diary</div><span class="tms">HIS</span></div>
+            <div class="trow" data-a="row" data-d=".98"><span class="tick cl">✓</span><div style="flex:1">Appointment written back — one booking, one system</div><span class="tms">HIS</span></div>
+            <div class="trow" data-a="row" data-d="1.1"><span class="tick">✓</span><div style="flex:1">Reminder journey scheduled · T−48h and T−3h</div><span class="tms">CRM</span></div>
+            <div class="trow" data-a="row" data-d="1.22"><span class="tick">✓</span><div style="flex:1">Conversation saved to her timeline, in Arabic</div><span class="tms">CRM</span></div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;display:flex;align-items:center;gap:16px" data-a="up" data-d="1.4">
+            <div style="flex:1;font-size:11.5px;line-height:1.5">Nobody at the hospital was awake. The bot didn't invent a slot or guess her cover — it read what the integration layer exposed, then wrote the booking back through the same layer.</div>
+            <div style="text-align:center;flex:none">
+              <div style="font-family:var(--display);font-weight:700;font-size:24px;color:var(--care)">0</div>
+              <div class="wlbl">STAFF INVOLVED</div></div>
+          </div>
+        </div>
+        <!-- identity + record -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:12px" data-a="inR" data-d=".7">
+            <div class="wlbl" style="margin-bottom:8px">IDENTITY, DONE PROPERLY</div>
+            <div style="font-size:11px;line-height:1.5">For anything that reveals clinical or financial detail, the patient verifies through <b>Nafath</b> before the content is released. A phone number is an identifier, not proof of identity.</div>
+            <div style="display:flex;gap:6px;margin-top:9px"><span class="pill g">Booking: phone match</span><span class="pill y">Results: Nafath</span></div>
+          </div>
+          <div class="wc" style="padding:12px" data-a="inR" data-d=".85">
+            <div class="wlbl" style="margin-bottom:8px">WHAT THE OLD PATH LOOKED LIKE</div>
+            <div style="display:flex;flex-direction:column;gap:5px;font-size:11px">
+              <div>· Calls at 09:00 Sunday, waits 6 minutes</div>
+              <div>· Repeats her ID and her insurance</div>
+              <div>· Told to call the clinic separately</div>
+              <div>· Books nothing, tries a competitor</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:12px;flex:1;background:#F1FBF8;border-color:#A9E6DA;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d="1">
+            <div class="wlbl" style="color:#0A7A63">WHY WHATSAPP SPECIFICALLY</div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:5px">In this market it is where patients already are — and where they will reply. An app you have to convince them to download is a channel you don't have yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 09 REMINDERS / NO-SHOWS ══════════ -->
+<section class="slide" data-step="2" data-when="T−48h → T−3h" data-title="Reminders and the no-show problem">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Stage 3 · before the visit</p><h2 data-a="up" data-d=".06">The empty chair is the most expensive thing in the clinic.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns">Campaigns</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM workflow</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--camp)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 1fr 260px;gap:12px">
+        <!-- the journey -->
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:10px" data-a="inL" data-d=".2">
+          <div class="wlbl">THE REMINDER JOURNEY</div>
+          <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+            <div class="wc" style="padding:10px;border-left:3px solid var(--wa)">
+              <div class="kv"><b style="font-size:11px">T−48h · WhatsApp</b><span class="pill g">92% read</span></div>
+              <div class="ar" dir="rtl" style="font-size:10.5px;margin-top:4px;color:var(--w-mu)">موعدك الأحد ١٠:٣٠ ص مع د. حصة — هل تؤكدين؟</div>
+              <div style="display:flex;gap:5px;margin-top:6px"><span class="pill n">تأكيد</span><span class="pill n">تغيير</span><span class="pill n">إلغاء</span></div>
+            </div>
+            <div class="wc" style="padding:10px;border-left:3px solid var(--desk)">
+              <div class="kv"><b style="font-size:11px">No reply by T−24h</b><span class="pill y">Escalate</span></div>
+              <div class="wlbl" style="margin-top:4px">CALL TASK TO THE CONTACT CENTRE · 11 PATIENTS TODAY</div>
+            </div>
+            <div class="wc" style="padding:10px;border-left:3px solid var(--care)">
+              <div class="kv"><b style="font-size:11px">Cancels at T−26h</b><span class="pill g">Slot released</span></div>
+              <div class="wlbl" style="margin-top:4px">OFFERED TO THE WAIT LIST AUTOMATICALLY · FILLED IN 14 MIN</div>
+            </div>
+            <div class="wc" style="padding:10px;border-left:3px solid var(--camp)">
+              <div class="kv"><b style="font-size:11px">T−3h · reminder + directions</b><span class="pill b">Map · parking · floor</span></div>
+              <div class="wlbl" style="margin-top:4px">SENT AFTER FAJR, NEVER DURING PRAYER TIMES</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:10px;background:var(--w-soft);font-size:10.5px;line-height:1.45">
+            Send windows respect the Saudi week and prayer times. A 13:00 Friday reminder is not a reminder, it's an irritation.</div>
+        </div>
+        <!-- the numbers -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:14px;flex:1;display:flex;flex-direction:column" data-a="up" data-d=".35">
+            <div class="kv" style="margin-bottom:11px"><span class="wlbl">NO-SHOW RATE BY SPECIALTY</span><span class="pill g">▼ AFTER 90 DAYS</span></div>
+            <div style="flex:1;display:flex;align-items:flex-end;gap:11px">
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">22→9%</span>
+                <div style="width:100%;display:flex;gap:3px;align-items:flex-end;height:76%">
+                  <div style="flex:1;height:100%;border-radius:3px 3px 0 0;background:#D6E0E4;transform-origin:bottom;animation:bargrow .7s .6s both"></div>
+                  <div style="flex:1;height:41%;border-radius:3px 3px 0 0;background:var(--care);transform-origin:bottom;animation:bargrow .7s .7s both"></div>
+                </div>
+                <span class="wlbl">DERMA</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">18→7%</span>
+                <div style="width:100%;display:flex;gap:3px;align-items:flex-end;height:62%">
+                  <div style="flex:1;height:100%;border-radius:3px 3px 0 0;background:#D6E0E4;transform-origin:bottom;animation:bargrow .7s .75s both"></div>
+                  <div style="flex:1;height:39%;border-radius:3px 3px 0 0;background:var(--care);transform-origin:bottom;animation:bargrow .7s .85s both"></div>
+                </div>
+                <span class="wlbl">ENDO</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">15→8%</span>
+                <div style="width:100%;display:flex;gap:3px;align-items:flex-end;height:52%">
+                  <div style="flex:1;height:100%;border-radius:3px 3px 0 0;background:#D6E0E4;transform-origin:bottom;animation:bargrow .7s .9s both"></div>
+                  <div style="flex:1;height:53%;border-radius:3px 3px 0 0;background:var(--care);transform-origin:bottom;animation:bargrow .7s 1s both"></div>
+                </div>
+                <span class="wlbl">ORTHO</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">26→11%</span>
+                <div style="width:100%;display:flex;gap:3px;align-items:flex-end;height:90%">
+                  <div style="flex:1;height:100%;border-radius:3px 3px 0 0;background:#D6E0E4;transform-origin:bottom;animation:bargrow .7s 1.05s both"></div>
+                  <div style="flex:1;height:42%;border-radius:3px 3px 0 0;background:var(--care);transform-origin:bottom;animation:bargrow .7s 1.15s both"></div>
+                </div>
+                <span class="wlbl">DENTAL</span></div>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:9px;padding-top:9px;border-top:1px solid var(--w-bd)">
+              <span class="wlbl"><i style="display:inline-block;width:8px;height:8px;background:#D6E0E4;border-radius:2px;margin-right:5px"></i>BEFORE</span>
+              <span class="wlbl"><i style="display:inline-block;width:8px;height:8px;background:var(--care);border-radius:2px;margin-right:5px"></i>AFTER</span>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="up" data-d=".55">
+            <div class="wlbl" style="margin-bottom:8px">WHY IT WORKS AT ALL</div>
+            <div style="font-size:11.5px;line-height:1.5">Because cancelling is <b>easier than not showing up</b>. Give her a one-tap cancel and she'll use it — which converts a dead slot into a filled one instead of an empty room.</div>
+          </div>
+        </div>
+        <!-- recovered capacity -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".6">
+            <div class="wlbl">SLOTS RECOVERED · LAST 30 DAYS</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:34px;color:var(--care)" data-count="1284">0</div>
+            <div class="wmu" style="font-size:10.5px;margin-top:3px">released early and refilled from the wait list</div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".74">
+            <div class="wlbl">CONFIRMATIONS WITHOUT A PHONE CALL</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:34px;color:var(--care)">87<span style="font-size:16px">%</span></div>
+            <div class="wmu" style="font-size:10.5px;margin-top:3px">the contact centre now calls 11 people, not 400</div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".88">
+            <div class="wlbl">AND THE PART FINANCE CARES ABOUT</div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:5px">A recovered slot is revenue you had already staffed, roomed and paid for. It is the cheapest revenue in the hospital.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 10 THE CALL CENTRE TEST ══════════ -->
+<section class="slide" data-step="3" data-when="VISIT DAY · 10:04" data-title="The call centre test">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The test that exposes everything</p><h2 data-a="up" data-d=".06">She calls. Can one screen answer her?</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk">Zoho Desk</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM patient view</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--desk)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/desk.png" alt="Zoho Desk"><span class="appname">Zoho <span>Desk</span> · Contact centre · inbound call</span>
+        <div class="spacer"></div><span class="pill g"><i class="dotlive" style="animation:ping 2s infinite"></i>ON CALL 00:11</span><div class="uav">ع</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div>
+          <div class="amk amk-logo" style="--c:var(--siq)"><img src="logos/salesiq.png" alt="salesiq"></div><div class="amk amk-logo" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:236px 1fr 250px;gap:12px">
+          <!-- who is calling -->
+          <div class="wc" style="padding:13px" data-a="inL" data-d=".2">
+            <div class="wlbl" style="margin-bottom:9px">CALLER IDENTIFIED · +966 5• ••• 2071</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding-bottom:11px;border-bottom:1px solid var(--w-bd)">
+              <div class="wav" style="width:46px;height:46px;font-size:18px">ن</div>
+              <b style="font-size:13px">Noura Al-Shehri</b>
+              <div class="ar" style="font-size:11px;color:var(--w-mu);direction:rtl">نورة الشهري</div>
+              <div style="display:flex;gap:5px"><span class="pill g ar">عربي</span><span class="pill y">Chronic</span></div>
+            </div>
+            <div style="padding-top:10px;display:flex;flex-direction:column;gap:6px;font-size:10.5px">
+              <div class="kv"><span class="wmu">MRN</span><b>44-1908</b></div>
+              <div class="kv"><span class="wmu">Age</span><b>46</b></div>
+              <div class="kv"><span class="wmu">Payer</span><b>Employer scheme</b></div>
+              <div class="kv"><span class="wmu">Visits · 24 mo</span><b>9</b></div>
+              <div class="kv"><span class="wmu">Interpreter</span><b>Not needed</b></div>
+            </div>
+          </div>
+          <!-- the six answers -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:9px">
+            <div class="wc" style="padding:11px;border-left:3px solid var(--clinical)" data-a="up" data-d=".35">
+              <div class="wlbl">WHICH DOCTOR TREATED HER?</div>
+              <b style="font-size:11.5px;display:block;margin-top:4px">Dr. Hessa Al-Mutairi · Endocrinology</b>
+              <div class="wmu" style="font-size:10.5px">Last seen today 10:30 · next review 12 weeks</div></div>
+            <div class="wc" style="padding:11px;border-left:3px solid var(--clinical)" data-a="up" data-d=".44">
+              <div class="wlbl">DID SHE MISS APPOINTMENTS?</div>
+              <b style="font-size:11.5px;display:block;margin-top:4px">One no-show, 14 months ago</b>
+              <div class="wmu" style="font-size:10.5px">8 attended since · confirms via WhatsApp</div></div>
+            <div class="wc" style="padding:11px;border-left:3px solid var(--clinical)" data-a="up" data-d=".53">
+              <div class="wlbl">ARE LAB RESULTS READY?</div>
+              <b style="font-size:11.5px;display:block;margin-top:4px">HbA1c ready 14:02 · flagged for review</b>
+              <div class="wmu" style="font-size:10.5px">Not yet released to her — awaiting the doctor</div></div>
+            <div class="wc" style="padding:11px;border-left:3px solid var(--desk)" data-a="up" data-d=".62">
+              <div class="wlbl">IS THERE AN OPEN COMPLAINT?</div>
+              <b style="font-size:11.5px;display:block;margin-top:4px">Yes — #4412, pharmacy wait</b>
+              <div class="wmu" style="font-size:10.5px">Raised 09:52 · owner Lama · due 13:52</div></div>
+            <div class="wc" style="padding:11px;border-left:3px solid var(--camp)" data-a="up" data-d=".71">
+              <div class="wlbl">HAS MARKETING CONTACTED HER?</div>
+              <b style="font-size:11.5px;display:block;margin-top:4px">Diabetes programme invite, 3 days ago</b>
+              <div class="wmu" style="font-size:10.5px">Opened, not enrolled · don't pitch it again today</div></div>
+            <div class="wc" style="padding:11px;border-left:3px solid var(--finance)" data-a="up" data-d=".8">
+              <div class="wlbl">IS INSURANCE STILL PENDING?</div>
+              <b style="font-size:11.5px;display:block;margin-top:4px">Pre-auth approved · co-pay SAR 50 unpaid</b>
+              <div class="wmu" style="font-size:10.5px">Payment link sent 11:20, not yet opened</div></div>
+          </div>
+          <!-- the point -->
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="wc" style="padding:13px;background:#FFF8F7;border-color:#F6CBC5" data-a="inR" data-d=".9">
+              <div class="wlbl" style="color:#B4322A;margin-bottom:7px">WITHOUT THIS SCREEN</div>
+              <div style="font-size:11px;line-height:1.5">Six answers live in five systems. The agent puts her on hold twice, transfers her once, and still can't tell her about the complaint her colleague logged an hour ago.</div>
+            </div>
+            <div class="wc" style="padding:13px" data-a="inR" data-d="1">
+              <div class="wlbl" style="margin-bottom:7px">WHAT THE AGENT SAYS INSTEAD</div>
+              <div class="ar" dir="rtl" style="font-size:11.5px;line-height:1.8">أهلاً أم … شفت إن عندك ملاحظة على انتظار الصيدلية الصباح، وأنا متابعها. نتيجة التحليل جاهزة وبتوصلك من الدكتورة اليوم.</div>
+            </div>
+            <div class="wc" style="padding:13px;flex:1;display:flex;flex-direction:column;justify-content:center;background:#F1FBF8;border-color:#A9E6DA" data-a="inR" data-d="1.1">
+              <div class="wlbl" style="color:#0A7A63">AVERAGE HANDLE TIME</div>
+              <div style="display:flex;align-items:baseline;gap:9px;margin-top:3px">
+                <b style="font-family:var(--display);font-size:22px;color:var(--w-mu);text-decoration:line-through">6m 40s</b>
+                <b style="font-family:var(--display);font-size:30px;color:#0A7A63">2m 05s</b></div>
+              <div class="wmu" style="font-size:10.5px;margin-top:5px">No holds, no transfers, no repeating herself.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 11 RESULTS & FOLLOW-UP ══════════ -->
+<section class="slide" data-step="4" data-when="VISIT DAY · 14:02" data-title="The result nobody chased">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Stage 5–7 · the dangerous gap</p><h2 data-a="up" data-d=".06">An abnormal result is a task, not a PDF.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--clinical)"><i></i>LIS event</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM task</span><span class="chip" style="--c:var(--wa)"><img src="logos/whatsapp.png" alt="whatsapp">WhatsApp</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--clinical)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 300px;gap:12px;padding:13px 15px">
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="overflow:hidden">
+            <div style="padding:9px 12px;border-bottom:1px solid var(--w-bd);display:flex;align-items:center;gap:8px">
+              <span class="wlbl" style="flex:1">EVENT CHAIN · HbA1c 8.4% · ABOVE TARGET</span><span class="pill r">CLINICALLY SIGNIFICANT</span>
+            </div>
+            <div class="trow" data-a="row" data-d=".3"><span class="tick cl">1</span>
+              <div style="flex:1"><b>Result arrives through the integration layer</b><div class="wlbl">LIS PUBLISHES · PATIENT 360 SUBSCRIBES</div></div><span class="tms">14:02</span></div>
+            <div class="trow" data-a="row" data-d=".42"><span class="tick">2</span>
+              <div style="flex:1"><b>Task created for Dr. Hessa — review and release</b><div class="wlbl">SLA 4 HOURS · ESCALATES TO THE ON-CALL CONSULTANT</div></div><span class="tms">14:02</span></div>
+            <div class="trow" data-a="row" data-d=".54"><span class="tick cl">3</span>
+              <div style="flex:1"><b>Doctor reviews, adjusts medication, releases</b><div class="wlbl">WASFATY E-PRESCRIPTION · INTEGRATED, VISIBLE ON THE TIMELINE</div></div><span class="tms">15:41</span></div>
+            <div class="trow" data-a="row" data-d=".66"><span class="tick">4</span>
+              <div style="flex:1"><b>Patient notified — with a Nafath check before disclosure</b><div class="wlbl">RESULT DETAIL NEVER SENT IN A PLAIN MESSAGE</div></div><span class="tms">15:43</span></div>
+            <div class="trow" data-a="row" data-d=".78"><span class="tick">5</span>
+              <div style="flex:1"><b>Follow-up call task · nurse educator, within 72h</b><div class="wlbl">BECAUSE A NUMBER ON A SCREEN IS NOT UNDERSTANDING</div></div><span class="tms">15:43</span></div>
+            <div class="trow" data-a="row" data-d=".9"><span class="tick">6</span>
+              <div style="flex:1"><b>Enrolled in the chronic care programme</b><div class="wlbl">12-WEEK REVIEW BOOKED · ADHERENCE CHECKS SCHEDULED</div></div><span class="tms">15:44</span></div>
+            <div class="trow" style="background:#F1FBF8" data-a="row" data-d="1.02"><span class="tick">7</span>
+              <div style="flex:1"><b>Loop closed — nurse spoke to her, noted on the record</b><div class="wlbl">IF SHE HADN'T ANSWERED, THE TASK WOULD STILL BE OPEN</div></div><span class="tms">+2 days</span></div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;display:flex;align-items:center;gap:18px" data-a="up" data-d="1.2">
+            <div style="flex:1">
+              <div class="wlbl" style="margin-bottom:7px">THE FAILURE THIS PREVENTS</div>
+              <div style="font-size:12px;line-height:1.55">The result was always in the LIS. It was always correct. It was also never explained to her, because explaining it wasn't anybody's open task — and a report that nobody is accountable for is indistinguishable from a report that was never produced.</div>
+            </div>
+            <div style="flex:none;text-align:center">
+              <div style="font-family:var(--display);font-weight:700;font-size:26px;color:var(--care)">100%</div>
+              <div class="wlbl">ABNORMAL RESULTS<br>WITH A CLOSED LOOP</div>
+            </div>
+          </div>
+        </div>
+        <!-- the patient side -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc ar" dir="rtl" style="padding:0;overflow:hidden" data-a="inR" data-d=".6">
+            <div style="padding:9px 12px;background:#0B1410;color:#fff;display:flex;align-items:center;gap:7px">
+              <span style="width:18px;height:18px;border-radius:99px;background:var(--wa);display:grid;place-items:center;font-size:9px;color:#08130C">✚</span>
+              <b style="font-size:10.5px">مدينة الواحة الطبية</b></div>
+            <div style="padding:11px;background:#EFE7DE;display:flex;flex-direction:column;gap:7px">
+              <div class="cb wa" style="font-size:11px;max-width:100%">نتيجة تحليلك جاهزة ومراجَعة من د. حصة. للاطلاع عليها بشكل آمن، يرجى الدخول عبر <b>نفاذ</b>:</div>
+              <div class="wc" style="padding:8px;font-size:10px;text-align:center">🔒 عرض النتيجة</div>
+              <div class="cb wa" style="font-size:11px;max-width:100%">عدّلت الدكتورة الجرعة، والوصفة متاحة في <b>وصفتي</b>. ستتصل بك المُثقّفة الصحية خلال يومين.</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:12px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".85">
+            <div class="wlbl" style="margin-bottom:7px">WHERE THE LINE SITS</div>
+            <div style="font-size:11.5px;line-height:1.5">The result is produced in the lab system and reaches Patient 360 as an event. Patient 360 creates the accountability — the task, the clock, the escalation, the closed loop — without duplicating the clinical record.</div>
+            <div style="display:flex;gap:6px;margin-top:9px;flex-wrap:wrap">
+              <span class="pill n">No shadow chart</span><span class="pill n">No clinical logic</span><span class="pill g">Audit trail</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 12 FINANCIAL JOURNEY / NPHIES ══════════ -->
+<section class="slide" data-step="5" data-when="SETTLEMENT" data-title="The financial journey, made visible">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Stage 6 · insurance and payment</p><h2 data-a="up" data-d=".06">The claim is plumbing. The conversation is the product.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--finance)"><i></i>ERP / RCM → NPHIES</span><span class="chip" style="--c:var(--care)"><img src="logos/crmplus.png" alt="crmplus">CRM Plus · status &amp; comms</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--finance)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 1fr 262px;gap:12px">
+        <!-- the pipeline -->
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:9px" data-a="inL" data-d=".2">
+          <div class="kv"><span class="wlbl">WHAT ARRIVES THROUGH THE INTEGRATION LAYER</span><span class="pill n">ERP / RCM · NPHIES</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px;flex:1">
+            <div class="wc" style="padding:9px 11px;border-left:3px solid var(--finance)">
+              <div class="kv"><b style="font-size:11px">Eligibility check</b><span class="pill g">Active</span></div>
+              <div class="wlbl" style="margin-top:3px">NPHIES · BEFORE THE VISIT · CO-PAY SAR 50</div></div>
+            <div class="wc" style="padding:9px 11px;border-left:3px solid var(--finance)">
+              <div class="kv"><b style="font-size:11px">Pre-authorisation</b><span class="pill g">Approved</span></div>
+              <div class="wlbl" style="margin-top:3px">NPHIES · HbA1c PANEL + CONSULT</div></div>
+            <div class="wc" style="padding:9px 11px;border-left:3px solid var(--finance)">
+              <div class="kv"><b style="font-size:11px">Claim submitted</b><span class="pill b">FHIR R4</span></div>
+              <div class="wlbl" style="margin-top:3px">CODED, VALIDATED, SENT TO THE PAYER</div></div>
+            <div class="wc" style="padding:9px 11px;border-left:3px solid var(--desk);background:#FFF8F7">
+              <div class="kv"><b style="font-size:11px">Line item rejected</b><span class="pill r">Code mismatch</span></div>
+              <div class="wlbl" style="margin-top:3px">RESUBMISSION WINDOW IS COUNTING</div></div>
+            <div class="wc" style="padding:9px 11px;border-left:3px solid var(--finance)">
+              <div class="kv"><b style="font-size:11px">Payment advice</b><span class="pill y">Partial</span></div>
+              <div class="wlbl" style="margin-top:3px">BALANCE MOVES TO THE PATIENT</div></div>
+          </div>
+          <div class="wc" style="padding:9px;background:var(--w-soft);font-size:10.5px;line-height:1.45">
+            Claims are filed by your RCM against NPHIES. Patient 360 subscribes to every status change.</div>
+        </div>
+        <!-- what CRM Plus does with it -->
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:9px" data-a="up" data-d=".35">
+          <div class="kv"><span class="wlbl">WHAT PATIENT 360 DOES WITH IT</span><span class="pill g">THE PLATFORM</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px;flex:1">
+            <div class="wc" style="padding:9px 11px;border-left:3px solid var(--care)">
+              <b style="font-size:11px">Before the visit</b>
+              <div class="ar" dir="rtl" style="font-size:10.5px;margin-top:4px;color:var(--w-mu)">تغطيتك سارية · التحمّل ٥٠ ر.س — يمكنك الدفع مسبقاً</div>
+              <div class="wlbl" style="margin-top:4px">NO SURPRISE AT THE CASHIER</div></div>
+            <div class="wc" style="padding:9px 11px;border-left:3px solid var(--care)">
+              <b style="font-size:11px">When pre-auth is delayed</b>
+              <div style="font-size:10.5px;margin-top:4px;line-height:1.45">She is told, proactively, before she drives across Riyadh for a procedure that isn't approved yet.</div></div>
+            <div class="wc" style="padding:9px 11px;border-left:3px solid var(--desk);background:#FFF8F7">
+              <b style="font-size:11px">When a line is rejected</b>
+              <div style="font-size:10.5px;margin-top:4px;line-height:1.45">A task to the RCM team with the reason code, an owner and a deadline — before the resubmission window closes.</div></div>
+            <div class="wc" style="padding:9px 11px;border-left:3px solid var(--care)">
+              <b style="font-size:11px">When a balance is due</b>
+              <div style="font-size:10.5px;margin-top:4px;line-height:1.45">A payment link on her preferred channel, then a reminder journey — not a letter and a phone call in month three.</div></div>
+          </div>
+          <div class="wc" style="padding:9px;background:#F1FBF8;border-color:#A9E6DA;font-size:10.5px;line-height:1.45">
+            Same data, two different jobs. Filing is a transaction. Explaining, chasing and closing it is the relationship — and that lives in Patient 360.</div>
+        </div>
+        <!-- outcome -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".6">
+            <div class="wlbl">BILLING COMPLAINTS</div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-top:3px">
+              <b style="font-family:var(--display);font-size:22px;color:var(--w-mu);text-decoration:line-through">31%</b>
+              <b style="font-family:var(--display);font-size:30px;color:var(--care)">12%</b></div>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px">of all complaints. Most were never about the amount — they were about being surprised by it.</div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".74">
+            <div class="wlbl">PATIENT BALANCE COLLECTED IN 30 DAYS</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:30px;color:var(--care)">74<span style="font-size:15px">%</span></div>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px">up from 41% on paper statements</div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".88">
+            <div class="wlbl">AND ONE MORE THING</div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:5px">Rejection reason codes, aggregated in Analytics, tell you which clinic keeps coding the same thing wrong. That's a training problem you can only see if the data lands somewhere.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 13 COMPLAINTS ══════════ -->
+<section class="slide" data-step="6" data-when="SAME DAY · 09:52" data-title="Complaints and patient relations">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Patient relations</p><h2 data-a="up" data-d=".06">A complaint is a retention event with a deadline.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk">Zoho Desk</span><span class="chip" style="--c:var(--survey)"><img src="logos/survey.png" alt="survey">Survey</span><span class="chip" style="--c:var(--anal)"><img src="logos/zia.png" alt="zia">Zia sentiment</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--desk)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/desk.png" alt="Zoho Desk"><span class="appname">Zoho <span>Desk</span> · Patient Relations</span>
+        <div class="spacer"></div><span class="pill r">SLA BREACH IN 1h 12m</span><div class="uav">ل</div>
+      </div>
+      <div class="win-tabs"><div class="tab">Dashboard</div><div class="tab on">Cases</div><div class="tab">Categories</div><div class="tab">Knowledge base</div><div class="tab">Reports</div></div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div>
+          <div class="amk amk-logo" style="--c:var(--survey)"><img src="logos/survey.png" alt="survey"></div><div class="amk amk-logo" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 262px;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div class="wc" style="overflow:hidden">
+              <div style="padding:9px 12px;border-bottom:1px solid var(--w-bd);display:flex;align-items:center;gap:8px">
+                <b style="font-size:11.5px">#4412 · Pharmacy wait time</b><span class="pill r">HIGH</span>
+                <span class="wlbl">NOURA AL-SHEHRI · MRN 44-1908</span>
+                <div class="spacer"></div><span class="pill y">DUE 13:52</span>
+              </div>
+              <div style="padding:12px;display:flex;flex-direction:column;gap:9px">
+                <div class="wc" style="padding:10px 12px">
+                  <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+                    <span class="chan" style="background:var(--wa)">◍</span><b style="font-size:10.5px">Raised on WhatsApp · 09:52</b>
+                    <div class="spacer"></div><span class="pill r">Sentiment: negative</span></div>
+                  <div class="ar" dir="rtl" style="font-size:12px;line-height:1.6">انتظرت ٥٥ دقيقة في الصيدلية بعد الموعد، ومحد قدر يقول لي وين وصل الدواء.</div>
+                </div>
+                <div class="wc" style="padding:10px 12px;border-left:3px solid var(--care)">
+                  <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+                    <span class="wav" style="width:18px;height:18px;font-size:8px;background:#8E9EA6">ل</span>
+                    <b style="font-size:10.5px">Lama · Patient Relations · 10:04</b>
+                    <div class="spacer"></div><span class="pill g">First response 12 min</span></div>
+                  <div class="ar" dir="rtl" style="font-size:12px;line-height:1.6">أعتذر لك يا نورة. تحققت من الطلب — كان في مراجعة الصيدلي. جهّزت لك التسليم السريع في زيارتك القادمة وسأتابع شخصياً.</div>
+                </div>
+                <div style="display:flex;gap:7px;flex-wrap:wrap">
+                  <span class="pill y">Category: Pharmacy → turnaround</span>
+                  <span class="pill b">Linked to today's encounter</span>
+                  <span class="pill p">Zia auto-tagged</span>
+                </div>
+              </div>
+            </div>
+            <div class="wc" style="padding:13px;flex:1;display:flex;gap:18px;align-items:center" data-a="up" data-d=".6">
+              <div style="flex:1">
+                <div class="wlbl" style="margin-bottom:7px">WHAT MAKES THIS DIFFERENT FROM A COMPLAINT BOOK</div>
+                <div style="font-size:11.5px;line-height:1.5">It has an owner, a clock and a category that rolls up. Eleven similar cases this month all point at one pharmacy shift — which becomes an operations fix, not eleven separate apologies.</div>
+              </div>
+              <div class="wc" style="padding:10px 13px;flex:none;text-align:center;background:#FFF8F7;border-color:#F6CBC5">
+                <div class="wlbl" style="color:#B4322A">SAME ROOT CAUSE</div>
+                <div style="font-family:var(--display);font-weight:700;font-size:24px;color:#B4322A">11</div>
+                <div class="wlbl">CASES THIS MONTH</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="wc" style="padding:13px" data-a="inR" data-d=".4">
+              <div class="wlbl" style="margin-bottom:9px">CATEGORIES · THIS MONTH</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div><div class="kv" style="font-size:10.5px;margin-bottom:3px"><span>Waiting time</span><b>38%</b></div>
+                  <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:38%;display:block;height:100%;background:var(--desk);animation:barw .9s .6s ease both"></i></div></div>
+                <div><div class="kv" style="font-size:10.5px;margin-bottom:3px"><span>Billing clarity</span><b>12%</b></div>
+                  <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:12%;display:block;height:100%;background:var(--finance);animation:barw .9s .68s ease both"></i></div></div>
+                <div><div class="kv" style="font-size:10.5px;margin-bottom:3px"><span>Communication</span><b>21%</b></div>
+                  <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:21%;display:block;height:100%;background:var(--care);animation:barw .9s .76s ease both"></i></div></div>
+                <div><div class="kv" style="font-size:10.5px;margin-bottom:3px"><span>Facilities</span><b>17%</b></div>
+                  <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:17%;display:block;height:100%;background:var(--clinical);animation:barw .9s .84s ease both"></i></div></div>
+                <div><div class="kv" style="font-size:10.5px;margin-bottom:3px"><span>Clinical concern → escalated</span><b>12%</b></div>
+                  <div style="height:6px;border-radius:99px;background:var(--w-soft);overflow:hidden"><i style="--w:12%;display:block;height:100%;background:var(--anal);animation:barw .9s .92s ease both"></i></div></div>
+              </div>
+            </div>
+            <div class="wc" style="padding:13px" data-a="inR" data-d=".6">
+              <div class="wlbl" style="margin-bottom:7px">CLINICAL CONCERNS ARE ROUTED, NOT ANSWERED</div>
+              <div style="font-size:11px;line-height:1.5">Anything that sounds like a clinical or safety issue leaves the service queue immediately and goes to the quality and patient-safety team with the case history attached.</div>
+            </div>
+            <div class="wc" style="padding:13px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".78">
+              <div class="wlbl">AND IT'S REPORTABLE</div>
+              <div style="font-size:11px;line-height:1.5;margin-top:5px">Response times, resolution rates and categories come out as a report rather than a manual compilation — which is what accreditation and patient-experience reviews ask you to evidence.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 14 PREVENTIVE CARE ══════════ -->
+<section class="slide" data-step="7" data-when="ONGOING" data-title="Preventive care and recall">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Stage 8 · the compounding stage</p><h2 data-a="up" data-d=".06">The visit that never gets booked is the one that mattered.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--camp)"><img src="logos/campaigns.png" alt="campaigns">Campaigns</span><span class="chip" style="--c:var(--proj)"><img src="logos/projects.png" alt="projects">Projects</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM segments</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--camp)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 1fr 268px;gap:12px">
+        <div class="wc" style="overflow:hidden;display:flex;flex-direction:column" data-a="inL" data-d=".2">
+          <div style="padding:9px 12px;border-bottom:1px solid var(--w-bd)">
+            <span class="wlbl">RECALL COHORTS · BUILT FROM CLINICAL + BEHAVIOURAL DATA</span></div>
+          <div class="trow" data-a="row" data-d=".3"><span class="pill y">2,410</span>
+            <div style="flex:1"><b style="font-size:11px">Diabetic, no HbA1c in 9 months</b><div class="wlbl">NURSE-LED CALL, NOT A BULK MESSAGE</div></div></div>
+          <div class="trow" data-a="row" data-d=".4"><span class="pill r">640</span>
+            <div style="flex:1"><b style="font-size:11px">Abnormal result, never returned</b><div class="wlbl">HIGHEST CLINICAL PRIORITY IN THE BUILDING</div></div></div>
+          <div class="trow" data-a="row" data-d=".5"><span class="pill b">8,900</span>
+            <div style="flex:1"><b style="font-size:11px">Women 40+, no mammogram on record</b><div class="wlbl">SCREENING INVITE · FEMALE-STAFFED SESSIONS OFFERED</div></div></div>
+          <div class="trow" data-a="row" data-d=".6"><span class="pill n">3,180</span>
+            <div style="flex:1"><b style="font-size:11px">Post-op, 6-week review not booked</b><div class="wlbl">SURGEON'S LIST, AUTOMATICALLY RECONCILED</div></div></div>
+          <div class="trow" data-a="row" data-d=".7"><span class="pill g">14,200</span>
+            <div style="flex:1"><b style="font-size:11px">Employer scheme, annual check-up unused</b><div class="wlbl">BENEFIT THEY ALREADY PAID FOR</div></div></div>
+          <div class="trow" data-a="row" data-d=".8"><span class="pill p">1,970</span>
+            <div style="flex:1"><b style="font-size:11px">Lapsed 18 months, previously loyal</b><div class="wlbl">WIN-BACK · REFERENCE THEIR OWN HISTORY</div></div></div>
+          <div style="margin-top:auto;padding:10px 12px;border-top:1px solid var(--w-bd)">
+            <span class="wlbl">EVERY COHORT IS A LIST OF NAMED PATIENTS WITH AN OWNER — NOT A MAILING LIST</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:14px" data-a="up" data-d=".4">
+            <div class="wlbl" style="margin-bottom:10px">THE DIABETES PROGRAMME · 12 WEEKS</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--care)">
+                <div class="kv"><b style="font-size:10.5px">Week 0 · enrolment call</b><span class="pill g">Nurse</span></div></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--camp)">
+                <div class="kv"><b style="font-size:10.5px">Week 2 · adherence check</b><span class="pill n">WhatsApp</span></div>
+                <div class="ar" dir="rtl" style="font-size:10px;margin-top:3px;color:var(--w-mu)">كيف تسير الجرعة الجديدة معك؟</div></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--camp)">
+                <div class="kv"><b style="font-size:10.5px">Week 6 · education content</b><span class="pill n">Arabic video</span></div></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--clinical)">
+                <div class="kv"><b style="font-size:10.5px">Week 12 · labs + review booked</b><span class="pill b">HIS</span></div></div>
+            </div>
+            <div class="wc" style="padding:10px;margin-top:10px;background:#FFF9EE;border-color:#F6DFAE">
+              <div class="wlbl" style="color:#96650A;margin-bottom:4px">RAMADAN AWARENESS ISN'T A NICE TOUCH</div>
+              <div style="font-size:10.5px;line-height:1.45">Fasting changes medication timing and glucose patterns. The programme shifts its content and its send times, and flags patients who need a pre-Ramadan review.</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="up" data-d=".6">
+            <div class="wlbl" style="margin-bottom:6px">WHY THIS IS THE SLIDE THE CFO LIKES</div>
+            <div style="font-size:11.5px;line-height:1.5">Recall is the only patient-acquisition channel where you already have consent, a clinical reason to make contact, and their file. It is cheaper than any advertisement and it improves outcomes.</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".55">
+            <div class="wlbl">RECALL APPOINTMENTS BOOKED · 90 DAYS</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:32px;color:var(--care)" data-count="6840">0</div>
+            <div class="wmu" style="font-size:10.5px;margin-top:3px">from patients who were already yours</div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".68">
+            <div class="wlbl">CHRONIC PROGRAMME RETENTION</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:32px;color:var(--care)">81<span style="font-size:16px">%</span></div>
+            <div class="wmu" style="font-size:10.5px;margin-top:3px">still engaged at 12 months</div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;background:#F1FBF8;border-color:#A9E6DA;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".82">
+            <div class="wlbl" style="color:#0A7A63">THE HONEST CAVEAT</div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:5px">Recall done badly is spam with a stethoscope. Consent, frequency caps and a clinical reason for every message are not optional — and they're configured once, in the platform.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 15 ONE TIMELINE ══════════ -->
+<section class="slide" data-step="8" data-when="ONE TIMELINE" data-title="One patient. One timeline.">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The payoff</p><h2 data-a="up" data-d=".06">Open her record. Every department sees this.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Clinical, financial and experience events on one thread, in the order they happened.</p>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--care)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crmplus.png" alt="Zoho CRM Plus"><span class="appname">Zoho <span>CRM Plus</span> › Noura Al-Shehri › Timeline</span>
+        <div class="spacer"></div><span class="pill g">6 SOURCES · 1 THREAD · 1 PLATFORM</span><div class="uav">ع</div>
+      </div>
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 250px;gap:12px">
+        <div style="position:relative;overflow:hidden;padding-left:5px">
+          <div style="position:absolute;left:18px;top:4px;bottom:4px;width:2px;background:linear-gradient(var(--care),var(--clinical),var(--finance),var(--care))"></div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".25">
+              <span class="chan" style="background:var(--care);z-index:1">◍</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px">
+                <span class="wlbl" style="width:88px">THU 21:14</span><b style="font-size:11px;flex:1">Booked on WhatsApp, in Arabic</b><span class="pill g">CRM Plus</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".33">
+              <span class="chan" style="background:var(--care);z-index:1">✓</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px">
+                <span class="wlbl" style="width:88px">FRI 10:30</span><b style="font-size:11px;flex:1">Reminder sent · confirmed in one tap</b><span class="pill g">CRM Plus</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".41">
+              <span class="chan" style="background:var(--finance);z-index:1">⛨</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px">
+                <span class="wlbl" style="width:88px">SUN 08:02</span><b style="font-size:11px;flex:1">Eligibility active · co-pay SAR 50 · pre-auth approved</b><span class="pill y">via integration</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".49">
+              <span class="chan" style="background:var(--clinical);z-index:1">⌗</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px">
+                <span class="wlbl" style="width:88px">SUN 10:34</span><b style="font-size:11px;flex:1">Consultation · Dr. Hessa Al-Mutairi, Endocrinology</b><span class="pill b">via integration</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".57">
+              <span class="chan" style="background:var(--desk);z-index:1">!</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px;border-color:#F6CBC5;background:#FFFAF9">
+                <span class="wlbl" style="width:88px">SUN 09:52</span><b style="font-size:11px;flex:1">Complaint #4412 · pharmacy wait · resolved 11:38</b><span class="pill r">Desk</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".65">
+              <span class="chan" style="background:var(--clinical);z-index:1">⚗</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px">
+                <span class="wlbl" style="width:88px">SUN 14:02</span><b style="font-size:11px;flex:1">HbA1c 8.4% · reviewed and released 15:41</b><span class="pill b">via integration</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".73">
+              <span class="chan" style="background:var(--care);z-index:1">◍</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px">
+                <span class="wlbl" style="width:88px">SUN 15:43</span><b style="font-size:11px;flex:1">Result released after Nafath verification</b><span class="pill g">CRM Plus</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".81">
+              <span class="chan" style="background:var(--finance);z-index:1">₪</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px">
+                <span class="wlbl" style="width:88px">MON 11:20</span><b style="font-size:11px;flex:1">Co-pay paid via link · ZATCA invoice issued</b><span class="pill y">via integration</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".89">
+              <span class="chan" style="background:var(--care);z-index:1">☏</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px">
+                <span class="wlbl" style="width:88px">TUE 12:10</span><b style="font-size:11px;flex:1">Nurse educator call · loop closed on the result</b><span class="pill g">CRM Plus</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d=".97">
+              <span class="chan" style="background:var(--survey);z-index:1">★</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px">
+                <span class="wlbl" style="width:88px">WED 19:00</span><b style="font-size:11px;flex:1">Experience survey · 9/10 · “الصيدلية تحسنت”</b><span class="pill g">Survey</span></div></div>
+            <div style="display:flex;gap:11px;align-items:center" data-a="up" data-d="1.05">
+              <span class="chan" style="background:var(--camp);z-index:1">✉</span>
+              <div class="wc" style="flex:1;padding:6px 11px;display:flex;align-items:center;gap:10px;border-color:#A9E6DA;background:#F5FCFA">
+                <span class="wlbl" style="width:88px">+12 WEEKS</span><b style="font-size:11px;flex:1">Chronic programme · review booked · she returns</b><span class="pill g">CRM Plus</span></div></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".6">
+            <div class="wlbl">TIMES SHE EXPLAINED HERSELF</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:38px;color:var(--care);line-height:1">0</div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".72">
+            <div class="wlbl">DEPARTMENTS THAT TOUCHED HER</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:38px;line-height:1">6</div>
+            <div class="wmu" style="font-size:10.5px;margin-top:5px">contact centre, endocrinology, lab, pharmacy, patient relations, RCM</div>
+          </div>
+          <div class="wc" style="padding:13px" data-a="inR" data-d=".84">
+            <div class="wlbl">OPEN LOOPS AT THE END</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:38px;color:var(--care);line-height:1">0</div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;background:#F1FBF8;border-color:#A9E6DA;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".96">
+            <div class="wlbl" style="color:#0A7A63">THE WHOLE ARGUMENT</div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:5px">Six systems produced these events. Patient 360 is the only one anybody has to open.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 16 EVERY DEPARTMENT ══════════ -->
+<section class="slide" data-step="8" data-when="ORG-WIDE" data-title="What each department gets">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Who actually benefits</p><h2 data-a="up" data-d=".06">Six departments, one record, six different reasons to care.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">If a platform only helps one department, it becomes that department's tool and dies there.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:11px">
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--desk)" data-a="up" data-d=".2">
+          <div class="kv"><b style="font-size:13px">Contact centre</b><span class="chan" style="background:var(--desk)">☏</span></div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">One screen instead of five. No holds, no transfers, and the caller's open complaint is visible before they mention it.</div>
+          <div class="wlbl">METRIC: HANDLE TIME, FIRST-CONTACT RESOLUTION</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--care)" data-a="up" data-d=".28">
+          <div class="kv"><b style="font-size:13px">Patient relations</b><span class="chan" style="background:var(--care)">♡</span></div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Complaints with owners, clocks and categories — plus the root-cause report that turns eleven apologies into one operational fix.</div>
+          <div class="wlbl">METRIC: RESOLUTION TIME, REPEAT COMPLAINTS</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--camp)" data-a="up" data-d=".36">
+          <div class="kv"><b style="font-size:13px">Marketing</b><span class="chan" style="background:var(--camp)">✉</span></div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Recall cohorts built from clinical reality, campaigns attributed to booked appointments, and consent managed in one place.</div>
+          <div class="wlbl">METRIC: BOOKINGS PER CAMPAIGN, COST PER RETURN VISIT</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--clinical)" data-a="up" data-d=".44">
+          <div class="kv"><b style="font-size:13px">Clinicians</b><span class="chan" style="background:var(--clinical)">✚</span></div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Continuity: who chased the patient, what she was told, whether she understood it. Nothing clinical is duplicated — the EMR remains the clinical record and integrates in.</div>
+          <div class="wlbl">METRIC: FOLLOW-UP COMPLETION, LOOP CLOSURE</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--finance)" data-a="up" data-d=".52">
+          <div class="kv"><b style="font-size:13px">Revenue cycle</b><span class="chan" style="background:var(--finance)">₪</span></div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Rejection reason codes aggregated by clinic and coder, patient balances chased on the channel people actually answer.</div>
+          <div class="wlbl">METRIC: REJECTION RATE, DAYS TO COLLECT</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--anal)" data-a="up" data-d=".6">
+          <div class="kv"><b style="font-size:13px">Executive &amp; IT</b><span class="chan" style="background:var(--anal)">▦</span></div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">One live view of experience alongside revenue and operations — and one integration surface to govern instead of six point-to-point scripts.</div>
+          <div class="wlbl">METRIC: NPS, RETENTION, INTEGRATION COUNT</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 17 EXECUTIVE DASHBOARD ══════════ -->
+<section class="slide" data-step="8" data-when="LIVE" data-title="Executive dashboard & Ask Zia">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Intelligence</p><h2 data-a="up" data-d=".06">The question the board asks, answered in the meeting.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--anal)"><img src="logos/analytics.png" alt="analytics">Zoho Analytics</span><span class="chip" style="--c:var(--anal)"><img src="logos/zia.png" alt="zia">Ask Zia</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--anal)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/analytics.png" alt="Zoho Analytics"><span class="appname">Zoho <span>Analytics</span> · Patient experience &amp; growth</span>
+        <div class="spacer"></div><span class="pill p">LIVE · HIS + ERP + CRM PLUS</span><div class="uav">ع</div>
+      </div>
+      <div class="win-body" style="display:flex;flex-direction:column;gap:11px">
+        <div class="zia" style="padding:12px 14px;flex:none" data-a="up" data-d=".2">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+            <span class="ziamk">✦</span><b style="font-size:10.5px;color:#4B2FBE">Ask Zia</b>
+            <div class="spacer"></div><span class="wlbl">ARABIC &amp; ENGLISH</span></div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="flex:1;background:#fff;border:1px solid #DED5FB;border-radius:7px;padding:9px 12px;font-size:12.5px;overflow:hidden;white-space:nowrap">
+              <span style="display:inline-block;overflow:hidden;white-space:nowrap;animation:typing 2.4s .5s steps(70,end) both;vertical-align:bottom">Which specialty loses the most patients after the first visit, and why?</span><span style="animation:caret .9s 10 both;color:var(--anal)">▌</span></div>
+            <span class="wbtn" style="background:var(--anal)">Ask</span>
+          </div>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:auto 1fr;gap:10px;min-height:0">
+          <div class="wc" style="padding:11px" data-a="up" data-d="2.8"><div class="wlbl">NO-SHOW RATE</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:21px;color:var(--care)">8.4%</div><span class="pill g">▼ from 19%</span></div>
+          <div class="wc" style="padding:11px" data-a="up" data-d="2.88"><div class="wlbl">PATIENT NPS</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:21px" data-count="61">0</div><span class="pill g">▲ 14 pts</span></div>
+          <div class="wc" style="padding:11px" data-a="up" data-d="2.96"><div class="wlbl">RETURN WITHIN 12 MO</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:21px">68%</div><span class="pill y">target 75%</span></div>
+          <div class="wc" style="padding:11px" data-a="up" data-d="3.04"><div class="wlbl">CLAIM REJECTION</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:21px;color:var(--finance)">6.1%</div><span class="pill g">▼ 2.3 pts</span></div>
+          <!-- the answer -->
+          <div class="wc" style="padding:13px;grid-column:span 2;display:flex;flex-direction:column" data-a="up" data-d="3.2">
+            <div class="kv" style="margin-bottom:10px"><span class="wlbl">FIRST-VISIT-ONLY PATIENTS BY SPECIALTY</span><span class="pill p">GENERATED FROM THE QUESTION</span></div>
+            <div style="flex:1;display:flex;align-items:flex-end;gap:12px">
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">44%</span><div style="width:100%;height:88%;border-radius:4px 4px 0 0;background:var(--desk);transform-origin:bottom;animation:bargrow .8s 3.5s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">DERMA</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">31%</span><div style="width:100%;height:62%;border-radius:4px 4px 0 0;background:var(--finance);transform-origin:bottom;animation:bargrow .8s 3.6s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">ORTHO</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">18%</span><div style="width:100%;height:36%;border-radius:4px 4px 0 0;background:#C6D3D8;transform-origin:bottom;animation:bargrow .8s 3.7s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">ENDO</span></div>
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px">
+                <span class="wlbl">11%</span><div style="width:100%;height:22%;border-radius:4px 4px 0 0;background:var(--care);transform-origin:bottom;animation:bargrow .8s 3.8s cubic-bezier(.2,.9,.3,1) both"></div><span class="wlbl">PAEDS</span></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:13px;grid-column:span 2;display:flex;flex-direction:column;gap:9px" data-a="up" data-d="3.4">
+            <div class="wlbl">AND THE “WHY” HALF OF THE QUESTION</div>
+            <div style="font-size:12px;line-height:1.6">Dermatology's one-and-done patients wait <b>19 days</b> for a follow-up slot against a 6-day average, and <b>61%</b> of their complaints are about waiting. It isn't a marketing problem or a doctor problem. It's a capacity problem that looked like churn.</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:auto">
+              <span class="pill r">Wait 19 days</span><span class="pill y">61% wait complaints</span><span class="pill b">Now a capacity review</span>
+            </div>
+            <div class="wmu" style="font-size:10.5px;line-height:1.45">The HIS knew the wait. Desk knew the complaints. CRM knew who didn't come back. Only together do they make a sentence.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+<!-- ══════════ 18 CLOSE ══════════ -->
+<section class="slide" data-step="8" data-when="—" data-title="Beyond clinical care">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The architecture in one line</p><h2 data-a="up" data-d=".06">One platform. One integration layer. Everything else stays put.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">And a set of requirements it has to satisfy here, in the Kingdom, not somewhere else.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 340px;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <!-- the platform -->
+          <div class="wc" style="padding:16px;flex:1;display:flex;gap:18px;align-items:center;background:#F5FCFA;border-color:#A9E6DA" data-a="up" data-d=".2">
+            <div style="flex:1">
+              <div class="kv" style="margin-bottom:8px"><b style="font-size:17px">Patient 360</b><span class="pill g">THE PLATFORM · ZOHO CRM PLUS</span></div>
+              <div style="font-size:12px;line-height:1.55">Owns the patient relationship end to end: identity, every channel, every promise made, every follow-up owed, every complaint, every recall, and the reporting on all of it. This is where your teams and your patients actually work.</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+                <span class="pill g">CRM</span><span class="pill g">Desk</span><span class="pill g">SalesIQ</span><span class="pill g">Campaigns</span>
+                <span class="pill g">Survey</span><span class="pill g">Projects</span><span class="pill g">Social</span><span class="pill g">Analytics + Zia</span>
+              </div>
+            </div>
+            <div style="flex:none;text-align:center;padding-left:14px;border-left:1px solid #A9E6DA">
+              <div style="font-family:var(--display);font-weight:700;font-size:40px;color:#0A7A63;line-height:1">1</div>
+              <div class="wlbl" style="color:#0A7A63">PLATFORM<br>YOU OPEN</div>
+            </div>
+          </div>
+          <!-- the integration layer -->
+          <div class="wc" style="padding:15px;flex:none" data-a="up" data-d=".4">
+            <div class="kv" style="margin-bottom:11px">
+              <b style="font-size:13px">One integration layer</b>
+              <span class="pill b">REST · HL7 FHIR R4 · WEBHOOKS · EVENT SUBSCRIPTIONS</span></div>
+            <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
+              <div class="wc" style="padding:9px 10px;border-top:2px solid var(--clinical)"><div class="wlbl">SOURCE</div><b style="font-size:10.5px">HIS / EMR</b></div>
+              <div class="wc" style="padding:9px 10px;border-top:2px solid var(--clinical)"><div class="wlbl">SOURCE</div><b style="font-size:10.5px">LIS / RIS</b></div>
+              <div class="wc" style="padding:9px 10px;border-top:2px solid var(--finance)"><div class="wlbl">SOURCE</div><b style="font-size:10.5px">ERP / RCM</b></div>
+              <div class="wc" style="padding:9px 10px;border-top:2px solid var(--finance)"><div class="wlbl">SOURCE</div><b style="font-size:10.5px">NPHIES</b></div>
+              <div class="wc" style="padding:9px 10px;border-top:2px solid var(--z-green)"><div class="wlbl">SOURCE</div><b style="font-size:10.5px">Nafath · Wasfaty</b></div>
+              <div class="wc" style="padding:9px 10px;border-top:2px solid var(--anal)"><div class="wlbl">SOURCE</div><b style="font-size:10.5px">Payment gateway</b></div>
+            </div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:11px">Not five platforms to log into and not a migration project. Each one keeps doing its job and becomes a source that feeds Patient 360 — <b>data in, patient communication out</b>, through a single surface your IT team governs once.</div>
+          </div>
+          <!-- the close -->
+          <div class="wc" style="padding:15px;flex:none" data-a="up" data-d=".6">
+            <div style="font-family:var(--display);font-weight:700;font-size:18px;line-height:1.3">Beyond clinical care. Beyond digital transformation. Towards a patient who never has to explain herself twice.</div>
+            <div class="ar" dir="rtl" style="font-size:13px;line-height:1.9;margin-top:9px;color:var(--w-mu)">
+              أنظمتك التشغيلية تبقى كما هي — وتجربة المريض تُدار بالكامل في منصة واحدة.</div>
+          </div>
+        </div>
+        <!-- KSA requirements -->
+        <div class="wc" style="padding:15px;display:flex;flex-direction:column;gap:11px" data-a="inR" data-d=".5">
+          <div class="wlbl">WHAT IT HAS TO SATISFY IN THE KINGDOM</div>
+          <div style="display:flex;flex-direction:column;gap:9px;flex:1">
+            <div class="wc" style="padding:11px;border-left:3px solid var(--z-green)">
+              <b style="font-size:11.5px">Data residency</b>
+              <div style="font-size:10.5px;line-height:1.45;margin-top:4px">Zoho operates data centres in <b>Riyadh and Jeddah</b>, so Saudi customer data can stay inside the Kingdom.</div></div>
+            <div class="wc" style="padding:11px;border-left:3px solid var(--z-green)">
+              <b style="font-size:11.5px">Class-B CST certified</b>
+              <div style="font-size:10.5px;line-height:1.45;margin-top:4px">Certified Class-B cloud service provider by Saudi Arabia's CST, audited against NCA's cybersecurity controls.</div></div>
+            <div class="wc" style="padding:11px;border-left:3px solid var(--z-green)">
+              <b style="font-size:11.5px">Role-based access</b>
+              <div style="font-size:10.5px;line-height:1.45;margin-top:4px">Marketing can segment a cohort without seeing a diagnosis. Field-level permissions, and an audit trail on every view.</div></div>
+            <div class="wc" style="padding:11px;border-left:3px solid var(--z-green)">
+              <b style="font-size:11.5px">No advertising business</b>
+              <div style="font-size:10.5px;line-height:1.45;margin-top:4px">Patient data is never mined, profiled or sold — the vendor has no ad revenue that would want it.</div></div>
+          </div>
+          <div class="wc" style="padding:10px;background:#FFF9EE;border-color:#F6DFAE">
+            <div style="font-size:10.5px;line-height:1.45">Confirm current certifications and regional service availability with Zoho before you commit — these change, and your compliance team will ask for specifics.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jrail"></div>
+</section>
+
+</div><!-- /stage -->
+
+<div id="hud">
+  <button id="prev" aria-label="Previous slide">←</button>
+  <span id="count"><b>1</b> / 18</span>
+  <button id="next" aria-label="Next slide">→</button>
+  <button id="ov" aria-label="Slide overview">O</button>
+  <button id="fs" aria-label="Fullscreen">⤢</button>
+</div>
+<div id="grid" role="dialog" aria-label="Slide overview"></div>
+
+<script>
+/* the nine-stage patient journey: the deck's spine */
+const STAGES = ["Discover","Enquire","Book","Visit","Diagnose","Settle","Follow up","Prevent","Return"];
+const slides = [...document.querySelectorAll('.slide')];
+const stage  = document.getElementById('stage');
+const grid   = document.getElementById('grid');
+let i = 0;
+
+slides.forEach(s=>{
+  const at = +s.dataset.step;            /* -1 = before the journey view */
+  const nodes = STAGES.map((n,k)=>{
+    const cls = at < 0 ? '' : (k < at ? 'done' : (k === at ? 'now' : ''));
+    return `<i class="jnode ${cls}" data-l="${n}"></i>` +
+           (k < STAGES.length-1 ? `<span class="jseg ${at >= 0 && k < at ? 'done':''}"></span>` : '');
+  }).join('');
+  s.querySelector('.jrail').innerHTML =
+    `<span class="jlabel">Patient journey</span>
+     <div class="jwrap">${nodes}</div>
+     <span class="jbadge">${s.dataset.when}</span>`;
+});
+
+/* stagger delays while hidden so each sequence starts clean */
+document.querySelectorAll('[data-d]').forEach(el=>{ el.style.animationDelay = el.dataset.d + 's' });
+
+function runCounters(slide){
+  slide.querySelectorAll('[data-count]').forEach(el=>{
+    const target = +el.dataset.count, dur = 950, t0 = performance.now();
+    (function tick(now){
+      const p = Math.min(1, (now - t0)/dur);
+      el.textContent = Math.round(target*(1 - Math.pow(1-p,3))).toLocaleString();
+      if(p < 1) requestAnimationFrame(tick);
+    })(t0);
+  });
+}
+
+function show(n){
+  i = Math.max(0, Math.min(slides.length-1, n));
+  slides.forEach((s,k)=>s.classList.toggle('is-on', k===i));
+  document.querySelector('#count b').textContent = i+1;
+  setTimeout(()=>runCounters(slides[i]), 400);
+}
+const next = ()=>show(i+1), prev = ()=>show(i-1);
+document.getElementById('next').onclick = next;
+document.getElementById('prev').onclick = prev;
+document.getElementById('fs').onclick = ()=>
+  document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+
+slides.forEach((s,k)=>{
+  const b = document.createElement('button');
+  b.innerHTML = `<span>${String(k+1).padStart(2,'0')}</span>${s.dataset.title}`;
+  b.onclick = ()=>{ grid.classList.remove('on'); show(k) };
+  grid.appendChild(b);
+});
+document.getElementById('ov').onclick = ()=> grid.classList.toggle('on');
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ grid.classList.remove('on'); return }
+  if(['ArrowRight',' ','PageDown','Enter'].includes(e.key)){ e.preventDefault(); next() }
+  if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); prev() }
+  if(e.key==='Home') show(0);
+  if(e.key==='End') show(slides.length-1);
+  const k = e.key.toLowerCase();
+  if(k==='f') document.getElementById('fs').click();
+  if(k==='o') grid.classList.toggle('on');
+  if(k==='r'){ slides[i].classList.remove('is-on'); void slides[i].offsetWidth; show(i) }
+});
+stage.addEventListener('click', e=>{ if(e.target.tagName!=='BUTTON') next() });
+
+let sx=0;
+stage.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+stage.addEventListener('touchend',e=>{
+  const d = e.changedTouches[0].clientX - sx;
+  if(Math.abs(d)>44) d<0 ? next() : prev();
+},{passive:true});
+
+function fit(){
+  const s = Math.min(innerWidth/1280, innerHeight/720) * (innerWidth<700 ? 1 : .965);
+  stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize', fit);
+addEventListener('orientationchange', fit);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+fit(); show(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automation That Works While You Sleep</title>
+
+<!--
+  ═══════════════════════════════════════════════════════════
+  PRESENTING
+  Arrows / Space / click = next    F = fullscreen
+  O = slide overview                R = replay slide animation
+
+  SWAPPING IN A REAL SCREEN RECORDING
+  Every app screen sits in <div class="art">. Replace its
+  contents with:
+     <video src="flow-builder.mp4" autoplay muted loop playsinline></video>
+     <img src="blueprint.gif" alt="CRM Blueprint editor">
+  ═══════════════════════════════════════════════════════════
+-->
+
+
+<style>
+
+/* ════════ JetBrains Mono (local, self-hosted) ════════ */
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Regular.woff") format("woff");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"JetBrains Mono";src:url("fonts/JetBrainsMono-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
+
+/* ════════ Zoho Puvi (local, self-hosted) ════════ */
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Regular.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Medium.woff") format("woff");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-SemiBold.woff") format("woff");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Zoho Puvi";src:url("fonts/ZohoPuvi-Bold.woff") format("woff");font-weight:700;font-style:normal;font-display:swap}
+/* ════════ tokens ════════ */
+:root{
+  --ink:#0F1620; --ink2:#16202C; --line:#2C3D4E;
+  --text:#EEF4F8; --muted:#8B9CAB;
+
+  --z-red:#E42527; --z-green:#33A852; --z-blue:#1A73E8; --z-yellow:#F5B01A;
+
+  --auto:#12B886;          /* this deck's accent: automation teal */
+  --flow:#0EA5A5; --crm:#E14A3B; --desk:#E0483D; --books:#2D9CDB;
+  --sign:#5B6BF0; --projects:#2B7FD4; --creator:#7B61FF; --camp:#F0A21B;
+  --people:#F0A21B; --cliq:#33A852; --forms:#17A398; --wa:#25D366;
+
+  --w-bg:#FFFFFF; --w-canvas:#F3F7F9; --w-bd:#E0E7EC;
+  --w-tx:#1E2A33; --w-mu:#74858F; --w-soft:#EBF1F4;
+
+  --arabic:"Geeza Pro","Segoe UI",Tahoma,Arial,sans-serif;
+  --display:"Zoho Puvi","Trebuchet MS",system-ui,sans-serif;
+  --body:"Zoho Puvi",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--body);overflow:hidden}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(58vw 58vw at 4% 4%, rgba(18,184,134,.16), transparent 62%),
+    radial-gradient(52vw 52vw at 96% 92%, rgba(26,115,232,.14), transparent 64%);
+}
+
+#stage{width:1280px;height:720px;position:fixed;top:50%;left:50%;z-index:1;transform-origin:center}
+.slide{position:absolute;inset:0;display:none;padding:36px 54px 0;grid-template-rows:auto 1fr auto;gap:18px}
+.slide.is-on{display:grid}
+.slide.hero{grid-template-rows:1fr auto;place-items:center}
+
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+.eyebrow b{color:var(--text);font-weight:500}
+h1{font-family:var(--display);font-weight:700;letter-spacing:-.03em;font-size:74px;line-height:.96}
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.025em;font-size:37px;line-height:1.05;margin-top:6px}
+.sub{font-size:16.5px;line-height:1.4;color:var(--muted)}
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:28px}
+.shead .sub{max-width:34ch;font-size:14px;padding-bottom:3px}
+h1 .arh{display:block;font-family:var(--arabic);font-weight:600;font-size:.4em;letter-spacing:0;
+  line-height:1.4;margin-top:16px;color:#8FD9C4}
+.ar{font-family:var(--arabic)}
+
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:5px 10px;border-radius:6px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.chip i{width:7px;height:7px;border-radius:2px;background:var(--c,#fff);display:block;flex:none}
+.chip img{width:13px;height:13px;object-fit:contain;display:block;flex:none}
+.chip.ar{font-family:var(--arabic);letter-spacing:0}
+
+.art{position:relative;width:100%;height:100%;border-radius:13px;overflow:hidden;
+  box-shadow:0 34px 70px -18px rgba(0,0,0,.78),0 0 0 1px rgba(255,255,255,.07)}
+.art > video,.art > img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ════════ Zoho app window ════════ */
+.win{width:100%;height:100%;background:var(--w-canvas);color:var(--w-tx);display:flex;flex-direction:column;
+  font-size:12px;--acc:var(--auto)}
+.win-top{height:36px;flex:none;background:var(--w-bg);border-bottom:1px solid var(--w-bd);
+  display:flex;align-items:center;gap:10px;padding:0 12px}
+.zlogo{display:flex;gap:2.5px;flex:none}
+.zlogo i{width:4px;height:13px;border-radius:1px;display:block}
+.zlogo i:nth-child(1){background:var(--z-red)}.zlogo i:nth-child(2){background:var(--z-green)}
+.zlogo i:nth-child(3){background:var(--z-blue)}.zlogo i:nth-child(4){background:var(--z-yellow)}
+.appname{font-weight:600;font-size:13px;letter-spacing:-.01em;white-space:nowrap}
+.appname span{color:var(--w-mu);font-weight:400}
+.spacer{flex:1}
+.searchpill{width:160px;height:21px;border-radius:5px;background:var(--w-soft);display:flex;align-items:center;
+  padding:0 8px;font-size:9.5px;color:var(--w-mu);gap:5px;white-space:nowrap;overflow:hidden;flex:none}
+.tbtn{width:21px;height:21px;border-radius:5px;background:var(--w-soft);display:grid;place-items:center;
+  font-size:10px;color:var(--w-mu);flex:none}
+.uav{width:22px;height:22px;border-radius:99px;background:linear-gradient(140deg,#F5B01A,#E42527);flex:none;
+  display:grid;place-items:center;color:#fff;font-weight:700;font-size:10px}
+.win-tabs{height:31px;flex:none;background:var(--w-bg);border-bottom:1px solid var(--w-bd);
+  display:flex;align-items:stretch;padding:0 12px;gap:2px}
+.tab{display:flex;align-items:center;padding:0 11px;font-size:11.5px;color:var(--w-mu);
+  border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc);font-weight:600}
+.win-mid{flex:1;display:flex;min-height:0}
+.rail{width:44px;flex:none;background:#1F2A33;display:flex;flex-direction:column;align-items:center;gap:7px;padding:9px 0}
+.rail .amk{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;
+  font-weight:700;font-size:11px;font-family:var(--display);opacity:.42}
+.rail .amk.on{opacity:1;box-shadow:0 0 0 2px rgba(255,255,255,.28)}
+.win-body{flex:1;padding:13px 15px;min-height:0;overflow:hidden}
+
+.wc{background:var(--w-bg);border:1px solid var(--w-bd);border-radius:8px}
+.wsk{height:7px;border-radius:99px;background:#E4EBF0;display:block}
+.wmu{color:var(--w-mu)}
+.wlbl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--w-mu)}
+.wlbl.ar{font-family:var(--arabic);letter-spacing:0;text-transform:none;font-size:10px}
+.wbtn{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;background:var(--acc);
+  color:#fff;font-size:10.5px;font-weight:600;white-space:nowrap}
+.wbtn.ghost{background:var(--w-bg);color:var(--w-mu);border:1px solid var(--w-bd)}
+.wav{width:28px;height:28px;border-radius:99px;flex:none;display:grid;place-items:center;color:#fff;
+  font-family:var(--display);font-weight:700;font-size:12px;background:linear-gradient(140deg,#F5B01A,#E14A3B)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:600;padding:3px 8px;border-radius:99px;white-space:nowrap}
+.pill.g{background:#E4F7EE;color:#0B7A50}.pill.r{background:#FDEBEA;color:#C0281F}
+.pill.b{background:#E8F1FE;color:#1257A8}.pill.y{background:#FEF4E1;color:#96650A}
+.pill.p{background:#EFEBFE;color:#5B3FD6}.pill.n{background:var(--w-soft);color:var(--w-mu)}
+.pill.ar{font-family:var(--arabic)}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.chan{width:19px;height:19px;border-radius:5px;display:grid;place-items:center;font-size:9.5px;color:#fff;flex:none}
+.dotlive{width:7px;height:7px;border-radius:99px;background:var(--z-green);display:block}
+.trow{display:flex;align-items:center;gap:9px;padding:7px 10px;border-bottom:1px solid var(--w-bd);font-size:11px}
+.trow:last-child{border-bottom:0}
+.tick{width:16px;height:16px;border-radius:99px;display:grid;place-items:center;font-size:9px;color:#fff;flex:none;background:var(--z-green)}
+.tick.wait{background:var(--z-yellow)}.tick.bot{background:var(--auto)}
+.tms{font-family:var(--mono);font-size:9px;color:var(--w-mu);width:58px;text-align:right;flex:none}
+
+/* rule builder */
+.rule{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-bottom:1px solid var(--w-bd)}
+.rkey{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--w-mu);width:62px;flex:none;padding-top:2px}
+.rval{flex:1;font-size:11.5px;line-height:1.5}
+.node{background:var(--w-bg);border:1px solid var(--w-bd);border-radius:8px;padding:8px 10px;position:absolute;
+  box-shadow:0 3px 10px rgba(15,30,40,.07)}
+.node b{font-size:11px;display:block}
+.node .wlbl{margin-bottom:3px}
+
+/* ════════ signature: the overnight chain ════════ */
+.chain{padding:10px 0 20px;display:flex;align-items:center;gap:14px}
+.cwrap{flex:1;display:flex;align-items:center}
+.cnode{position:relative;flex:none;width:11px;height:11px;border-radius:3px;background:#1D2A36;border:1px solid var(--line);transform:rotate(45deg)}
+.cnode.done{background:var(--auto);border-color:var(--auto)}
+.cnode.now{width:15px;height:15px;background:#fff;border-color:#fff;box-shadow:0 0 0 5px rgba(18,184,134,.22)}
+.cnode.now::after{content:attr(data-l);position:absolute;top:-27px;left:50%;transform:translateX(-50%) rotate(-45deg);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.cseg{flex:1;height:2px;background:#1D2A36}
+.cseg.done{background:linear-gradient(90deg,var(--auto),#5BD4AC)}
+.clabel{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.clabel b{color:#fff}
+.ctouch{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 8px;border-radius:5px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.ctouch.one{border-color:var(--z-yellow);color:var(--z-yellow)}
+
+/* ════════ animations ════════ */
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{opacity:0;transform:scale(.9)}60%{transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+@keyframes inR{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@keyframes winIn{from{opacity:0;transform:translateY(24px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(18,184,134,.5)}100%{box-shadow:0 0 0 15px rgba(18,184,134,0)}}
+@keyframes glow{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes draw{from{stroke-dashoffset:var(--len,600)}to{stroke-dashoffset:0}}
+@keyframes flow{to{stroke-dashoffset:-44}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes barw{from{width:0}to{width:var(--w,100%)}}
+@keyframes bargrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes caret{50%{opacity:0}}
+@keyframes rowin{from{opacity:0;transform:translateY(-8px);background:#E4F7EE}60%{background:#E4F7EE}to{opacity:1;transform:none;background:transparent}}
+@keyframes swivel{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-14px) rotate(-3deg)}
+  50%{transform:translateX(0) rotate(0)}75%{transform:translateX(14px) rotate(3deg)}}
+@keyframes copypaste{0%{opacity:0;transform:translate(0,0) scale(.9)}
+  15%{opacity:1;transform:translate(0,0) scale(1)}
+  70%{opacity:1;transform:translate(var(--dx,120px),var(--dy,0)) scale(1)}
+  100%{opacity:0;transform:translate(var(--dx,120px),var(--dy,0)) scale(.9)}}
+@keyframes travel{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes moonrise{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.is-on [data-a]{opacity:0}
+.is-on [data-a="up"]{animation:up .58s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="fade"]{animation:fade .62s ease both}
+.is-on [data-a="pop"]{animation:pop .48s cubic-bezier(.2,.9,.3,1.15) both}
+.is-on [data-a="inR"]{animation:inR .5s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="inL"]{animation:inL .5s cubic-bezier(.22,.9,.25,1) both}
+.is-on [data-a="win"]{animation:winIn .68s cubic-bezier(.2,.85,.25,1) both}
+.is-on [data-a="row"]{animation:rowin .85s ease both}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001s !important;animation-iteration-count:1 !important}}
+
+/* ════════ chrome ════════ */
+#brand{position:fixed;top:16px;right:20px;z-index:20;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.2em;text-transform:uppercase;color:#556878;display:flex;align-items:center;gap:8px}
+#brand .zlogo i{height:10px}
+#hud{position:fixed;bottom:12px;right:18px;z-index:20;display:flex;gap:12px;align-items:center;
+  font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em}
+#hud button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:7px;font:inherit;padding:4px 8px;cursor:pointer}
+#hud button:hover,#hud button:focus-visible{color:#fff;border-color:#fff;outline:none}
+#count b{color:#fff}
+#grid{position:fixed;inset:0;z-index:30;background:rgba(8,13,18,.97);display:none;
+  grid-template-columns:repeat(4,1fr);gap:12px;padding:32px;align-content:start;overflow:auto}
+#grid.on{display:grid}
+#grid button{aspect-ratio:16/9;border:1px solid var(--line);background:var(--ink2);color:var(--text);border-radius:9px;
+  font-family:var(--display);font-size:14px;font-weight:600;text-align:left;padding:11px;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:space-between;line-height:1.2}
+#grid button:hover,#grid button:focus-visible{border-color:var(--auto);outline:none}
+#grid button span{font-family:var(--mono);font-size:8.5px;color:var(--muted);letter-spacing:.1em}
+
+/* ════════ responsive: fixed chrome + overview grid ════════ */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{overflow-x:hidden;max-width:100%}
+@media (max-width:820px){
+  #brand{font-size:8.5px;top:10px;right:10px;gap:6px}
+  #brand .zlogo i{height:8px}
+  #hud{font-size:9px;bottom:10px;right:10px;gap:7px}
+  #hud button{padding:3px 7px}
+  #grid{padding:16px;gap:8px;grid-template-columns:repeat(3,1fr)}
+  #grid button{padding:9px;font-size:12px}
+}
+@media (max-width:560px){
+  #brand{top:8px;right:8px;font-size:7.5px;gap:5px}
+  #hud{bottom:8px;right:8px;font-size:8px;gap:5px}
+  #grid{padding:10px;gap:6px;grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:380px){
+  #grid{grid-template-columns:1fr}
+}
+@media (max-height:420px) and (orientation:landscape){
+  #brand{top:4px;right:6px}
+  #hud{bottom:4px;right:6px}
+}
+
+/* ════════ product logos ════════ */
+.applogo{height:16px;width:auto;max-width:70px;object-fit:contain;flex:none;display:block}
+#brand .applogo{height:13px}
+.amk-logo{background:#fff !important;padding:6px}
+.amk-logo::after{display:none !important}
+.amk-logo img{width:100%;height:100%;object-fit:contain}
+.amk.on.amk-logo{box-shadow:0 0 0 2px var(--c,#888) inset,0 8px 20px -6px rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+
+<div id="brand"><img class="applogo" src="logos/zoho.png" alt="Zoho"> Automation While You Sleep · Riyadh</div>
+
+<div id="stage">
+
+<!-- ══════════ 01 COVER ══════════ -->
+<section class="slide hero" data-step="0" data-clock="THU 22:40" data-touch="0" data-title="Automation that works while you sleep">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px">
+    <p class="eyebrow" data-a="fade" data-d=".1">Zoho Automation · Saudi Arabia</p>
+    <h1 data-a="up" data-d=".2">Automation that works<br>while you sleep.<span class="arh">أتمتة تعمل بينما أنت نائم</span></h1>
+    <svg width="700" height="86" viewBox="0 0 700 86" fill="none" data-a="fade" data-d=".6">
+      <g stroke="#2C3D4E" stroke-width="1" stroke-dasharray="3 6"><path d="M10 60 H690"/></g>
+      <path d="M10 60 H690" stroke="url(#g)" stroke-width="2.5" stroke-linecap="round"
+            stroke-dasharray="700" style="--len:700;animation:draw 2.6s .7s ease both"/>
+      <defs><linearGradient id="g" x1="0" y1="0" x2="700" y2="0">
+        <stop stop-color="#12B886"/><stop offset=".5" stop-color="#1A73E8"/><stop offset="1" stop-color="#33A852"/>
+      </linearGradient></defs>
+      <g font-family="JetBrains Mono, monospace" font-size="9" fill="#8B9CAB" letter-spacing="1.2">
+        <text x="0" y="34" style="animation:fade .5s 1s both">THU 22:41</text>
+        <text x="286" y="34" style="animation:fade .5s 2s both">FRI–SAT · WEEKEND</text>
+        <text x="612" y="34" style="animation:fade .5s 3s both">SUN 08:00</text>
+        <circle cx="26" cy="60" r="5" fill="#12B886" style="animation:pop .4s 1s both"/>
+        <circle cx="350" cy="60" r="5" fill="#1A73E8" style="animation:pop .4s 2s both"/>
+        <circle cx="674" cy="60" r="5" fill="#33A852" style="animation:pop .4s 3s both"/>
+        <text x="0" y="80" fill="#556878" style="animation:fade .5s 1.2s both">lead arrives</text>
+        <text x="296" y="80" fill="#556878" style="animation:fade .5s 2.2s both">nobody in the office</text>
+        <text x="596" y="80" fill="#556878" style="animation:fade .5s 3.2s both">live customer, onboarded</text>
+      </g>
+    </svg>
+    <p class="sub" style="max-width:52ch;text-align:center;font-size:15px" data-a="fade" data-d="3.4">
+      Eight steps, one human click, and a Saudi weekend in between.
+    </p>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 02 THE ASK ══════════ -->
+<section class="slide" data-step="0" data-clock="—" data-touch="0" data-title="Who still copies data between systems?">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Start here</p>
+      <h2 data-a="up" data-d=".06">Who here still copies data between systems?</h2>
+      <p class="ar" dir="rtl" data-a="up" data-d=".1" style="font-size:17px;color:#8FD9C4;margin-top:8px">من منكم لا يزال ينقل البيانات يدوياً بين الأنظمة؟</p>
+    </div>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 296px;gap:14px">
+        <!-- swivel chair integration -->
+        <div class="wc" style="padding:15px;position:relative;overflow:hidden">
+          <div class="wlbl" style="margin-bottom:10px">“SWIVEL-CHAIR INTEGRATION” · WHAT IT LOOKS LIKE AT 16:40 ON A SUNDAY</div>
+          <div style="position:relative;height:calc(100% - 26px)">
+            <!-- the systems -->
+            <div class="wc" style="position:absolute;left:0;top:6%;width:150px;padding:9px 11px" data-a="inL" data-d=".2">
+              <div class="wlbl">SPREADSHEET</div><b style="font-size:11px">Leads_Oct.xlsx</b></div>
+            <div class="wc" style="position:absolute;left:0;top:40%;width:150px;padding:9px 11px" data-a="inL" data-d=".3">
+              <div class="wlbl">EMAIL</div><b style="font-size:11px">Quote request</b></div>
+            <div class="wc" style="position:absolute;left:0;top:74%;width:150px;padding:9px 11px" data-a="inL" data-d=".4">
+              <div class="wlbl">WHATSAPP</div><b style="font-size:11px">Approval screenshot</b></div>
+            <div class="wc" style="position:absolute;right:0;top:6%;width:150px;padding:9px 11px" data-a="inR" data-d=".5">
+              <div class="wlbl">ACCOUNTING</div><b style="font-size:11px">Invoice entry</b></div>
+            <div class="wc" style="position:absolute;right:0;top:40%;width:150px;padding:9px 11px" data-a="inR" data-d=".6">
+              <div class="wlbl">CRM</div><b style="font-size:11px">Deal record</b></div>
+            <div class="wc" style="position:absolute;right:0;top:74%;width:150px;padding:9px 11px" data-a="inR" data-d=".7">
+              <div class="wlbl">PROJECT TOOL</div><b style="font-size:11px">Kick-off tasks</b></div>
+            <!-- the human in the middle -->
+            <div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px" data-a="pop" data-d=".8">
+              <div style="animation:swivel 3.4s ease-in-out infinite"><div class="wav" style="width:44px;height:44px;font-size:18px">م</div></div>
+              <span class="pill r">COPY · PASTE · REPEAT</span>
+            </div>
+            <!-- flying clipboard blobs -->
+            <div style="position:absolute;left:160px;top:14%;--dx:290px;--dy:44px">
+              <span class="pill n" style="animation:copypaste 2.6s 1s infinite">Ctrl+C</span></div>
+            <div style="position:absolute;left:160px;top:46%;--dx:290px;--dy:-40px">
+              <span class="pill n" style="animation:copypaste 2.6s 1.9s infinite">Ctrl+V</span></div>
+            <div style="position:absolute;left:160px;top:78%;--dx:290px;--dy:-30px">
+              <span class="pill n" style="animation:copypaste 2.6s 2.6s infinite">Ctrl+C</span></div>
+          </div>
+        </div>
+        <!-- the cost -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:14px" data-a="up" data-d=".9">
+            <div class="wlbl">TOUCHES TO ONBOARD ONE CUSTOMER</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:40px;color:var(--crm);line-height:1.1" data-count="23">0</div>
+            <div class="wmu" style="font-size:11px">across 6 systems and 4 people</div>
+          </div>
+          <div class="wc" style="padding:14px" data-a="up" data-d="1">
+            <div class="wlbl">TYPO RATE ON RE-ENTERED DATA</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:40px;color:var(--z-yellow);line-height:1.1">1 in 8</div>
+            <div class="wmu" style="font-size:11px">wrong VAT number, wrong quantity, wrong email</div>
+          </div>
+          <div class="wc" style="padding:14px;flex:1;display:flex;flex-direction:column;justify-content:center;background:#FFF8F7;border-color:#F6CBC5" data-a="up" data-d="1.1">
+            <div class="wlbl" style="color:#B4322A">AND THE REAL COST</div>
+            <div style="font-size:12.5px;line-height:1.5;margin-top:6px">A lead that arrives on Thursday night waits until Sunday morning for a human to notice it. That's <b>57 hours</b> of silence in a market where the competitor answers on WhatsApp in ten minutes.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 03 FOUR TOOLS ══════════ -->
+<section class="slide" data-step="0" data-clock="THU 22:41" data-touch="0" data-title="Four tools — which one when">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">The toolbox</p><h2 data-a="up" data-d=".06">Four tools. Pick by the shape of the problem.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Most automation projects fail here — the right logic built in the wrong layer.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        <div class="wc" style="padding:15px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--crm)" data-a="up" data-d=".2">
+          <div class="kv"><b style="font-size:14px">Workflow rules</b><span class="chan" style="background:var(--crm)">⚙</span></div>
+          <div class="wlbl">INSIDE ONE APP</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">When a record changes, do something. Field updates, emails, tasks, webhooks. Minutes to build.</div>
+          <div class="wc" style="padding:9px;background:var(--w-soft);font-size:10.5px;line-height:1.45">
+            <b>Use it for:</b> assign the lead, notify the owner, stamp a date, escalate an idle deal.</div>
+          <div class="pill n">IF THIS → THEN THAT</div>
+        </div>
+        <div class="wc" style="padding:15px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--z-yellow)" data-a="up" data-d=".3">
+          <div class="kv"><b style="font-size:14px">Blueprint</b><span class="chan" style="background:var(--z-yellow)">◫</span></div>
+          <div class="wlbl">A PROCESS PEOPLE WALK THROUGH</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Stages and transitions with rules. Nobody skips a step, nobody forgets a mandatory field.</div>
+          <div class="wc" style="padding:9px;background:var(--w-soft);font-size:10.5px;line-height:1.45">
+            <b>Use it for:</b> the sales stage gate, ticket resolution, employee onboarding, discount sign-off.</div>
+          <div class="pill n">GUARDED PATH</div>
+        </div>
+        <div class="wc" style="padding:15px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--flow)" data-a="up" data-d=".4">
+          <div class="kv"><b style="font-size:14px">Zoho Flow</b><span class="chan" style="background:var(--flow)">⇄</span></div>
+          <div class="wlbl">BETWEEN APPS</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Trigger in one app, actions in others, with logic and delays. Zoho apps and 900+ outside ones.</div>
+          <div class="wc" style="padding:9px;background:var(--w-soft);font-size:10.5px;line-height:1.45">
+            <b>Use it for:</b> deal won → invoice → project → welcome journey → Cliq post.</div>
+          <div class="pill n">THE CONNECTIVE TISSUE</div>
+        </div>
+        <div class="wc" style="padding:15px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--creator)" data-a="up" data-d=".5">
+          <div class="kv"><b style="font-size:14px">Creator</b><span class="chan" style="background:var(--creator)">◈</span></div>
+          <div class="wlbl">WHEN NO APP FITS</div>
+          <div style="font-size:11.5px;line-height:1.5;flex:1">Build the app that doesn't exist — your forms, your logic, your mobile screens, your data.</div>
+          <div class="wc" style="padding:9px;background:var(--w-soft);font-size:10.5px;line-height:1.45">
+            <b>Use it for:</b> site survey capture, fleet inspections, Saudi-specific compliance registers.</div>
+          <div class="pill n">YOUR OWN APP</div>
+        </div>
+        <!-- the decision line -->
+        <div class="wc" style="grid-column:span 4;padding:12px 15px;display:flex;align-items:center;gap:16px" data-a="up" data-d=".8">
+          <span class="wlbl" style="flex:none">HOW TO CHOOSE</span>
+          <div style="display:flex;align-items:center;gap:10px;flex:1;font-size:11.5px">
+            <span>One app, one condition?</span><span class="pill n">Workflow</span>
+            <span class="wmu">›</span><span>People need to follow steps?</span><span class="pill n">Blueprint</span>
+            <span class="wmu">›</span><span>Crosses app boundaries?</span><span class="pill n">Flow</span>
+            <span class="wmu">›</span><span>Still doesn't fit?</span><span class="pill n">Creator</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 04 THE SCENARIO ══════════ -->
+<section class="slide" data-step="0" data-clock="THU 22:41" data-touch="0" data-title="The chain we're going to automate">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Thursday · <b>22:41 AST</b> · the weekend just started</p><h2 data-a="up" data-d=".06">Nada submits a form. Nobody is at work until Sunday.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Watch eight steps happen without anyone opening a laptop.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-top">
+        <span class="zlogo"><i></i><i></i><i></i><i></i></span><span class="appname">Mazaya Group <span>· order-to-onboard chain</span></span>
+        <div class="spacer"></div><span class="pill g"><i class="dotlive" style="animation:ping 2s infinite"></i>ARMED</span><div class="uav">ف</div>
+      </div>
+      <div class="win-body" style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1">
+          <div class="wc" style="padding:12px;border-left:3px solid var(--forms)" data-a="up" data-d=".2">
+            <div class="kv" style="margin-bottom:7px"><span class="wlbl">01 · LEAD</span><span class="chan" style="background:var(--forms)">▤</span></div>
+            <b style="font-size:11.5px">Arabic web form → CRM</b>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px;line-height:1.4">Assigned, scored, enriched, acknowledged on WhatsApp</div>
+            <div class="wlbl" style="margin-top:7px;color:var(--auto)">22:41 · 0 HUMANS</div>
+          </div>
+          <div class="wc" style="padding:12px;border-left:3px solid var(--z-yellow)" data-a="up" data-d=".3">
+            <div class="kv" style="margin-bottom:7px"><span class="wlbl">02 · APPROVAL</span><span class="chan" style="background:var(--z-yellow)">✓</span></div>
+            <b style="font-size:11.5px">14% discount &gt; 12% cap</b>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px;line-height:1.4">Turki approves from his phone in bed</div>
+            <div class="wlbl" style="margin-top:7px;color:#96650A">23:19 · 1 HUMAN CLICK</div>
+          </div>
+          <div class="wc" style="padding:12px;border-left:3px solid var(--crm)" data-a="up" data-d=".4">
+            <div class="kv" style="margin-bottom:7px"><span class="wlbl">03 · QUOTE</span><span class="chan" style="background:var(--crm)">C</span></div>
+            <b style="font-size:11.5px">Arabic quote, VAT 15%</b>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px;line-height:1.4">Generated from template, sent by email + WhatsApp</div>
+            <div class="wlbl" style="margin-top:7px;color:var(--auto)">23:20 · 0 HUMANS</div>
+          </div>
+          <div class="wc" style="padding:12px;border-left:3px solid var(--sign)" data-a="up" data-d=".5">
+            <div class="kv" style="margin-bottom:7px"><span class="wlbl">04 · CONTRACT</span><span class="chan" style="background:var(--sign)">✍</span></div>
+            <b style="font-size:11.5px">Zoho Sign, bilingual</b>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px;line-height:1.4">Nada signs Friday morning from her phone</div>
+            <div class="wlbl" style="margin-top:7px;color:var(--auto)">FRI 09:04 · 0 HUMANS</div>
+          </div>
+          <div class="wc" style="padding:12px;border-left:3px solid var(--books)" data-a="up" data-d=".6">
+            <div class="kv" style="margin-bottom:7px"><span class="wlbl">05 · INVOICE</span><span class="chan" style="background:var(--books)">B</span></div>
+            <b style="font-size:11.5px">ZATCA e-invoice cleared</b>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px;line-height:1.4">QR, VAT, payment link — no bookkeeper awake</div>
+            <div class="wlbl" style="margin-top:7px;color:var(--auto)">FRI 09:06 · 0 HUMANS</div>
+          </div>
+          <div class="wc" style="padding:12px;border-left:3px solid var(--camp)" data-a="up" data-d=".7">
+            <div class="kv" style="margin-bottom:7px"><span class="wlbl">06 · WELCOME</span><span class="chan" style="background:var(--camp)">✉</span></div>
+            <b style="font-size:11.5px">Arabic onboarding journey</b>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px;line-height:1.4">Day 0, 2, 7 — paced, not blasted</div>
+            <div class="wlbl" style="margin-top:7px;color:var(--auto)">FRI 09:07 · 0 HUMANS</div>
+          </div>
+          <div class="wc" style="padding:12px;border-left:3px solid var(--projects)" data-a="up" data-d=".8">
+            <div class="kv" style="margin-bottom:7px"><span class="wlbl">07 · PROJECT</span><span class="chan" style="background:var(--projects)">▦</span></div>
+            <b style="font-size:11.5px">Implementation created</b>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px;line-height:1.4">From template, 14 tasks, owners, dates</div>
+            <div class="wlbl" style="margin-top:7px;color:var(--auto)">SAT 06:12 · 0 HUMANS</div>
+          </div>
+          <div class="wc" style="padding:12px;border-left:3px solid var(--desk);background:#F5FCF9" data-a="up" data-d=".9">
+            <div class="kv" style="margin-bottom:7px"><span class="wlbl">08 · SUCCESS</span><span class="chan" style="background:var(--desk)">D</span></div>
+            <b style="font-size:11.5px">CS task + Desk account</b>
+            <div class="wmu" style="font-size:10.5px;margin-top:4px;line-height:1.4">Lama has a briefed check-in waiting Sunday</div>
+            <div class="wlbl" style="margin-top:7px;color:var(--auto)">SAT 06:13 · 0 HUMANS</div>
+          </div>
+        </div>
+        <div class="wc" style="padding:13px 15px;display:flex;align-items:center;gap:24px;flex:none;border-color:#A9E6CF;background:#F0FBF6" data-a="up" data-d="1.1">
+          <div><div class="wlbl" style="color:#0B7A50">ELAPSED</div><b style="font-family:var(--display);font-size:22px">31h 32m</b></div>
+          <div><div class="wlbl" style="color:#0B7A50">WORKING HOURS USED</div><b style="font-family:var(--display);font-size:22px">0</b></div>
+          <div><div class="wlbl" style="color:#0B7A50">HUMAN TOUCHES</div><b style="font-family:var(--display);font-size:22px">1</b></div>
+          <div><div class="wlbl" style="color:#0B7A50">RE-TYPED FIELDS</div><b style="font-family:var(--display);font-size:22px">0</b></div>
+          <div class="spacer"></div>
+          <div class="ar" dir="rtl" style="font-size:12.5px;color:#0B7A50">من النموذج إلى العميل — دون أن يفتح أحد جهازه</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 05 STEP 1 — LEAD ══════════ -->
+<section class="slide" data-step="1" data-clock="THU 22:41" data-touch="0" data-title="Step 1 — Arabic form to CRM lead">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Step 1 · <b>22:41</b></p><h2 data-a="up" data-d=".06">The form fills the CRM, not a person.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--forms)"><img src="logos/forms.png" alt="forms">Zoho Forms</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM workflow rules</span><span class="chip" style="--c:var(--wa)"><img src="logos/whatsapp.png" alt="whatsapp">WhatsApp</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--forms)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:270px 1fr;gap:13px;padding:14px 15px">
+        <!-- the Arabic form -->
+        <div class="wc ar" dir="rtl" style="padding:0;overflow:hidden;display:flex;flex-direction:column" data-a="inL" data-d=".2">
+          <div style="padding:10px 13px;border-bottom:1px solid var(--w-bd);background:var(--forms);color:#fff">
+            <b style="font-size:12.5px">طلب عرض سعر</b>
+            <div style="font-size:10px;opacity:.9;margin-top:2px">مزايا · نموذج زوهو</div>
+          </div>
+          <div style="padding:13px;display:flex;flex-direction:column;gap:10px;flex:1">
+            <div><div class="wlbl ar" style="margin-bottom:4px">الاسم</div>
+              <div class="wc" style="padding:7px 10px;font-size:11.5px">ندى السديري</div></div>
+            <div><div class="wlbl ar" style="margin-bottom:4px">الشركة</div>
+              <div class="wc" style="padding:7px 10px;font-size:11.5px">مجموعة رواف · الرياض</div></div>
+            <div><div class="wlbl ar" style="margin-bottom:4px">عدد المستخدمين</div>
+              <div class="wc" style="padding:7px 10px;font-size:11.5px">١٢٠</div></div>
+            <div><div class="wlbl ar" style="margin-bottom:4px">الرقم الضريبي</div>
+              <div class="wc" style="padding:7px 10px;font-size:11.5px">3•••••••••••003</div></div>
+            <div><div class="wlbl ar" style="margin-bottom:4px">القناة المفضلة</div>
+              <div style="display:flex;gap:6px"><span class="pill g ar">واتساب</span><span class="pill n ar">بريد</span></div></div>
+            <div style="margin-top:auto"><div class="wbtn" style="width:100%;justify-content:center;padding:9px;background:var(--forms)">إرسال الطلب</div>
+              <div class="wlbl ar" style="text-align:center;margin-top:7px">الخميس ١٠:٤١ مساءً</div></div>
+          </div>
+        </div>
+        <!-- what fires -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="overflow:hidden">
+            <div style="padding:9px 12px;border-bottom:1px solid var(--w-bd);display:flex;align-items:center;gap:8px">
+              <span class="chan" style="background:var(--crm)">C</span><b style="font-size:11.5px">CRM · Workflow rule: “Inbound quote request”</b>
+              <div class="spacer"></div><span class="pill g">ACTIVE</span>
+            </div>
+            <div class="rule" data-a="up" data-d=".3"><span class="rkey">WHEN</span><span class="rval">A Forms submission creates a <b>Lead</b></span></div>
+            <div class="rule" data-a="up" data-d=".4"><span class="rkey">CONDITION</span><span class="rval">Country = Saudi Arabia <b>AND</b> Users ≥ 100 <b>AND</b> VAT number is not empty</span></div>
+            <div class="rule" data-a="up" data-d=".5"><span class="rkey">THEN</span>
+              <span class="rval" style="display:flex;flex-direction:column;gap:6px">
+                <span>· Assign by territory round-robin → <b>Faisal Al-Harbi</b> (Riyadh)</span>
+                <span>· Set score <b>+40</b> (enterprise size) and tag <span class="pill p ar">عربي</span></span>
+                <span>· Look up the company by VAT number, fill the account fields</span>
+                <span>· Send the Arabic acknowledgement on WhatsApp inside 60 seconds</span>
+                <span>· Enter Blueprint at stage <b>Qualified</b></span>
+              </span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;flex:1">
+            <div class="wc" style="padding:0;overflow:hidden;display:flex;flex-direction:column" data-a="up" data-d=".7">
+              <div style="padding:8px 11px;background:#0B1410;color:#fff;display:flex;align-items:center;gap:7px">
+                <span class="chan" style="background:var(--wa)">◍</span><b style="font-size:10.5px">WhatsApp · 22:41</b>
+                <div class="spacer"></div><span style="font-size:9px;opacity:.7">AUTO</span></div>
+              <div style="flex:1;padding:11px;background:#EFE7DE;display:flex;flex-direction:column;gap:7px">
+                <div class="ar" dir="rtl" style="background:#DCF8C6;border-radius:10px;padding:8px 11px;font-size:11.5px;line-height:1.6">
+                  أهلاً ندى، وصلنا طلبكِ لـ ١٢٠ مستخدماً. فيصل الحربي سيتواصل معكِ صباح الأحد، وعرض السعر في طريقه إليكِ الآن.
+                  <div style="text-align:end;font-size:8.5px;color:#4B7C5A;margin-top:3px">١٠:٤١ م ✓✓</div>
+                </div>
+                <div class="wlbl ar" style="text-align:center;margin-top:auto">تم الرد في ٤١ ثانية</div>
+              </div>
+            </div>
+            <div class="wc" style="padding:12px;display:flex;flex-direction:column;gap:8px" data-a="up" data-d=".85">
+              <div class="wlbl">THE LEAD RECORD, 60 SECONDS LATER</div>
+              <div class="kv" style="font-size:11px"><span class="wmu">Owner</span><b>Faisal Al-Harbi</b></div>
+              <div class="kv" style="font-size:11px"><span class="wmu">Score</span><b style="color:var(--crm)">78</b></div>
+              <div class="kv" style="font-size:11px"><span class="wmu">Account matched</span><b>Rawaf Group</b></div>
+              <div class="kv" style="font-size:11px"><span class="wmu">Language</span><b>العربية</b></div>
+              <div class="kv" style="font-size:11px"><span class="wmu">Blueprint stage</span><b>Qualified</b></div>
+              <div class="kv" style="font-size:11px"><span class="wmu">Fields typed by a human</span><b style="color:var(--auto)">0</b></div>
+              <div class="pill g" style="margin-top:auto;align-self:flex-start">SLA CLOCK STARTED</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 06 STEP 2 — APPROVAL ══════════ -->
+<section class="slide" data-step="2" data-clock="THU 23:19" data-touch="1" data-title="Step 2 — the one human click">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Step 2 · <b>23:19</b></p><h2 data-a="up" data-d=".06">The only human in the whole chain.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--z-yellow)"><i></i>Approval process</span><span class="chip" style="--c:var(--cliq)"><img src="logos/cliq.png" alt="cliq">Cliq · mobile</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--z-yellow)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 262px;gap:13px;padding:14px 15px">
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="overflow:hidden">
+            <div style="padding:9px 12px;border-bottom:1px solid var(--w-bd);display:flex;align-items:center;gap:8px">
+              <span class="chan" style="background:var(--crm)">C</span><b style="font-size:11.5px">CRM · Approval process: “Discount above policy”</b>
+              <div class="spacer"></div><span class="pill y">TRIGGERED</span>
+            </div>
+            <div class="rule" data-a="up" data-d=".25"><span class="rkey">WHEN</span><span class="rval">A quote is created with <b>discount &gt; 12%</b> or value &gt; SAR 250,000</span></div>
+            <div class="rule" data-a="up" data-d=".35"><span class="rkey">ROUTE TO</span><span class="rval">Regional sales manager · <b>Turki Al-Shammari</b> — escalates to the GM after 4 hours</span></div>
+            <div class="rule" data-a="up" data-d=".45"><span class="rkey">GIVE THEM</span><span class="rval">Deal, margin at this discount, the customer's payment history, and what we did last time</span></div>
+            <div class="rule" data-a="up" data-d=".55"><span class="rkey">ON APPROVE</span><span class="rval">Unlock the quote, resume the chain, log who approved and when</span></div>
+          </div>
+          <div class="wc" style="padding:14px;flex:1" data-a="up" data-d=".7">
+            <div class="wlbl" style="margin-bottom:10px">WHY THIS ONE STAYS HUMAN</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+              <div style="font-size:11.5px;line-height:1.55">Everything else in this chain is a <b>copy</b> of data that already exists. This step is a <b>judgement</b> about giving away margin.</div>
+              <div style="font-size:11.5px;line-height:1.55">Automate the copying. Keep the judgement. That line is where automation earns trust instead of losing it.</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <span class="pill g">AUTOMATE: MOVING DATA</span>
+              <span class="pill g">AUTOMATE: CHASING</span>
+              <span class="pill y">KEEP: PRICING</span>
+              <span class="pill y">KEEP: EXCEPTIONS</span>
+              <span class="pill r">KEEP: BAD NEWS</span>
+            </div>
+          </div>
+        </div>
+        <!-- the phone -->
+        <div style="display:grid;place-items:center">
+          <div style="width:214px;border-radius:26px;background:#0E1318;border:1px solid #2C3D4E;padding:9px;box-shadow:0 26px 50px rgba(0,0,0,.45)" data-a="pop" data-d=".5">
+            <div style="width:52px;height:4px;border-radius:99px;background:#2C3D4E;margin:2px auto 9px"></div>
+            <div style="background:#fff;border-radius:16px;overflow:hidden">
+              <div style="padding:9px 11px;background:var(--cliq);color:#fff;display:flex;align-items:center;gap:7px">
+                <span style="width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:9px">Q</span>
+                <b style="font-size:10.5px">Approvals</b><div class="spacer"></div><span style="font-size:9px;opacity:.85">23:18</span>
+              </div>
+              <div style="padding:11px;display:flex;flex-direction:column;gap:8px">
+                <div class="wlbl">APPROVAL NEEDED</div>
+                <b style="font-size:12px">Rawaf Group · 120 users</b>
+                <div class="kv" style="font-size:10.5px"><span class="wmu">Value</span><b>SAR 283,800</b></div>
+                <div class="kv" style="font-size:10.5px"><span class="wmu">Discount asked</span><b style="color:#C0281F">14%</b></div>
+                <div class="kv" style="font-size:10.5px"><span class="wmu">Margin after</span><b>31%</b></div>
+                <div class="kv" style="font-size:10.5px"><span class="wmu">Pays on time</span><b>Always</b></div>
+                <div class="wc" style="padding:8px;background:var(--w-soft);font-size:10px;line-height:1.4">
+                  Last year they got 13% at 90 users. This is +30 users.</div>
+                <div style="display:flex;gap:6px;margin-top:2px">
+                  <span class="wbtn" style="flex:1;justify-content:center;background:var(--z-green);animation:glow 1.8s 1.4s infinite">Approve</span>
+                  <span class="wbtn ghost" style="flex:1;justify-content:center">Reject</span>
+                </div>
+                <div class="wlbl" style="text-align:center">TAPPED AT 23:19 · 41 SECONDS</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 07 BLUEPRINT ══════════ -->
+<section class="slide" data-step="2" data-clock="THU 23:19" data-touch="1" data-title="Blueprint — the process nobody can skip">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Blueprints</p><h2 data-a="up" data-d=".06">Draw the process once. It enforces itself.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM Blueprint editor</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--z-yellow)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/crm.png" alt="Zoho CRM"><span class="appname">Zoho <span>CRM</span> · Blueprint editor › KSA Enterprise Deal</span>
+        <div class="spacer"></div><span class="pill g">PUBLISHED · 41 DEALS INSIDE</span><div class="uav">ف</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk"></div><div class="amk" style="background:var(--people)">P</div></div>
+        <!-- fixed coordinate canvas so states and transitions line up -->
+        <div style="flex:1;position:relative;min-width:0;background:var(--w-canvas);overflow:hidden">
+          <div style="position:absolute;inset:0;background-image:radial-gradient(circle,#D3DDE4 1px,transparent 1px);background-size:18px 18px"></div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:1010px;height:330px">
+            <svg width="1010" height="330" viewBox="0 0 1010 330" style="position:absolute;left:0;top:0">
+              <g stroke="#9FB0BC" stroke-width="1.6" fill="none" stroke-dasharray="1200" style="--len:1200;animation:draw 1.7s .5s ease both">
+                <path d="M180 116 H205"/><path d="M355 116 H380"/><path d="M530 116 H555"/><path d="M705 116 H730"/>
+                <path d="M455 140 V214"/>
+              </g>
+              <g fill="#9FB0BC" style="animation:fade .4s 1.9s both">
+                <path d="M205 116 l-8-4 v8 z"/><path d="M380 116 l-8-4 v8 z"/><path d="M555 116 l-8-4 v8 z"/><path d="M730 116 l-8-4 v8 z"/>
+                <path d="M455 214 l-4-8 h8 z"/>
+              </g>
+              <g font-family="JetBrains Mono, monospace" font-size="8.5" fill="#74858F" letter-spacing=".8" style="animation:fade .5s 2s both">
+                <text x="188" y="106">QUALIFY</text><text x="360" y="106">REQUEST</text>
+                <text x="536" y="106">APPROVED</text><text x="712" y="106">SIGNED</text>
+                <text x="466" y="182">REJECTED</text>
+              </g>
+            </svg>
+            <!-- states -->
+            <div class="node" style="left:30px;top:92px;width:150px;border-left:3px solid var(--w-mu)" data-a="pop" data-d=".6">
+              <div class="wlbl">STATE 01</div><b>New lead</b>
+              <div class="wlbl" style="margin-top:4px;color:var(--auto)">AUTO-ENTERED</div></div>
+            <div class="node" style="left:205px;top:92px;width:150px;border-left:3px solid var(--crm)" data-a="pop" data-d=".85">
+              <div class="wlbl">STATE 02</div><b>Qualified</b>
+              <div class="wlbl" style="margin-top:4px">MANDATORY: VAT NO.</div></div>
+            <div class="node" style="left:380px;top:92px;width:150px;border-left:3px solid var(--z-yellow);box-shadow:0 0 0 3px rgba(245,176,26,.2)" data-a="pop" data-d="1.1">
+              <div class="wlbl">STATE 03</div><b>Approval pending</b>
+              <div class="wlbl" style="margin-top:4px">SLA: 4H, THEN GM</div></div>
+            <div class="node" style="left:555px;top:92px;width:150px;border-left:3px solid var(--sign)" data-a="pop" data-d="1.35">
+              <div class="wlbl">STATE 04</div><b>Quote sent</b>
+              <div class="wlbl" style="margin-top:4px">AUTO: PDF + WHATSAPP</div></div>
+            <div class="node" style="left:730px;top:92px;width:150px;border-left:3px solid var(--z-green);background:#F0FBF6" data-a="pop" data-d="1.6">
+              <div class="wlbl">STATE 05</div><b>Closed won</b>
+              <div class="wlbl" style="margin-top:4px">HANDS OFF TO FLOW</div></div>
+            <div class="node" style="left:380px;top:214px;width:150px;border-left:3px solid var(--desk)" data-a="pop" data-d="1.85">
+              <div class="wlbl">EXIT</div><b>Rejected</b>
+              <div class="wlbl" style="margin-top:4px">REASON REQUIRED</div></div>
+            <!-- the deal travelling the blueprint -->
+            <div style="position:absolute;left:0;top:0;offset-path:path('M 105 116 L 280 116 L 455 116 L 630 116 L 805 116');offset-rotate:0deg;animation:travel 3.4s 2.1s ease-in-out both">
+              <div class="wav" style="width:24px;height:24px;font-size:10px;box-shadow:0 4px 14px rgba(0,0,0,.28)">ن</div>
+            </div>
+            <!-- side note -->
+            <div class="wc" style="position:absolute;left:30px;top:200px;width:300px;padding:11px" data-a="up" data-d="2.2">
+              <div class="wlbl" style="margin-bottom:6px">WHAT A BLUEPRINT ACTUALLY BUYS YOU</div>
+              <div style="font-size:11px;line-height:1.5">The rep cannot send a quote before the VAT number exists, cannot skip approval, cannot close without a signed contract. The process stops being a training problem.</div>
+            </div>
+            <div class="wc" style="position:absolute;left:730px;top:200px;width:250px;padding:11px;background:#F0FBF6;border-color:#A9E6CF" data-a="up" data-d="2.4">
+              <div class="wlbl" style="color:#0B7A50;margin-bottom:6px">AND FOR THE MANAGER</div>
+              <div style="font-size:11px;line-height:1.5">Every deal's exact position, how long it sat in each state, and who held it up. No status meeting required.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 08 STEP 3 — QUOTE ══════════ -->
+<section class="slide" data-step="3" data-clock="THU 23:20" data-touch="1" data-title="Step 3 — the Arabic quote, generated">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Step 3 · <b>23:20</b> · one minute after approval</p><h2 data-a="up" data-d=".06">The quote writes itself, in Arabic, with the VAT right.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM Quotes</span><span class="chip" style="--c:var(--wa)"><img src="logos/whatsapp.png" alt="whatsapp">WhatsApp delivery</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--crm)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 300px;gap:13px;padding:14px 15px">
+        <!-- the quote document -->
+        <div class="wc ar" dir="rtl" style="padding:18px 20px;display:flex;flex-direction:column;gap:12px" data-a="up" data-d=".2">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--w-bd);padding-bottom:11px">
+            <div>
+              <b style="font-size:16px">عرض سعر</b>
+              <div class="wmu" style="font-size:11px;margin-top:3px">رقم العرض: QT-2026-1188 · الخميس ٢٢:٢٠</div>
+            </div>
+            <div style="text-align:end">
+              <div style="display:flex;gap:3px;justify-content:flex-end;margin-bottom:4px">
+                <i style="width:4px;height:12px;background:var(--z-red);display:block"></i><i style="width:4px;height:12px;background:var(--z-green);display:block"></i>
+                <i style="width:4px;height:12px;background:var(--z-blue);display:block"></i><i style="width:4px;height:12px;background:var(--z-yellow);display:block"></i>
+              </div>
+              <b style="font-size:12px">مزايا</b>
+              <div class="wmu" style="font-size:10px">الرقم الضريبي 3•••••••••••001</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:26px;font-size:11.5px">
+            <div><div class="wlbl ar">العميل</div><b>مجموعة رواف</b><div class="wmu" style="font-size:10.5px">ندى السديري · الرياض</div></div>
+            <div><div class="wlbl ar">مدة العقد</div><b>٢٤ شهراً</b></div>
+            <div><div class="wlbl ar">صالح حتى</div><b>٣٠ أكتوبر</b></div>
+          </div>
+          <div style="flex:1">
+            <div style="display:grid;grid-template-columns:1fr 70px 100px 110px;gap:8px;padding:8px 0;border-bottom:1px solid var(--w-bd)" class="wlbl ar">
+              <span>البند</span><span>الكمية</span><span>السعر</span><span>الإجمالي</span></div>
+            <div style="display:grid;grid-template-columns:1fr 70px 100px 110px;gap:8px;padding:9px 0;font-size:11.5px;border-bottom:1px solid var(--w-soft)">
+              <span>ترخيص المنصة — سنوي</span><span>١٢٠</span><span>٢٦٠٠</span><span>٣١٢٬٠٠٠</span></div>
+            <div style="display:grid;grid-template-columns:1fr 70px 100px 110px;gap:8px;padding:9px 0;font-size:11.5px;border-bottom:1px solid var(--w-soft)">
+              <span>التهيئة والتدريب</span><span>١</span><span>١٨٬٠٠٠</span><span>١٨٬٠٠٠</span></div>
+            <div style="display:grid;grid-template-columns:1fr 70px 100px 110px;gap:8px;padding:9px 0;font-size:11.5px;color:#C0281F">
+              <span>خصم معتمد — ١٤٪ <span class="pill y ar" style="margin-inline-start:5px">موافقة تركي ٢٣:١٩</span></span><span></span><span></span><span>−٤٦٬٢٠٠</span></div>
+          </div>
+          <div style="border-top:1px solid var(--w-bd);padding-top:11px;display:flex;justify-content:flex-end">
+            <div style="width:250px;display:flex;flex-direction:column;gap:6px;font-size:11.5px">
+              <div class="kv"><span class="wmu">الإجمالي قبل الضريبة</span><b>٢٨٣٬٨٠٠</b></div>
+              <div class="kv"><span class="wmu">ضريبة القيمة المضافة ١٥٪</span><b>٤٢٬٥٧٠</b></div>
+              <div class="kv" style="border-top:1px solid var(--w-bd);padding-top:7px"><b>الإجمالي (ر.س)</b><b style="font-size:15px;color:var(--crm)">٣٢٦٬٣٧٠</b></div>
+            </div>
+          </div>
+        </div>
+        <!-- what generated it -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:12px" data-a="inR" data-d=".4">
+            <div class="wlbl" style="margin-bottom:9px">ASSEMBLED FROM</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick bot">✓</span>Arabic quote template</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick bot">✓</span>Price book · KSA · 120-user tier</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick bot">✓</span>Approved discount from step 2</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick bot">✓</span>VAT 15% rule</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick bot">✓</span>Account data from the form</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:12px" data-a="inR" data-d=".55">
+            <div class="wlbl" style="margin-bottom:9px">SENT AT 23:20 VIA</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+              <div style="display:flex;gap:7px;align-items:center"><span class="chan" style="background:var(--wa)">◍</span>WhatsApp — her stated preference</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="chan" style="background:var(--books)">✉</span>Email — PDF attached</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="chan" style="background:var(--crm)">C</span>Logged on the deal</div>
+            </div>
+            <div class="pill g" style="margin-top:10px">OPENED 07:52 FRIDAY</div>
+          </div>
+          <div class="wc" style="padding:12px;flex:1;display:flex;flex-direction:column;justify-content:center;background:#F0FBF6;border-color:#A9E6CF" data-a="inR" data-d=".7">
+            <div class="wlbl" style="color:#0B7A50">THE OLD WAY</div>
+            <div style="font-size:11.5px;line-height:1.5;margin-top:5px">Sunday morning: find the template, retype 120, get the VAT wrong, ask someone for the discount, send it Monday.</div>
+            <div style="display:flex;gap:7px;margin-top:9px"><span class="pill n">WAS: 2 DAYS</span><span class="pill g">NOW: 60 SECONDS</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 09 STEP 4 — CONTRACT ══════════ -->
+<section class="slide" data-step="4" data-clock="FRI 09:04" data-touch="1" data-title="Step 4 — signed on a Friday">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Step 4 · <b>Friday 09:04</b> · the weekend</p><h2 data-a="up" data-d=".06">She signs from her phone. The chain keeps moving.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--sign)"><img src="logos/sign.png" alt="sign">Zoho Sign</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM trigger</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--sign)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:1fr 1fr 260px;gap:13px;padding:14px 15px">
+        <!-- signing order -->
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:11px" data-a="inL" data-d=".2">
+          <div class="wlbl">SIGNING ORDER · AUTOMATIC</div>
+          <div style="display:flex;flex-direction:column;gap:0;flex:1">
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+                <span class="tick">✓</span><span style="width:2px;height:38px;background:#A9E6CF;display:block"></span></div>
+              <div><b style="font-size:11.5px">Mazaya · Faisal</b><div class="wlbl">PRE-SIGNED FROM TEMPLATE · THU 23:20</div></div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+                <span class="tick">✓</span><span style="width:2px;height:38px;background:#A9E6CF;display:block"></span></div>
+              <div><b style="font-size:11.5px">Rawaf · Nada Al-Sudairi</b><div class="wlbl">SIGNED ON MOBILE · FRI 09:04</div></div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="display:flex;flex-direction:column;align-items:center"><span class="tick">✓</span></div>
+              <div><b style="font-size:11.5px">Rawaf · Finance countersign</b><div class="wlbl">SIGNED · FRI 09:04</div></div>
+            </div>
+          </div>
+          <div class="wc" style="padding:10px;background:var(--w-soft);font-size:10.5px;line-height:1.45">
+            Reminder was scheduled for Saturday 10:00 — never needed to fire.</div>
+        </div>
+        <!-- the document -->
+        <div class="wc ar" dir="rtl" style="padding:15px 17px;display:flex;flex-direction:column;gap:9px" data-a="up" data-d=".35">
+          <div class="kv" style="border-bottom:1px solid var(--w-bd);padding-bottom:9px">
+            <b style="font-size:13px">اتفاقية ترخيص وخدمات</b><span class="pill b ar">نسخة عربية / إنجليزية</span></div>
+          <div style="font-size:11px;line-height:1.9;color:var(--w-mu)">
+            تُبرم هذه الاتفاقية بين <b style="color:var(--w-tx)">مزايا</b> و<b style="color:var(--w-tx)">مجموعة رواف</b> بتاريخ…
+          </div>
+          <div class="wsk" style="width:88%"></div><div class="wsk" style="width:74%"></div><div class="wsk" style="width:82%"></div>
+          <div class="wsk" style="width:60%"></div>
+          <div style="margin-top:auto;display:flex;gap:12px;align-items:flex-end;border-top:1px dashed var(--w-bd);padding-top:12px">
+            <div style="flex:1">
+              <svg width="86" height="34" viewBox="0 0 86 34">
+                <path d="M4 26 C 16 6 22 30 32 16 S 46 4 54 22 S 70 12 82 18" stroke="#1E2A33" stroke-width="1.6" fill="none"
+                      stroke-dasharray="200" style="--len:200;animation:draw 1.4s 1s ease both"/></svg>
+              <div class="wlbl ar" style="margin-top:3px">ندى السديري · ٩:٠٤ ص</div>
+            </div>
+            <div style="text-align:center">
+              <div style="width:40px;height:40px;border:1px solid var(--w-bd);border-radius:6px;display:grid;place-items:center;font-size:9px;color:var(--w-mu)">QR</div>
+              <div class="wlbl" style="margin-top:3px">AUDIT ID</div>
+            </div>
+          </div>
+        </div>
+        <!-- what it triggered -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="wc" style="padding:12px" data-a="inR" data-d=".6">
+            <div class="wlbl" style="margin-bottom:9px">THE SIGNATURE IS THE TRIGGER</div>
+            <div style="font-size:11px;line-height:1.5">The moment the last signature lands, Zoho Sign tells CRM, CRM moves the Blueprint to <b>Closed won</b>, and that fires Flow.</div>
+          </div>
+          <div class="wc" style="padding:12px" data-a="inR" data-d=".75">
+            <div class="wlbl" style="margin-bottom:8px">IN THE NEXT 94 SECONDS</div>
+            <div style="display:flex;flex-direction:column;gap:5px;font-size:11px">
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick bot">✓</span>Deal → Closed won</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick bot">✓</span>Contract filed in WorkDrive</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick bot">✓</span>Invoice raised in Books</div>
+              <div style="display:flex;gap:7px;align-items:center"><span class="tick bot">✓</span>Welcome journey enrolled</div>
+            </div>
+          </div>
+          <div class="wc" style="padding:12px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d=".9">
+            <div class="wlbl">PEOPLE INVOLVED ON THE MAZAYA SIDE</div>
+            <div style="font-family:var(--display);font-weight:700;font-size:38px;color:var(--auto);line-height:1.1">0</div>
+            <div class="wmu" style="font-size:11px">It's Friday. Everyone is with their family.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 10 STEP 5 — INVOICE ══════════ -->
+<section class="slide" data-step="5" data-clock="FRI 09:06" data-touch="1" data-title="Step 5 — ZATCA invoice, no bookkeeper">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Step 5 · <b>Friday 09:06</b></p><h2 data-a="up" data-d=".06">A compliant e-invoice, cleared, at two minutes past signing.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--books)"><img src="logos/books.png" alt="books">Zoho Books</span><span class="chip" style="--c:var(--z-green)"><i></i>ZATCA phase 2</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--books)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/books.png" alt="Zoho Books"><span class="appname">Zoho <span>Books</span> · Invoices</span>
+        <div class="spacer"></div><span class="pill g">ZATCA INTEGRATION LIVE</span><div class="uav">ف</div>
+      </div>
+      <div class="win-tabs"><div class="tab">Dashboard</div><div class="tab on">Invoices</div><div class="tab">Payments</div><div class="tab">Reports</div><div class="tab">e-Invoicing</div></div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--books)"><img src="logos/books.png" alt="books"></div><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div><div class="amk amk-logo" style="--c:var(--projects)"><img src="logos/projects.png" alt="projects"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 280px;gap:13px">
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div class="wc" style="overflow:hidden">
+              <div class="trow" style="background:#F7FAFB"><span class="wlbl" style="flex:1">INVOICE</span><span class="wlbl" style="width:120px">CUSTOMER</span><span class="wlbl" style="width:100px">AMOUNT</span><span class="wlbl" style="width:96px">ZATCA</span></div>
+              <div class="trow" data-a="row" data-d=".4">
+                <span style="flex:1;display:flex;align-items:center;gap:8px"><b>INV-2026-0442</b><span class="pill g">AUTO</span></span>
+                <span style="width:120px">Rawaf Group</span>
+                <span style="width:100px"><b>SAR 326,370</b></span>
+                <span style="width:96px"><span class="pill g">CLEARED</span></span>
+              </div>
+              <div class="trow" style="opacity:.55"><span style="flex:1">INV-2026-0441</span><span style="width:120px">Nakhla Trading</span><span style="width:100px">SAR 88,000</span><span style="width:96px"><span class="pill g">CLEARED</span></span></div>
+              <div class="trow" style="opacity:.4"><span style="flex:1">INV-2026-0440</span><span style="width:120px">Dammam Logistics</span><span style="width:100px">SAR 41,200</span><span style="width:96px"><span class="pill g">CLEARED</span></span></div>
+            </div>
+            <div class="wc" style="padding:15px;flex:1;display:flex;gap:18px" data-a="up" data-d=".7">
+              <div style="flex:1;display:flex;flex-direction:column;gap:9px">
+                <div class="wlbl">WHAT BOOKS DID BY ITSELF</div>
+                <div style="display:flex;flex-direction:column;gap:6px;font-size:11.5px">
+                  <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Pulled the line items from the signed quote</div>
+                  <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Applied VAT 15% and the buyer's VAT number</div>
+                  <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Generated the Arabic + English invoice</div>
+                  <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Submitted for ZATCA clearance, embedded the QR</div>
+                  <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Emailed it with a SADAD / card payment link</div>
+                  <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Scheduled reminders at day 7, 14, 25</div>
+                </div>
+              </div>
+              <!-- QR block -->
+              <div style="width:130px;display:flex;flex-direction:column;align-items:center;gap:8px">
+                <svg width="96" height="96" viewBox="0 0 24 24" data-a="pop" data-d="1.1">
+                  <rect width="24" height="24" fill="#fff"/><g fill="#1E2A33">
+                  <rect x="1" y="1" width="7" height="7"/><rect x="16" y="1" width="7" height="7"/><rect x="1" y="16" width="7" height="7"/>
+                  <rect x="3" y="3" width="3" height="3" fill="#fff"/><rect x="18" y="3" width="3" height="3" fill="#fff"/><rect x="3" y="18" width="3" height="3" fill="#fff"/>
+                  <rect x="10" y="1" width="2" height="2"/><rect x="13" y="4" width="2" height="2"/><rect x="10" y="7" width="2" height="2"/>
+                  <rect x="1" y="10" width="2" height="2"/><rect x="4" y="13" width="2" height="2"/><rect x="7" y="10" width="2" height="2"/>
+                  <rect x="10" y="10" width="3" height="3"/><rect x="16" y="10" width="2" height="2"/><rect x="19" y="13" width="2" height="2"/>
+                  <rect x="10" y="16" width="2" height="2"/><rect x="13" y="19" width="2" height="2"/><rect x="16" y="16" width="2" height="2"/>
+                  <rect x="19" y="19" width="3" height="3"/></g></svg>
+                <div class="wlbl" style="text-align:center">ZATCA QR<br>CLEARED 09:06</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="wc" style="padding:13px" data-a="inR" data-d=".8">
+              <div class="wlbl" style="margin-bottom:8px">COMPLIANCE, NOT A PROJECT</div>
+              <div style="font-size:11px;line-height:1.5">Phase 2 e-invoicing means every invoice is cleared with ZATCA before it reaches the customer. Automate it once and it stops being a monthly panic.</div>
+            </div>
+            <div class="wc" style="padding:13px" data-a="inR" data-d=".92">
+              <div class="wlbl" style="margin-bottom:9px">DAYS TO CASH</div>
+              <div style="display:flex;align-items:baseline;gap:9px">
+                <b style="font-family:var(--display);font-size:24px;color:var(--w-mu);text-decoration:line-through">34</b>
+                <b style="font-family:var(--display);font-size:32px;color:var(--auto)">19</b></div>
+              <div class="wmu" style="font-size:10.5px;margin-top:5px">Invoices that go out the same hour get paid faster. That's the whole trick.</div>
+            </div>
+            <div class="wc" style="padding:13px;flex:1;background:#F0FBF6;border-color:#A9E6CF;display:flex;flex-direction:column;justify-content:center" data-a="inR" data-d="1.05">
+              <div class="wlbl" style="color:#0B7A50">FINANCE TEAM ON FRIDAY</div>
+              <div class="ar" dir="rtl" style="font-size:13px;line-height:1.7;margin-top:6px;color:#0B7A50">لا أحد. الفاتورة صدرت واعتُمدت وحدها.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 11 ZOHO FLOW ══════════ -->
+<section class="slide" data-step="5" data-clock="FRI 09:06" data-touch="1" data-title="Zoho Flow — the connective tissue">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Zoho Flow</p><h2 data-a="up" data-d=".06">This is the part that used to be a person.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--flow)"><img src="logos/flow.png" alt="flow">Flow builder</span><span class="chip" style="--c:var(--z-blue)"><img src="logos/zoho.png" alt="zoho">Zoho + 900 external apps</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--flow)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/flow.png" alt="Zoho Flow"><span class="appname">Zoho <span>Flow</span> · Order to onboard · KSA</span>
+        <div class="spacer"></div><span class="pill g"><i class="dotlive" style="animation:ping 2s infinite"></i>LIVE · 41 RUNS THIS MONTH</span><div class="uav">ف</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--flow)"><img src="logos/flow.png" alt="flow"></div><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div>
+          <div class="amk amk-logo" style="--c:var(--books)"><img src="logos/books.png" alt="books"></div><div class="amk amk-logo" style="--c:var(--projects)"><img src="logos/projects.png" alt="projects"></div></div>
+        <div style="flex:1;position:relative;min-width:0;background:var(--w-canvas);overflow:hidden">
+          <div style="position:absolute;inset:0;background-image:radial-gradient(circle,#D3DDE4 1px,transparent 1px);background-size:18px 18px"></div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:1010px;height:340px">
+            <svg width="1010" height="340" viewBox="0 0 1010 340" style="position:absolute;left:0;top:0">
+              <g stroke="#0EA5A5" stroke-width="1.7" fill="none" stroke-dasharray="7 5" style="animation:flow 1.4s linear infinite">
+                <path d="M190 170 H240"/>
+                <path d="M390 158 C 420 158 420 74 450 74"/>
+                <path d="M390 182 C 420 182 420 262 450 262"/>
+                <path d="M600 74 H650"/>
+                <path d="M600 262 H650"/>
+                <path d="M810 74 C 845 74 845 158 875 158"/>
+                <path d="M810 262 C 845 262 845 182 875 182"/>
+              </g>
+            </svg>
+            <!-- trigger -->
+            <div class="node" style="left:20px;top:146px;width:170px;border-left:3px solid var(--crm)" data-a="pop" data-d=".3">
+              <div class="wlbl">TRIGGER · CRM</div><b>Deal → Closed won</b>
+              <div class="wlbl" style="margin-top:4px">FIRED FRI 09:04</div></div>
+            <!-- decision -->
+            <div class="node" style="left:240px;top:146px;width:150px;border-left:3px solid var(--z-yellow)" data-a="pop" data-d=".55">
+              <div class="wlbl">DECISION</div><b>Value &gt; SAR 250k?</b>
+              <div class="wlbl" style="margin-top:4px">YES ↗ · NO ↘</div></div>
+            <!-- yes branch -->
+            <div class="node" style="left:450px;top:50px;width:150px;border-left:3px solid var(--sign)" data-a="pop" data-d=".8">
+              <div class="wlbl">ZOHO SIGN</div><b>Enterprise contract</b></div>
+            <div class="node" style="left:650px;top:50px;width:160px;border-left:3px solid var(--books)" data-a="pop" data-d="1.05">
+              <div class="wlbl">ZOHO BOOKS</div><b>ZATCA invoice + link</b></div>
+            <!-- no branch -->
+            <div class="node" style="left:450px;top:238px;width:150px;border-left:3px solid var(--books)" data-a="pop" data-d=".95">
+              <div class="wlbl">ZOHO BOOKS</div><b>Standard invoice</b></div>
+            <div class="node" style="left:650px;top:238px;width:160px;border-left:3px solid var(--camp)" data-a="pop" data-d="1.2">
+              <div class="wlbl">MARKETING AUTOMATION</div><b>Welcome journey · AR</b></div>
+            <!-- merge -->
+            <div class="node" style="left:875px;top:146px;width:120px;border-left:3px solid var(--projects)" data-a="pop" data-d="1.45">
+              <div class="wlbl">THEN</div><b>Projects + Desk + Cliq</b></div>
+            <!-- run log -->
+            <div class="wc" style="position:absolute;left:20px;top:238px;width:390px;padding:11px" data-a="up" data-d="1.7">
+              <div class="kv" style="margin-bottom:8px"><span class="wlbl">RUN #41 · FRI 09:04:31</span><span class="pill g">94s END TO END</span></div>
+              <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px">
+                <div style="display:flex;gap:7px;align-items:center"><span class="tick" style="width:13px;height:13px;font-size:8px">✓</span>Books · invoice created <span class="wmu">09:06:02</span></div>
+                <div style="display:flex;gap:7px;align-items:center"><span class="tick" style="width:13px;height:13px;font-size:8px">✓</span>Marketing · journey enrolled <span class="wmu">09:07:11</span></div>
+                <div style="display:flex;gap:7px;align-items:center"><span class="tick wait" style="width:13px;height:13px;font-size:8px">⏱</span>Projects · waiting for payment <span class="wmu">held</span></div>
+              </div>
+            </div>
+            <div class="wc" style="position:absolute;left:640px;top:150px;width:200px;padding:10px;background:#F0FBF6;border-color:#A9E6CF" data-a="up" data-d="1.9">
+              <div class="wlbl" style="color:#0B7A50;margin-bottom:5px">BUILT BY</div>
+              <div style="font-size:10.5px;line-height:1.45">A sales ops analyst. In an afternoon. Dragging boxes.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 12 STEPS 6+7 — WELCOME & PROJECT ══════════ -->
+<section class="slide" data-step="7" data-clock="SAT 06:12" data-touch="1" data-title="Steps 6 & 7 — welcome and kick-off">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Steps 6 &amp; 7 · <b>Friday 09:07 → Saturday 06:12</b></p><h2 data-a="up" data-d=".06">Onboarding starts before anyone says hello.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--camp)"><img src="logos/marketingautomation.png" alt="marketingautomation">Marketing Automation</span><span class="chip" style="--c:var(--projects)"><img src="logos/projects.png" alt="projects">Zoho Projects</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--projects)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:326px 1fr;gap:13px;padding:14px 15px">
+        <!-- welcome journey -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:13px" data-a="inL" data-d=".2">
+            <div class="kv" style="margin-bottom:10px"><span class="wlbl">WELCOME JOURNEY · ARABIC</span><span class="chan" style="background:var(--camp)">✉</span></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--camp)">
+                <div class="wlbl">DAY 0 · FRI 09:07</div>
+                <div class="ar" dir="rtl" style="font-size:11px;margin-top:3px">أهلاً بكم في مزايا — هذه خطواتكم الأولى</div></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid var(--camp)">
+                <div class="wlbl">DAY 2 · SUN</div>
+                <div class="ar" dir="rtl" style="font-size:11px;margin-top:3px">دعوة لجلسة التهيئة مع فريقكم</div></div>
+              <div class="wc" style="padding:9px 11px;border-left:3px solid #D8DEE3;opacity:.65">
+                <div class="wlbl">DAY 7 · IF NOT LOGGED IN</div>
+                <div class="ar" dir="rtl" style="font-size:11px;margin-top:3px">هل تحتاجون مساعدة في تسجيل الدخول؟</div></div>
+            </div>
+            <div class="wlbl" style="margin-top:10px">PACED, NOT BLASTED · SENDS AVOID FRI–SAT</div>
+          </div>
+          <div class="wc" style="padding:13px;flex:1;display:flex;flex-direction:column;justify-content:center" data-a="inL" data-d=".4">
+            <div class="wlbl" style="margin-bottom:7px">THE PAYMENT WAS THE TRIGGER</div>
+            <div style="font-size:11.5px;line-height:1.5">Saturday 06:12, the SADAD payment landed. Flow was holding the project step until then — so implementation only starts on real customers, never on hopeful ones.</div>
+            <div class="pill g" style="margin-top:10px;align-self:flex-start">PAID · SAR 326,370</div>
+          </div>
+        </div>
+        <!-- project created -->
+        <div class="wc" style="padding:0;overflow:hidden;display:flex;flex-direction:column" data-a="up" data-d=".5">
+          <div style="padding:10px 13px;border-bottom:1px solid var(--w-bd);display:flex;align-items:center;gap:9px">
+            <span class="chan" style="background:var(--projects)">▦</span>
+            <div style="flex:1"><b style="font-size:12px">Rawaf Group · Implementation</b>
+              <div class="wlbl">CREATED FROM TEMPLATE “ENTERPRISE 100+ · KSA” · SAT 06:12</div></div>
+            <span class="pill g">AUTO</span>
+          </div>
+          <div style="flex:1;padding:12px 13px;display:flex;flex-direction:column;gap:8px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px">
+              <div class="wc" style="padding:9px"><div class="wlbl">TASKS</div><b style="font-family:var(--display);font-size:19px">14</b></div>
+              <div class="wc" style="padding:9px"><div class="wlbl">MILESTONES</div><b style="font-family:var(--display);font-size:19px">4</b></div>
+              <div class="wc" style="padding:9px"><div class="wlbl">OWNERS SET</div><b style="font-family:var(--display);font-size:19px">5</b></div>
+              <div class="wc" style="padding:9px"><div class="wlbl">GO-LIVE</div><b style="font-family:var(--display);font-size:19px">18 NOV</b></div>
+            </div>
+            <div class="wc" style="flex:1;overflow:hidden">
+              <div class="trow" style="background:#F7FAFB"><span class="wlbl" style="flex:1">TASK</span><span class="wlbl" style="width:104px">OWNER</span><span class="wlbl" style="width:78px">DUE</span></div>
+              <div class="trow" data-a="row" data-d=".8"><span class="tick bot">1</span><span style="flex:1">Kick-off call with Nada</span><span style="width:104px">Faisal</span><span style="width:78px">Sun 09:00</span></div>
+              <div class="trow" data-a="row" data-d=".9"><span class="tick bot">2</span><span style="flex:1">Provision 120 user accounts</span><span style="width:104px">Majed</span><span style="width:78px">Mon</span></div>
+              <div class="trow" data-a="row" data-d="1"><span class="tick bot">3</span><span style="flex:1">Arabic UI + RTL configuration</span><span style="width:104px">Majed</span><span style="width:78px">Tue</span></div>
+              <div class="trow" data-a="row" data-d="1.1"><span class="tick bot">4</span><span style="flex:1">Data migration dry run</span><span style="width:104px">Hessa</span><span style="width:78px">Thu</span></div>
+              <div class="trow" data-a="row" data-d="1.2"><span class="tick bot">5</span><span style="flex:1">Arabic admin training · 2 sessions</span><span style="width:104px">Lama</span><span style="width:78px">4 Nov</span></div>
+              <div class="trow" data-a="row" data-d="1.3"><span class="tick bot">6</span><span style="flex:1">ZATCA invoicing walkthrough</span><span style="width:104px">Abdulaziz</span><span style="width:78px">9 Nov</span></div>
+            </div>
+            <div class="wlbl">DATES CALCULATED BACKWARD FROM GO-LIVE · SAUDI WORK WEEK · NO FRI–SAT DEADLINES</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 13 STEP 8 — SUCCESS TASK ══════════ -->
+<section class="slide" data-step="8" data-clock="SAT 06:13" data-touch="1" data-title="Step 8 — the handoff that already happened">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Step 8 · <b>Saturday 06:13</b></p><h2 data-a="up" data-d=".06">Sunday morning, the team walks in to a live customer.</h2></div>
+    <div class="chips" data-a="up" data-d=".14"><span class="chip" style="--c:var(--desk)"><img src="logos/desk.png" alt="desk">Zoho Desk</span><span class="chip" style="--c:var(--cliq)"><img src="logos/cliq.png" alt="cliq">Cliq</span><span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">CRM task</span></div>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--cliq)" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:300px 1fr 250px;gap:13px;padding:14px 15px">
+        <!-- Cliq channel post -->
+        <div class="wc" style="padding:0;overflow:hidden;display:flex;flex-direction:column" data-a="inL" data-d=".2">
+          <div style="padding:9px 12px;background:var(--cliq);color:#fff;display:flex;align-items:center;gap:8px">
+            <span style="width:19px;height:19px;border-radius:5px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:9px">Q</span>
+            <b style="font-size:11.5px">#sales-ksa</b><div class="spacer"></div><span style="font-size:9px;opacity:.85">SAT 06:13</span>
+          </div>
+          <div style="padding:12px;display:flex;flex-direction:column;gap:9px;flex:1">
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="chan" style="background:var(--flow)">⇄</span><b style="font-size:11px">Flow bot</b><span class="wlbl">AUTOMATED</span></div>
+            <div class="wc" style="padding:11px;border-left:3px solid var(--z-green)">
+              <b style="font-size:11.5px">🎉 Rawaf Group is live</b>
+              <div style="font-size:11px;line-height:1.55;margin-top:6px">SAR 326,370 · 120 users · signed Friday, paid Saturday. Project created, kick-off booked Sunday 09:00 with Faisal.</div>
+              <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:9px">
+                <span class="pill g">Contract</span><span class="pill b">Invoice</span><span class="pill p">Project</span><span class="pill y">Kick-off</span>
+              </div>
+            </div>
+            <div class="wlbl" style="margin-top:auto">NOBODY TYPED THIS MESSAGE</div>
+          </div>
+        </div>
+        <!-- CS task -->
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="wc" style="padding:14px" data-a="up" data-d=".35">
+            <div class="kv" style="margin-bottom:10px">
+              <span class="wlbl">CUSTOMER SUCCESS TASK · CREATED AUTOMATICALLY</span><span class="pill y">DUE SUN 08:30</span></div>
+            <div style="display:flex;gap:11px;align-items:center;margin-bottom:11px">
+              <div class="wav" style="width:32px;height:32px;font-size:13px;background:linear-gradient(140deg,#8FD9C4,#12B886)">ل</div>
+              <div><b style="font-size:12px">Lama Al-Qahtani</b><div class="wlbl">CUSTOMER SUCCESS · RIYADH</div></div>
+            </div>
+            <div class="wc" style="padding:11px;background:var(--w-soft)">
+              <div class="wlbl" style="margin-bottom:6px">EVERYTHING SHE NEEDS, ATTACHED</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:10.5px">
+                <div>· Signed contract</div><div>· Cleared invoice</div>
+                <div>· The original Arabic form</div><div>· Approved discount + why</div>
+                <div>· Implementation plan</div><div>· Preferred channel: WhatsApp</div>
+              </div>
+            </div>
+          </div>
+          <div class="wc" style="padding:14px;flex:1" data-a="up" data-d=".5">
+            <div class="wlbl" style="margin-bottom:10px">DESK · ACCOUNT PROVISIONED</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:11.5px">
+              <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Support account created, tied to the CRM record</div>
+              <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Arabic-speaking queue assigned by default</div>
+              <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Enterprise SLA applied · 2h first response</div>
+              <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Onboarding KB articles shared in Arabic</div>
+            </div>
+          </div>
+        </div>
+        <!-- the ledger -->
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:0;background:#F0FBF6;border-color:#A9E6CF" data-a="inR" data-d=".6">
+          <div class="wlbl" style="color:#0B7A50;margin-bottom:11px">THE WHOLE CHAIN</div>
+          <div class="kv" style="padding:7px 0;border-bottom:1px solid #CDEBDD"><span style="font-size:11px">Steps</span><b style="font-family:var(--display);font-size:17px">8</b></div>
+          <div class="kv" style="padding:7px 0;border-bottom:1px solid #CDEBDD"><span style="font-size:11px">Apps involved</span><b style="font-family:var(--display);font-size:17px">7</b></div>
+          <div class="kv" style="padding:7px 0;border-bottom:1px solid #CDEBDD"><span style="font-size:11px">Human touches</span><b style="font-family:var(--display);font-size:17px;color:#96650A">1</b></div>
+          <div class="kv" style="padding:7px 0;border-bottom:1px solid #CDEBDD"><span style="font-size:11px">Fields re-typed</span><b style="font-family:var(--display);font-size:17px;color:var(--auto)">0</b></div>
+          <div class="kv" style="padding:7px 0;border-bottom:1px solid #CDEBDD"><span style="font-size:11px">Working hours used</span><b style="font-family:var(--display);font-size:17px;color:var(--auto)">0</b></div>
+          <div class="kv" style="padding:7px 0"><span style="font-size:11px">Elapsed</span><b style="font-family:var(--display);font-size:17px">31h 32m</b></div>
+          <div class="ar" dir="rtl" style="margin-top:auto;font-size:12px;line-height:1.7;color:#0B7A50;padding-top:11px;border-top:1px solid #CDEBDD">
+            كل هذا حدث في نهاية الأسبوع — بنقرة واحدة من الإنسان.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 14 CREATOR ══════════ -->
+<section class="slide" data-step="8" data-clock="SAT 06:13" data-touch="1" data-title="Creator — when no app fits">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Zoho Creator</p><h2 data-a="up" data-d=".06">And when the process is yours alone.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Every business has one workflow no vendor ships. That's not a reason to go back to spreadsheets.</p>
+  </header>
+  <div class="art">
+    <div class="win" style="--acc:var(--creator)" data-a="win">
+      <div class="win-top">
+        <img class="applogo" src="logos/creator.png" alt="Zoho Creator"><span class="appname">Zoho <span>Creator</span> · Site Handover App</span>
+        <div class="spacer"></div><span class="pill p">BUILT IN 3 DAYS · NO DEVELOPER</span><div class="uav">ف</div>
+      </div>
+      <div class="win-mid">
+        <div class="rail"><div class="amk on amk-logo" style="--c:var(--creator)"><img src="logos/creator.png" alt="creator"></div><div class="amk amk-logo" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm"></div>
+          <div class="amk amk-logo" style="--c:var(--projects)"><img src="logos/projects.png" alt="projects"></div><div class="amk amk-logo" style="--c:var(--flow)"><img src="logos/flow.png" alt="flow"></div></div>
+        <div class="win-body" style="display:grid;grid-template-columns:1fr 250px 214px;gap:12px">
+          <!-- builder -->
+          <div class="wc" style="padding:13px;display:flex;flex-direction:column;gap:10px" data-a="up" data-d=".2">
+            <div class="wlbl">THE PROBLEM NOBODY SELLS AN APP FOR</div>
+            <div style="font-size:11.5px;line-height:1.55">Mazaya installs hardware at retail sites across the Kingdom. Every handover needs photos, a signature from the store manager, a serial-number check and a municipality permit reference — captured on site, often with no signal.</div>
+            <div style="border-top:1px solid var(--w-bd);padding-top:10px">
+              <div class="wlbl" style="margin-bottom:8px">WHAT WAS BUILT</div>
+              <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+                <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Arabic mobile form, works offline</div>
+                <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Photo capture + GPS stamp per unit</div>
+                <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Store manager signs on the screen</div>
+                <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Serial validated against the CRM asset list</div>
+                <div style="display:flex;gap:8px;align-items:center"><span class="tick bot">✓</span>Permit reference kept for the municipality file</div>
+              </div>
+            </div>
+            <div class="wc" style="padding:10px;background:#F8F6FF;border-color:#DED5FB;margin-top:auto">
+              <div class="wlbl" style="color:#5B3FD6;margin-bottom:5px">AND THEN IT JOINS THE CHAIN</div>
+              <div style="font-size:10.5px;line-height:1.45">Handover submitted → Flow closes the Projects milestone, releases the retention invoice in Books, and posts to Cliq.</div>
+            </div>
+          </div>
+          <!-- the schema/logic -->
+          <div class="wc" style="padding:13px;display:flex;flex-direction:column;gap:9px" data-a="up" data-d=".4">
+            <div class="wlbl">FORM · DEPLOY TARGETS</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:10.5px">
+              <div class="kv"><span>Field: الموقع</span><span class="pill n">Lookup</span></div>
+              <div class="kv"><span>Field: الأجهزة</span><span class="pill n">Subform</span></div>
+              <div class="kv"><span>Field: الصور</span><span class="pill n">Image ×6</span></div>
+              <div class="kv"><span>Field: التوقيع</span><span class="pill n">Signature</span></div>
+              <div class="kv"><span>Field: رقم التصريح</span><span class="pill n">Text</span></div>
+            </div>
+            <div style="border-top:1px solid var(--w-bd);padding-top:9px">
+              <div class="wlbl" style="margin-bottom:7px">RUNS ON</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px">
+                <span class="pill p">iOS</span><span class="pill p">Android</span><span class="pill p">Web</span><span class="pill p">Offline</span>
+              </div>
+            </div>
+            <div class="wlbl" style="margin-top:auto">ONE APP · ONE DATA MODEL · NO EXPORTS</div>
+          </div>
+          <!-- phone -->
+          <div style="display:grid;place-items:center">
+            <div style="width:186px;border-radius:24px;background:#0E1318;border:1px solid #2C3D4E;padding:8px;box-shadow:0 24px 46px rgba(0,0,0,.45)" data-a="pop" data-d=".6">
+              <div style="width:46px;height:4px;border-radius:99px;background:#2C3D4E;margin:2px auto 8px"></div>
+              <div class="ar" dir="rtl" style="background:#fff;border-radius:14px;overflow:hidden">
+                <div style="padding:9px 11px;background:var(--creator);color:#fff"><b style="font-size:11px">تسليم موقع</b>
+                  <div style="font-size:9px;opacity:.9">فرع العليا · الرياض</div></div>
+                <div style="padding:10px;display:flex;flex-direction:column;gap:7px">
+                  <div class="wc" style="padding:6px 9px;font-size:10.5px">٦ أجهزة — تم المسح ✓</div>
+                  <div style="display:flex;gap:5px">
+                    <div style="flex:1;height:34px;border-radius:5px;background:var(--w-soft)"></div>
+                    <div style="flex:1;height:34px;border-radius:5px;background:var(--w-soft)"></div>
+                    <div style="flex:1;height:34px;border-radius:5px;background:var(--w-soft)"></div>
+                  </div>
+                  <div class="wc" style="padding:6px 9px;font-size:10px;color:var(--w-mu)">GPS: ٢٤.٧١° ن، ٤٦.٦٧° ش</div>
+                  <div class="wc" style="padding:6px;display:grid;place-items:center">
+                    <svg width="70" height="26" viewBox="0 0 70 26"><path d="M3 20 C 12 4 18 24 26 12 S 38 3 44 18 S 58 9 67 14"
+                      stroke="#1E2A33" stroke-width="1.5" fill="none" stroke-dasharray="160" style="--len:160;animation:draw 1.3s 1.2s ease both"/></svg>
+                  </div>
+                  <div class="wbtn" style="justify-content:center;background:var(--creator);font-size:10px">إرسال التسليم</div>
+                  <div class="wlbl ar" style="text-align:center">يعمل بدون إنترنت</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 15 ACROSS THE BUSINESS ══════════ -->
+<section class="slide" data-step="8" data-clock="SAT 06:13" data-touch="1" data-title="Sales, Service, HR, Marketing">
+  <header class="shead">
+    <div><p class="eyebrow" data-a="up">Every department has a chain</p><h2 data-a="up" data-d=".06">We automated one. There are dozens.</h2></div>
+    <p class="sub" data-a="up" data-d=".14">Same four tools. Different nouns.</p>
+  </header>
+  <div class="art">
+    <div class="win" data-a="win">
+      <div class="win-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--crm)" data-a="up" data-d=".2">
+          <div class="kv"><b style="font-size:14px">Sales</b><span class="chan" style="background:var(--crm)">C</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px;font-size:11px;flex:1">
+            <div>· Lead assignment by territory and language</div>
+            <div>· Blueprint stage gates with mandatory fields</div>
+            <div>· Discount approval above policy</div>
+            <div>· Quote, contract, invoice generation</div>
+            <div>· Idle-deal escalation after 7 days silent</div>
+          </div>
+          <div class="wc" style="padding:9px;background:var(--w-soft);font-size:10.5px;line-height:1.4">
+            <b>Start with:</b> lead assignment. One rule, visible win, nobody argues.</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--desk)" data-a="up" data-d=".3">
+          <div class="kv"><b style="font-size:14px">Service</b><span class="chan" style="background:var(--desk)">D</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px;font-size:11px;flex:1">
+            <div>· Route by language, product and sentiment</div>
+            <div>· Blueprint for resolution, no skipped steps</div>
+            <div>· SLA escalation before the breach, not after</div>
+            <div>· Auto-merge duplicate tickets per contact</div>
+            <div>· Close the loop: survey, then CRM health flag</div>
+          </div>
+          <div class="wc" style="padding:9px;background:var(--w-soft);font-size:10.5px;line-height:1.4">
+            <b>Start with:</b> Arabic queue routing. Removes the daily triage argument.</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--people)" data-a="up" data-d=".4">
+          <div class="kv"><b style="font-size:14px">HR</b><span class="chan" style="background:var(--people)">P</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px;font-size:11px;flex:1">
+            <div>· Offer → onboarding checklist, day one ready</div>
+            <div>· Accounts, assets and access provisioned</div>
+            <div>· Iqama and document expiry reminders</div>
+            <div>· Leave approvals routed up the real hierarchy</div>
+            <div>· Probation reviews scheduled automatically</div>
+          </div>
+          <div class="wc" style="padding:9px;background:var(--w-soft);font-size:10.5px;line-height:1.4">
+            <b>Start with:</b> document expiry alerts. Compliance risk, zero controversy.</div>
+        </div>
+        <div class="wc" style="padding:14px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--camp)" data-a="up" data-d=".5">
+          <div class="kv"><b style="font-size:14px">Marketing</b><span class="chan" style="background:var(--camp)">✉</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px;font-size:11px;flex:1">
+            <div>· Form → segment → journey, in the right language</div>
+            <div>· Send windows that respect Fri–Sat and prayer times</div>
+            <div>· Score behaviour, hand over only when warm</div>
+            <div>· Re-engage the silent, suppress the unsubscribed</div>
+            <div>· Ramadan and seasonal calendars built in</div>
+          </div>
+          <div class="wc" style="padding:9px;background:var(--w-soft);font-size:10.5px;line-height:1.4">
+            <b>Start with:</b> the language split. Arabic and English should never share a template.</div>
+        </div>
+        <div class="wc" style="grid-column:span 4;padding:13px 15px;display:flex;align-items:center;gap:20px;background:#F0FBF6;border-color:#A9E6CF" data-a="up" data-d=".8">
+          <span class="wlbl" style="color:#0B7A50;flex:none">HOW TO ACTUALLY START ON SUNDAY</span>
+          <div style="display:flex;gap:14px;flex:1;font-size:11.5px">
+            <div><b>1.</b> Pick the chain people complain about most</div>
+            <div><b>2.</b> Write down every human touch in it</div>
+            <div><b>3.</b> Automate the copying, keep the judgement</div>
+            <div><b>4.</b> Ship one step, measure, then the next</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+<!-- ══════════ 16 CLOSE ══════════ -->
+<section class="slide hero" data-step="8" data-clock="SUN 08:00" data-touch="1" data-title="Close — so people can focus on customers">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px">
+    <div style="display:flex;gap:34px;align-items:flex-end;margin-bottom:2px" data-a="up">
+      <div><div style="font-family:var(--display);font-weight:700;font-size:56px;color:var(--auto);line-height:1">8</div>
+        <div class="eyebrow">steps</div></div>
+      <div><div style="font-family:var(--display);font-weight:700;font-size:56px;color:#fff;line-height:1">1</div>
+        <div class="eyebrow">human click</div></div>
+      <div><div style="font-family:var(--display);font-weight:700;font-size:56px;color:var(--auto);line-height:1">0</div>
+        <div class="eyebrow">working hours</div></div>
+      <div><div style="font-family:var(--display);font-weight:700;font-size:56px;color:#fff;line-height:1">31<span style="font-size:26px">h</span></div>
+        <div class="eyebrow">elapsed, over a weekend</div></div>
+    </div>
+    <h1 data-a="up" data-d=".3" style="font-size:52px;max-width:22ch">Automation removes the repetitive work so people can focus on customers.<span class="arh">الأتمتة تزيل العمل المتكرر ليتفرّغ الناس للعملاء</span></h1>
+    <p class="sub" style="max-width:50ch;font-size:15px" data-a="fade" data-d=".8">
+      Faisal didn't lose his job to a workflow. He got Sunday morning back — and spent it on the kick-off call instead of retyping a VAT number.
+    </p>
+    <div class="chips" style="justify-content:center" data-a="fade" data-d="1">
+      <span class="chip" style="--c:var(--crm)"><img src="logos/crm.png" alt="crm">Workflow</span>
+      <span class="chip" style="--c:var(--z-yellow)"><i></i>Blueprint</span>
+      <span class="chip" style="--c:var(--flow)"><img src="logos/flow.png" alt="flow">Flow</span>
+      <span class="chip" style="--c:var(--creator)"><img src="logos/creator.png" alt="creator">Creator</span>
+    </div>
+  </div>
+  <div class="chain"></div>
+</section>
+
+</div><!-- /stage -->
+
+<div id="hud">
+  <button id="prev" aria-label="Previous slide">←</button>
+  <span id="count"><b>1</b> / 16</span>
+  <button id="next" aria-label="Next slide">→</button>
+  <button id="ov" aria-label="Slide overview">O</button>
+  <button id="fs" aria-label="Fullscreen">⤢</button>
+</div>
+<div id="grid" role="dialog" aria-label="Slide overview"></div>
+
+<script>
+/* the eight-step chain that runs across the weekend */
+const STEPS = ["Lead","Approval","Quote","Contract","Invoice","Welcome","Project","Success"];
+const slides = [...document.querySelectorAll('.slide')];
+const stage  = document.getElementById('stage');
+const grid   = document.getElementById('grid');
+let i = 0;
+
+slides.forEach(s=>{
+  const done = +s.dataset.step, clock = s.dataset.clock, touch = +s.dataset.touch;
+  const nodes = STEPS.map((n,k)=>{
+    /* node k is complete when k < done; the one in progress is k === done */
+    const cls = k < done ? 'done' : (k === done ? 'now' : '');
+    return `<i class="cnode ${cls}" data-l="${n}"></i>` +
+           (k < STEPS.length-1 ? `<span class="cseg ${k < done ? 'done':''}"></span>` : '');
+  }).join('');
+  s.querySelector('.chain').innerHTML =
+    `<span class="clabel"><b>${clock}</b></span>
+     <div class="cwrap">${nodes}</div>
+     <span class="ctouch ${touch ? 'one':''}">Human touches: ${touch}</span>`;
+});
+
+/* stagger delays while hidden so each sequence starts clean */
+document.querySelectorAll('[data-d]').forEach(el=>{ el.style.animationDelay = el.dataset.d + 's' });
+
+function runCounters(slide){
+  slide.querySelectorAll('[data-count]').forEach(el=>{
+    const target = +el.dataset.count, dur = 900, t0 = performance.now();
+    (function tick(now){
+      const p = Math.min(1, (now - t0)/dur);
+      el.textContent = Math.round(target*(1 - Math.pow(1-p,3))).toLocaleString();
+      if(p < 1) requestAnimationFrame(tick);
+    })(t0);
+  });
+}
+
+function show(n){
+  i = Math.max(0, Math.min(slides.length-1, n));
+  slides.forEach((s,k)=>s.classList.toggle('is-on', k===i));
+  document.querySelector('#count b').textContent = i+1;
+  setTimeout(()=>runCounters(slides[i]), 400);
+}
+const next = ()=>show(i+1), prev = ()=>show(i-1);
+document.getElementById('next').onclick = next;
+document.getElementById('prev').onclick = prev;
+document.getElementById('fs').onclick = ()=>
+  document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+
+slides.forEach((s,k)=>{
+  const b = document.createElement('button');
+  b.innerHTML = `<span>${String(k+1).padStart(2,'0')}</span>${s.dataset.title}`;
+  b.onclick = ()=>{ grid.classList.remove('on'); show(k) };
+  grid.appendChild(b);
+});
+document.getElementById('ov').onclick = ()=> grid.classList.toggle('on');
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ grid.classList.remove('on'); return }
+  if(['ArrowRight',' ','PageDown','Enter'].includes(e.key)){ e.preventDefault(); next() }
+  if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); prev() }
+  if(e.key==='Home') show(0);
+  if(e.key==='End') show(slides.length-1);
+  const k = e.key.toLowerCase();
+  if(k==='f') document.getElementById('fs').click();
+  if(k==='o') grid.classList.toggle('on');
+  if(k==='r'){ slides[i].classList.remove('is-on'); void slides[i].offsetWidth; show(i) }
+});
+stage.addEventListener('click', e=>{ if(e.target.tagName!=='BUTTON') next() });
+
+let sx=0;
+stage.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+stage.addEventListener('touchend',e=>{
+  const d = e.changedTouches[0].clientX - sx;
+  if(Math.abs(d)>44) d<0 ? next() : prev();
+},{passive:true});
+
+function fit(){
+  const s = Math.min(innerWidth/1280, innerHeight/720) * (innerWidth<700 ? 1 : .965);
+  stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize', fit);
+addEventListener('orientationchange', fit);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+fit(); show(0);
+</script>
+</body>
+</html>

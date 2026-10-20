@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoho Decks</title>
+<style>
+@font-face{font-family:'Zoho Puvi';src:url('fonts/ZohoPuvi-Regular.woff') format('woff');font-weight:400}
+@font-face{font-family:'Zoho Puvi';src:url('fonts/ZohoPuvi-Medium.woff') format('woff');font-weight:500}
+@font-face{font-family:'Zoho Puvi';src:url('fonts/ZohoPuvi-SemiBold.woff') format('woff');font-weight:600}
+@font-face{font-family:'Zoho Puvi';src:url('fonts/ZohoPuvi-Bold.woff') format('woff');font-weight:700}
+:root{--ink:#141021;--card:#1d1830;--line:#372E4C;--text:#F2EFF9;--muted:#978EAB;--zia:#7B61FF;--red:#E42527}
+*{box-sizing:border-box;margin:0}
+body{background:var(--ink);color:var(--text);font-family:'Zoho Puvi',system-ui,sans-serif;min-height:100vh;
+background-image:radial-gradient(circle at 80% -10%,rgba(123,97,255,.18),transparent 45%),radial-gradient(circle at 0% 100%,rgba(228,37,39,.10),transparent 40%)}
+.wrap{max-width:1100px;margin:0 auto;padding:56px 24px 40px}
+header img{height:34px;margin-bottom:28px}
+h1{font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:12px}
+.sub{color:var(--muted);font-size:18px;max-width:60ch;margin-bottom:44px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;transition:.2s}
+.card:hover{transform:translateY(-4px);border-color:var(--zia);box-shadow:0 12px 32px rgba(123,97,255,.2)}
+.tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--zia);font-weight:600;margin-bottom:12px}
+.card h2{font-size:22px;font-weight:600;margin-bottom:8px;line-height:1.25}
+.card p{color:var(--muted);font-size:15px;line-height:1.5;flex:1;margin-bottom:22px}
+.btn{align-self:flex-start;background:var(--red);color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:11px 22px;border-radius:999px;transition:.2s}
+.btn:hover{background:#c91e20}
+.btn:focus-visible{outline:3px solid var(--zia);outline-offset:3px}
+footer{margin-top:56px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><img src="logos/zoho.png" alt="Zoho"></header>
+<h1>Presentation Decks</h1>
+<p class="sub">Select a deck below to open it. Use the arrow keys to navigate once inside.</p>
+<main class="grid">
+
+<section class="card">
+<div class="tag">Session 1</div>
+<h2>Beyond the Buzz</h2>
+<p>AI that actually gets work done.</p>
+<a class="btn" href="beyond-the-buzz.html">Open deck →</a>
+</section>
+
+<section class="card">
+<div class="tag">Session 2</div>
+<h2>Automation That Works While You Sleep</h2>
+<p>Remove repetitive work so people can focus on customers.</p>
+<a class="btn" href="automation-while-you-sleep.html">Open deck →</a>
+</section>
+
+<section class="card">
+<div class="tag">Customer Experience</div>
+<h2>Every Conversation Matters</h2>
+<p>Bringing every customer conversation together in one place.</p>
+<a class="btn" href="every-conversation-matters_1.html">Open deck →</a>
+</section>
+
+<section class="card">
+<div class="tag">Healthcare · KSA</div>
+<h2>Patient 360</h2>
+<p>Zoho CRM Plus for Healthcare in Saudi Arabia.</p>
+<a class="btn" href="patient360-crmplus-ksa.html">Open deck →</a>
+</section>
+
+<section class="card">
+<div class="tag">Hospitality · KSA</div>
+<h2>Guest 360</h2>
+<p>Zoho CRM Plus + Creator for Hospitality in Saudi Arabia.</p>
+<a class="btn" href="hospitality-ksa_1.html">Open deck →</a>
+</section>
+
+<section class="card">
+<div class="tag">Sports &amp; Entertainment</div>
+<h2>World-Class on the Pitch. World-Class Behind It.</h2>
+<p>Zoho CRM Plus for Sports &amp; Entertainment.</p>
+<a class="btn" href="sports-entertainment.html">Open deck →</a>
+</section>
+
+</main>
+<footer>© Zoho Corporation</footer>
+</div>
+</body>
+</html>
